@@ -10,13 +10,16 @@
 
 # ------------------------------------------------------------------------------
 # Define time sequence - using mrgsolve's tgrid function
-	TIME.tgrid <- c(tgrid(0,3,0.25),tgrid(4,12,2),tgrid(16,32,8))
+	TIME.tgrid <- c(tgrid(0,3,0.1),tgrid(4,12,2),tgrid(16,96,8))
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
 	nsim <- n+1	#Add an individual for the "PRED"
 # 95% prediction interval functions - calculate the 2.5th and 97.5th percentiles
 	CI95lo <- function(x) quantile(x,probs = 0.025)
 	CI95hi <- function(x) quantile(x,probs = 0.975)
+# 90% prediction interval functions - calculate the 5th and 95th percentiles
+	CI90lo <- function(x) quantile(x,probs = 0.05)
+	CI90hi <- function(x) quantile(x,probs = 0.95)
 # Set seed for reproducible numbers
 	set.seed(123456)
 
@@ -49,9 +52,9 @@
 							COVSTDKTR = 0.894,	//Study averaged KTR for simulation
 							COVSTDCL = 0.789,	//Study averaged CL for simulation
 							COVSTDV = 0.786,	//Study averaged V for simulation
-							FED = 0,
-							SEX = 0,
-							FFM = 70,
+							FED = 1,
+							SEX = 1,
+							FFM = 55.49,
 							TRT = 1,
 							PER = 1
 
@@ -110,7 +113,7 @@
 							double CL = POPCL*pow(FFM/70,0.75)*exp(ETA_CL)*COVSTDF*COVSTDCL*FEDCOV2*SEXCOV;
 							double V = POPV*(FFM/70)*exp(ETA_V)*COVSTDF*COVSTDV*FEDCOV2;
 							double CLP1 = POPCLP1*pow(FFM/70,0.75)*COVSTDF*FEDCOV2;
-							double VP1 = POPVP1*(FFM/70)*exp(ETA_VP1);
+							double VP1 = POPVP1*(FFM/70)*exp(ETA_VP1)*COVSTDF*FEDCOV2;
 							double KTR = POPKTR*exp(ETA_KTR)*FEDCOV*COVSTDKTR;
 							double F = POPF;
 							if (TRT == 1) F = F1XC;
@@ -128,7 +131,7 @@
 							// Lag time
 							double TLAG = 0;
 							if (TRT == 1) TLAG = ALAG1;
-							if (TRT == 2) TLAG = ALAG1;
+							if (TRT == 3) TLAG = ALAG1;
 							double FTLAG = 0;
 							if (FED == 1) FTLAG = FTLAG2;
 							double ALAG_DEPOT = TLAG+FTLAG;
@@ -138,7 +141,7 @@
 							dxdt_TRANS1 = K12*DEPOT -K23*TRANS1;
 							dxdt_TRANS2 = K23*TRANS1 -K34*TRANS2;
 							dxdt_CENT = K34*TRANS2 -K45*CENT +K54*PERI -K46*CENT;
-							dxdt_PERI = K46*CENT -K54*PERI;
+							dxdt_PERI = K45*CENT -K54*PERI;
 
 		$TABLE		table(IPRE) = CENT/V;
 							table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
@@ -167,7 +170,8 @@
 	plotobj1 <- NULL
 	plotobj1 <- ggplot()
 	plotobj1 <- plotobj1 + geom_line(aes(x = time,y = IPRE),data = conc.data[conc.data$ID == 1,],colour = "red")
-	plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = conc.data[conc.data$ID != 1,],geom = "ribbon",fun.ymin = "CI95lo",fun.ymax = "CI95hi",fill = "red",alpha = 0.3)
+	plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = conc.data[conc.data$ID != 1,],geom = "ribbon",fun.ymin = "CI90lo",fun.ymax = "CI90hi",fill = "red",alpha = 0.3)
+	plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
 	plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
-	plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
+	plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,1000))
 	print(plotobj1)
