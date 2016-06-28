@@ -3,7 +3,6 @@
 # Load package libraries
 	library(ggplot2)	#Plotting
 	library(grid)	#Plotting
-	library(plyr)	#Split and rearrange data, ddply function
 	library(dplyr)	#New plyr - required for mrgsolve
 	library(mrgsolve)	#Metrum differential equation solver for pharmacometrics
 # Define a custom ggplot2 theme
