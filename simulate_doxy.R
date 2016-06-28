@@ -1,4 +1,4 @@
-# R script for simulating a population from Ash's doxycycline MODEL
+# R script for simulating a population from Ash's doxycycline model
 # ------------------------------------------------------------------------------
 # Load package libraries
 	library(ggplot2)	#Plotting
@@ -10,7 +10,7 @@
 	theme_bw2 <- theme_set(theme_bw(base_size = 16))
 
 # ------------------------------------------------------------------------------
-# Define time sequence
+# Define time sequence - using mrgsolve's tgrid function
 	TIME.tgrid <- c(tgrid(0,3,0.5),tgrid(4,12,2),tgrid(16,32,8))
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
@@ -57,7 +57,7 @@
 
 		$OMEGA		name = "BSV"
 							block = TRUE
-							labels = s(ETA_CL,ETA_KTR,ETA_VP1,ETA_V)
+							labels = s(BSV_CL,BSV_KTR,BSV_VP1,BSV_V)
 							0.0373
 							0.0229 0.0796
 							0.0106 -0.01 0.0229
@@ -65,7 +65,7 @@
 
 		$OMEGA		name = "BOV"
 							block = FALSE
-							labels = s(IOV_CL1,IOV_CL2,IOV_KTR1,IOV_KTR2)
+							labels = s(BOV_CL1,BOV_CL2,BOV_KTR1,BOV_KTR2)
 							0.0183
 							0.0183
 							0.0738
@@ -88,20 +88,24 @@
 
 							// Between-occassion variability
 								// Clearance
-									double IOV_CL = IOV_CL1;
-									if (PER == 2) IOV_CL = IOV_CL2;
-									double BSV_CL = ETA_CL+IOV_CL;
+									double BOV_CL = BOV_CL1;
+									if (PER == 2) BOV_CL = BOV_CL2;
+									double ETA_CL = BSV_CL+BOV_CL;
 								// Transit
-									double IOV_KTR = IOV_KTR1;
-									if (PER == 2) IOV_KTR = IOV_KTR2;
-									double BSV_KTR = ETA_KTR+IOV_KTR;
+									double BOV_KTR = BOV_KTR1;
+									if (PER == 2) BOV_KTR = BOV_KTR2;
+									double ETA_KTR = BSV_KTR+BOV_KTR;
+								// Volume - peripheral
+									double ETA_VP1 = BSV_VP1;
+								// Volume - central
+									double ETA_V = BSV_V;
 
 							// Individual parameter values
-							double CL = POPCL*pow(FFM/70,0.75)*exp(BSV_CL)*COVSTDF*COVSTDCL*FEDCOV2*SEXCOV;
+							double CL = POPCL*pow(FFM/70,0.75)*exp(ETA_CL)*COVSTDF*COVSTDCL*FEDCOV2*SEXCOV;
 							double V = POPV*(FFM/70)*exp(ETA_V)*COVSTDF*COVSTDV*FEDCOV2;
 							double CLP1 = POPCLP1*pow(FFM/70,0.75)*COVSTDF*FEDCOV2;
 							double VP1 = POPVP1*(FFM/70)*exp(ETA_VP1);
-							double KTR = POPKTR*exp(BSV_KTR)*FEDCOV*COVSTDKTR;
+							double KTR = POPKTR*exp(ETA_KTR)*FEDCOV*COVSTDKTR;
 							double F = POPF;
 							if (TRT == 1) F = F1XC;
 							if (TRT == 3) F = F1CAP;
@@ -127,8 +131,8 @@
 							dxdt_DEPOT = -K12*DEPOT;
 							dxdt_TRANS1 = K12*DEPOT -K23*TRANS1;
 							dxdt_TRANS2 = K23*TRANS1 -K34*TRANS2;
-							dxdt_CENT = K34*TRANS2 -K45*CENT +K54*PERI -K45*CENT;
-							dxdt_PERI = K45*CENT -K54*PERI;
+							dxdt_CENT = K34*TRANS2 -K45*CENT +K54*PERI -K46*CENT;
+							dxdt_PERI = K46*CENT -K54*PERI;
 
 		$TABLE		table(IPRE) = CENT/V;
 							table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
@@ -140,6 +144,11 @@
 # ------------------------------------------------------------------------------
 # Simulate concentration-time profiles for the population
 	input.conc.data <- expand.ev(ID = 1:n,amt = 70*1000,evid = 1,cmt = 1,time = 0)
+		# n individuals
+		# amt in microg
+		# evid = 1; dosing event
+		# cmt = 1; dose goes into compartment 1 = depot
+		# time = 0; dose at time = 0
 	conc.data <- mod %>% data_set(input.conc.data) %>% mrgsim(tgrid = TIME.tgrid)
 	conc.data <- as.data.frame(conc.data)
 
