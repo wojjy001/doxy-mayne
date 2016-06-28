@@ -11,9 +11,10 @@
 
 # ------------------------------------------------------------------------------
 # Define time sequence - using mrgsolve's tgrid function
-	TIME.tgrid <- c(tgrid(0,3,0.5),tgrid(4,12,2),tgrid(16,32,8))
+	TIME.tgrid <- c(tgrid(0,3,0.25),tgrid(4,12,2),tgrid(16,32,8))
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
+	nsim <- n+1	#Add an individual for the "PRED"
 # 95% prediction interval functions - calculate the 2.5th and 97.5th percentiles
 	CI95lo <- function(x) quantile(x,probs = 0.025)
 	CI95hi <- function(x) quantile(x,probs = 0.975)
@@ -100,6 +101,12 @@
 								// Volume - central
 									double ETA_V = BSV_V;
 
+							// Population parameter values
+							if (ID == 1) ETA_CL = 0;
+							if (ID == 1) ETA_KTR = 0;
+							if (ID == 1) ETA_V = 0;
+							if (ID == 1) ETA_VP1 = 0;
+
 							// Individual parameter values
 							double CL = POPCL*pow(FFM/70,0.75)*exp(ETA_CL)*COVSTDF*COVSTDCL*FEDCOV2*SEXCOV;
 							double V = POPV*(FFM/70)*exp(ETA_V)*COVSTDF*COVSTDV*FEDCOV2;
@@ -136,6 +143,8 @@
 
 		$TABLE		table(IPRE) = CENT/V;
 							table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
+
+		$CAPTURE	CL V CLP1 VP1 KTR F ETA_CL ETA_V ETA_VP1 ETA_KTR
 		'
 	# Compile the model code
 		mod <- mcode("popDOXY",code)
@@ -143,7 +152,7 @@
 
 # ------------------------------------------------------------------------------
 # Simulate concentration-time profiles for the population
-	input.conc.data <- expand.ev(ID = 1:n,amt = 70*1000,evid = 1,cmt = 1,time = 0)
+	input.conc.data <- expand.ev(ID = 1:nsim,amt = 70*1000,evid = 1,cmt = 1,time = 0)
 		# n individuals
 		# amt in microg
 		# evid = 1; dosing event
@@ -155,9 +164,9 @@
 # ------------------------------------------------------------------------------
 # Plot results
 	plotobj1 <- NULL
-	plotobj1 <- ggplot(conc.data)
-	plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),geom = "line",fun.y = median,colour = "red")
-	plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),geom = "ribbon",fun.ymin = "CI95lo",fun.ymax = "CI95hi",fill = "red",alpha = 0.3)
+	plotobj1 <- ggplot()
+	plotobj1 <- plotobj1 + geom_line(aes(x = time,y = IPRE),data = conc.data[conc.data$ID == 1,],colour = "red")
+	plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = conc.data[conc.data$ID != 1,],geom = "ribbon",fun.ymin = "CI95lo",fun.ymax = "CI95hi",fill = "red",alpha = 0.3)
 	plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
 	plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
 	print(plotobj1)
