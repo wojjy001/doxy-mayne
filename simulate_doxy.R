@@ -152,14 +152,16 @@
 
 # ------------------------------------------------------------------------------
 # Simulate concentration-time profiles for the population
-	input.conc.data <- expand.ev(ID = 1:nsim,amt = 70*1000,evid = 1,cmt = 1,time = 0)
+	input.conc.data <- expand.ev(ID = 1:nsim,amt = 120*1000,evid = 1,cmt = 1,time = 0)
 		# n individuals
 		# amt in microg
 		# evid = 1; dosing event
 		# cmt = 1; dose goes into compartment 1 = depot
 		# time = 0; dose at time = 0
 	conc.data <- mod %>% data_set(input.conc.data) %>% mrgsim(tgrid = TIME.tgrid)
-	conc.data <- as.data.frame(conc.data)
+	# Test speed of mrgsolve
+		system.time(conc.data <- mod %>% data_set(input.conc.data) %>% mrgsim(tgrid = TIME.tgrid))
+	conc.data <- as.data.frame(conc.data)	#Convert to a data frame so that it is more useful for me!
 
 # ------------------------------------------------------------------------------
 # Plot results
