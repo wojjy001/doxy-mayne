@@ -6,38 +6,18 @@ shinyServer(function(input,output,session) {
 	###########
 	##_INPUT_##
 	###########
-	# Create a reactive input expression that takes widget values and makes a data frame ready for Bayesian estimation of individual pharmacokinetic parameters (Rinput.data)
-	Rinput.data <- reactive({
-		# Call in reactive widget input from ui.R
-		WT <- input$WT  #Patient's weight (kg)
-		AMT <- input$AMT*1000  #Estimated amount ingested (mg)
-		PROD <- input$PROD  #Product category ingested
-		if (input$SDAC == TRUE) SDAC <- 1	#If the patient received single-dose activated charcoal then SDAC = 1
-		if (input$SDAC == FALSE) SDAC <- 0  #If the patient did not receive single-dose activated charcoal, then SDAC = 0
-		PAC1 <- input$PAC1  #First plasma acetaminophen concentration (mg/L)
-		TIME1 <- input$TIME1  #TIme for first plasma acetaminophen concentration (hours)
-		PAC2 <- NA  #Make NA unless the appropriate "selectInput" option has been chosen
-		TIME2 <- 0  #When PAC2 is NA, just make it correspond to TIME = 0
-		if (input$NPAC > 1) {
-			PAC2 <- input$PAC2  #Second plasma acetaminophen concentration (mg/L)
-			TIME2 <- input$TIME2  #Time for second plasma acetaminophen concentration (hours)
-		}
-		# Slot sampling times into TIME sequence
-		TIME <- sort(unique(c(TIME.base,TIME1,TIME2)))
-		# Create a sequence of PAC values for corresponding times
-		PAC <- rep(NA,times = length(TIME))
-		PAC[TIME == TIME1] <- PAC1  #Input with PAC1 when TIME = TIME1
-		PAC[TIME == TIME2] <- PAC2  #Input with PAC2 when TIME = TIME2
-		# Collate into a data frame
-		input.data <- data.frame(TIME,  #Time sequence
-														AMT = c(AMT,rep(0,times = length(TIME)-1)),  #AMT input at time = 0, then no further doses at subsequent times
-														PAC,  #Patient's plasma acetaminophen concentrations (mg/L)
-														WT,  #Patient's weight (kg)
-														SDAC,  #Single-dose activated charcoal status (0 = No, 1 = Yes)
-														PROD  #Product category ingested
-		)
-		input.data
-	})  #Brackets closing "Rinput.data"
+	# Simulate a population that will compare fed versus fasted status
+	Rfed.data <- reactive({
+		# Simulate concentration-time profiles for the population
+			input.fed.data <- expand.ev(ID = 1:nsim,amt = 120*1000,evid = 1,cmt = 1,time = 0)
+				# n individuals
+				# amt in microg
+				# evid = 1; dosing event
+				# cmt = 1; dose goes into compartment 1 = depot
+				# time = 0; dose at time = 0
+			fed.data <- mod %>% data_set(input.fed.data) %>% mrgsim(tgrid = TIME.tgrid)
+			fed.data <- as.data.frame(fed.data)	#Convert to a data frame so that it is more useful for me!
+	})	#Brackets closing "Rfed.data"
 
 	# Use individual parameter estimates in Rbayes.data to simulate a concentration-time profile for the individual
 	Rconc.data <- reactive({
@@ -61,7 +41,29 @@ shinyServer(function(input,output,session) {
 	############
 	##_OUTPUT_##
 	############
+	# Plot simulation results of fed versus fasted
+	output$Rfed.plot <- renderPlot({
+		# Read in the reactive data frame for fed.data
+		fed.data <- Rfed.data()
 
+		# Plot
+		plotobj1 <- ggplot()
+		plotobj1 <- plotobj1 + geom_line(aes(x = time,y = IPRE),data = fed.data[fed.data$ID == 1,],colour = "red")	#Population typical individual
+
+		if (input$PI == 2) {
+		plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$ID != 1,],geom = "ribbon",fun.ymin = "CI90lo",fun.ymax = "CI90hi",fill = "red",alpha = 0.3)
+		}
+
+		if (input$PI == 3) {
+		plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$ID != 1,],geom = "ribbon",fun.ymin = "CI95lo",fun.ymax = "CI95hi",fill = "red",alpha = 0.3)
+		}
+
+		plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
+		plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
+		plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,1000))
+		print(plotobj1)
+
+	})	#Brackets closing "renderPlot"
 
   #############
   ##_SESSION_##

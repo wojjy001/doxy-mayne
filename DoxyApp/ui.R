@@ -32,7 +32,8 @@ body <-
 	dashboardBody(
 		tabItems(
 			tabItem(tabName = "fed-status",
-        h4("Compare Fed versus Fasted")
+        h4("Compare Fed versus Fasted"),
+        plotOutput("Rfed.plot")
 			),	#Brackets closing "tabItem" for "fed-status"
       tabItem(tabName = "form-status",
         h4("Compare Doryx MPC versus Doryx Tablet")
