@@ -7,51 +7,31 @@
 header <-
   dashboardHeader(
 		title = "Doxycycline",
-		titleWidth = 250
+		titleWidth = 300
 	)	#Brackets closing "dashboardHeader"
 # Application's sidebar
 sidebar <-
 	dashboardSidebar(
-		width = 250,	#Width of sidebar the same as width of header
+		width = 300,	#Width of sidebar the same as width of header
 		sidebarMenu(
-      menuItem("Patient Information",tabName = "patient",icon = icon("child")),
-      menuItem("Overdose Information",tabName = "para-info",icon = icon("medkit")),
-		  menuItem("Plot and Numerical Output",tabName = "results",icon = icon("line-chart"))
+      menuItem("Compare Fed versus Fasted",tabName = "fed-status",icon = icon("child")),
+      menuItem("Compare Doryx MPC versus Doryx Tablet",tabName = "form-status",icon = icon("child")),
+      menuItem("Compare Male versus Female",tabName = "gender-status",icon = icon("child"))
 		)	#Brackets closing "sidebarMenu"
 	) #Brackets closing "dashboardSidebar"
 # Application's body
 body <-
 	dashboardBody(
 		tabItems(
-			tabItem(tabName = "patient",
-				h4("Patient Information:"),	#Heading for Patient Information section
-        fixedRow(
-          column(6,
-    				numericInput("MRN","Medical Record Number (MRN):",value = 000000,step = 1)  #Numeric input for patient's medical record number (or unit record number)
-          ) #Brackets closing "column"
-        ),  #Brackets closing "fixedRow"
-				fixedRow(
-					column(6,
-						textInput("FNAME", "First Name:","First Name")	#Text input for patient's first name
-          ),  #Brackets closing "column"
-          column(6,
-						textInput("LNAME","Last Name:","Last Name")	#Text input for patient's last name
-          ) #Brackets closing "column"
-        ),  #Brackets closing "fixedRow"
-        fixedRow(
-          column(6,
-						dateInput("BDATE","Date of Birth (DD-MM-YYYY):",value = "1980-01-01",format = "dd-mm-yyyy",startview = "year")  #Date input for patient's date of birth
-          ),  #Brackets closing "column"
-          column(6,
-						numericInput("WT","Weight (kg):",min = 0,max = 200,value = 70)	#Numeric input for patient weight
-          ) #Brackets closing "fixedRow"
-        ),  #Brackets closing "fixedRow"
-        fixedRow(
-          column(6,
-						selectInput("SEX","Gender:",choices = list("Male" = 1,"Female" = 2),selected = 1)	#Select input for patient's gender
-					)	#Brackets closing "column"
-				)	#Brackets closing "fixedRow"
-			)	#Brackets closing "tabItem" for "patient"
+			tabItem(tabName = "fed-status",
+        h4("Compare Fed versus Fasted")
+			),	#Brackets closing "tabItem" for "fed-status"
+      tabItem(tabName = "form-status",
+        h4("Compare Doryx MPC versus Doryx Tablet")
+      ),  #Brackets closing "tabItem" for "form-status"
+      tabItem(tabName = "gender-status",
+        h4("Compare Male versus Female")
+      ) #Brackets closing "tabItem" for "gender-status"
 		)  #Brackets closing "tabItems"
 	) #Brackets closing "dashboardBody"
 # ------------------------------------------------------------------------------
