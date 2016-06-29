@@ -33,7 +33,8 @@
 							TRANS1 = 0,	// Transit 1
 							TRANS2 = 0,	// Transit 2
 							CENT = 0,	// Central
-							PERI = 0	// Peripheral
+							PERI = 0,	// Peripheral
+							AUC = 0	//Area under the curve compartment
 
 		$PARAM		// Population parameters
 							POPCL = 4.63,	//THETA4
@@ -150,6 +151,8 @@
 							dxdt_TRANS2 = K23*TRANS1 -K34*TRANS2;
 							dxdt_CENT = K34*TRANS2 -K45*CENT +K54*PERI -K46*CENT;
 							dxdt_PERI = K45*CENT -K54*PERI;
+							dxdt_AUC = 0;
+							if (CENT/V > 0) dxdt_AUC = 1;
 
 		$TABLE		table(IPRE) = CENT/V;
 							table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
