@@ -1,4 +1,4 @@
-# server.R script for PrototypeAPAP3
+# server.R script for DoxyApp
 # Reactive objects (i.e., those dependent on widget input) are written here
 # ------------------------------------------------------------------------------
 # Define the "server" part of the Shiny application
