@@ -39,19 +39,6 @@ shinyServer(function(input,output,session) {
 		input.data
 	})  #Brackets closing "Rinput.data"
 
-	#Estimate individual parameter values based on the information in Rinput.data
-	Rbayes.data <- reactive({
-		withProgress(
-			message = "Estimating individual parameters...",
-			value = 0,
-			{
-			input.data <- Rinput.data()  #Read in the reactive "input.data"
-			input.data <- input.data[input.data$TIME == 0 | is.na(input.data$PAC) == F,]	#Only use the time-points that are actually needed - i.e., when the amount was ingested and when samples were collected
-			bayes.data <- bayesian.function(input.data)
-			}	#Brackets closing expression for "withProgress"
-		)	#Brackets closing "withProgress"
-	})  #Brackets closing "Rbayes.data"
-
 	#Use individual parameter estimates in Rbayes.data to simulate a concentration-time profile for the individual
 	Rconc.data <- reactive({
 		input.data <- Rinput.data()  #Read in reactive "input.data"
@@ -70,57 +57,6 @@ shinyServer(function(input,output,session) {
 		conc.data <- update.parameters %>% data_set(input.conc.data,evid = 1,cmt = 1) %>% mrgsim(tgrid = TIME.tgrid)
 		conc.data <- as.data.frame(conc.data)
 	})  #Brackets closing "Rconc.data"
-
-	#Use the hessian matrix from Rbayes.data to calculate standard errors for each parameter
-	Rse.par <- reactive({
-		input.data <- Rinput.data() #Read in reactive "input.data"
-		bayes.data <- Rbayes.data()	#Read in reactive "bayes.data"
-		hessian.matrix <- matrix(c(bayes.data$HESS11,bayes.data$HESS12,bayes.data$HESS13,bayes.data$HESS14,bayes.data$HESS21,bayes.data$HESS22,bayes.data$HESS23,bayes.data$HESS24,bayes.data$HESS31,bayes.data$HESS32,bayes.data$HESS33,bayes.data$HESS34,bayes.data$HESS41,bayes.data$HESS42,bayes.data$HESS43,bayes.data$HESS44),4,4)
-  	VCmatrix <- solve(hessian.matrix)	#Calculate the variance-covariance matrix
-		se.par <- sqrt(diag(VCmatrix))	#Calculate the parameter standard errors
-	})	#Brackets closing "Rse.par"
-
-	#Simulate 95% prediction intervals for the individual based on standard errors
-	Rci.data <- reactive({
-	  input.data <- Rinput.data() #Read in reactive "input.data"
-		bayes.data <- Rbayes.data()	#Read in reactive "bayes.data"
-		se.par <- Rse.par()	#Read in reactive "se.par"
-		#Simulate concentrations for a population defined by the individual's Bayes parameters and precision of those parameters
-		#Update ERR_X values in model code - previously set to zero, but now we have individual parameter values for CL, V, KA and F
-		parameter.list <- list(ERR_CL = bayes.data$ETA1,ERR_V = bayes.data$ETA2,ERR_KA = bayes.data$ETA3,ERR_F = bayes.data$ETA4)
-		#Update the covariate values in model code - dependent on the individual input
-		covariate.list <- list(PROD = input.data$PROD[1],WT = input.data$WT[1],SDAC = input.data$SDAC[1])
-		#Update the omega values in model code - omega here are NOT between-subject variability but the precision of the parameters
-		omega.list <- list(ETA_CL = (se.par[1])^2,ETA_V = (se.par[2])^2,ETA_KA = (se.par[3])^2,ETA_F = (se.par[4])^2)	#Values need to be specified as "variance" not SD
-		#Formally update the model parameters
-		update.parameters <- mod %>% param(parameter.list) %>% param(covariate.list) %>% omat(dmat(omega.list))
-		#Input dataset for differential equation solver
-		input.ci.data <- expand.ev(ID = 1:n,amt = input.data$AMT[1])
-		#Run differential equation solver
-		ci.data <- update.parameters %>% data_set(input.ci.data,evid = 1,cmt = 1) %>% mrgsim(tgrid = c(tgrid(0,3,0.5),tgrid(4,12,2),tgrid(16,32,8)))
-		ci.data <- as.data.frame(ci.data)
-	})
-
-	#Calculate relative standard errors using the previously calculated standard errors
-	#If relative standard errors are poor, then make the app show a message recommending to collect a further sample
-	Rrse.par <- reactive({
-		bayes.data <- Rbayes.data()  #Read in reactive "bayes.data"
-		se.par <- Rse.par()	#Read in reactive "se.par"
-		CL.rse <- se.par[1]/exp(bayes.data$ETA1)*100	#Relative standard error for the ETA for CL
-		V.rse <- se.par[2]/exp(bayes.data$ETA2)*100	#Relative standard error for the ETA for V
-		KA.rse <- se.par[3]/exp(bayes.data$ETA3)*100 #Relative standard error for the ETA for KA
-		F.rse <- se.par[4]/exp(bayes.data$ETA4)*100	#Relative standard error for the ETA for F
-		rse.par <- c(CL.rse,V.rse,KA.rse,F.rse)  #Vector of parameter relative standard errors
-	})	#Brackets closing "Rrse.par"
-
-	#Use individual simulated concentration-time profile (Rconc.data) to decide whether the individual should receive NAC or not
-	Rdecision.data <- reactive({
-		conc.data <- Rconc.data()	#Read in reactive "conc.data"
-		rm.decision.data <- ddply(conc.data, .(time), rm.function)  #Decide for each time-point in "conc.data" whether the individual should receive NAC or not according to the RM nomogram
-		rm.decision <- sum(na.omit(rm.decision.data$NAC_DEC))
-		if (rm.decision > 1) rm.decision <- 1
-		rm.decision
-	})  #Brackets closing "Rdecision.data"
 
 	############
 	##_OUTPUT_##
