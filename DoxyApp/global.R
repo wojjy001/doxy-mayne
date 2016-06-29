@@ -15,7 +15,7 @@
 
 # ------------------------------------------------------------------------------
 # Define time sequence - using mrgsolve's tgrid function
-	TIME.tgrid <- c(tgrid(0,3,0.1),tgrid(4,12,2),tgrid(16,96,8))
+	TIME.tgrid <- c(tgrid(0,12,0.1),tgrid(16,96,8))
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
 	nsim <- n+1	#Add an individual for the "PRED"
