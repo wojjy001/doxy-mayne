@@ -22,9 +22,9 @@ sidebar <-
         h4(strong("Plotting Features")),  #Allow the user to control plot appearances from the sidebar
         align = "center"
       ),  #Brackets closing "fixedRow"
-      checkboxInput("FACET","Stratify by primary factor",value = FALSE),  #Allow the user to facet the plot by factors in the "compare" tab they have chosen. i.e., in "Compare Fed versus Fasted", facet the resultant plot by fed/fasted status
-      selectInput("PI","Prediction intervals:",choices = list("No Prediction Intervals" = 1,"90% Prediction Intervals" = 2,"95% Prediction Intervals" = 3)),
-      checkboxInput("SUMSTATS","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+      checkboxInput("FACET","Stratify by secondary factor",value = FALSE),  #Allow the user to facet the plot by factors other than that stated in the "compare" tab they have chosen. i.e., in "Compare Fed versus Fasted", facet the resultant plot by formulation status
+      checkboxInput("SUMSTATS","Show summary statistics",value = FALSE), #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+      selectInput("PI","Prediction intervals:",choices = list("No Prediction Intervals" = 1,"90% Prediction Intervals" = 2,"95% Prediction Intervals" = 3))
 		)	#Brackets closing "sidebarMenu"
 	) #Brackets closing "dashboardSidebar"
 # Application's body
