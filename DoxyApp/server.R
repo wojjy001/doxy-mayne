@@ -49,18 +49,15 @@ shinyServer(function(input,output,session) {
 		# Plot
 		plotobj1 <- ggplot()
 		plotobj1 <- plotobj1 + geom_line(aes(x = time,y = IPRE),data = fed.data[fed.data$ID == 1,],colour = "red")	#Population typical individual
-
-		if (input$PI == 2) {
-		plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$ID != 1,],geom = "ribbon",fun.ymin = "CI90lo",fun.ymax = "CI90hi",fill = "red",alpha = 0.3)
-		}
-
-		if (input$PI == 3) {
-		plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$ID != 1,],geom = "ribbon",fun.ymin = "CI95lo",fun.ymax = "CI95hi",fill = "red",alpha = 0.3)
-		}
-
+		# Plot 90% or 95% prediction intervals depending on what value was selected
+		if (input$PI == 2) plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$ID != 1,],geom = "ribbon",fun.ymin = "CI90lo",fun.ymax = "CI90hi",fill = "red",alpha = 0.3)	#90% prediction intervals
+		if (input$PI == 3) plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$ID != 1,],geom = "ribbon",fun.ymin = "CI95lo",fun.ymax = "CI95hi",fill = "red",alpha = 0.3)	#95% prediction intervals
+		# Plot horizontal line representing LLOQ
 		plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
 		plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
-		plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,1000))
+		# Plot on linear or log-scale depending on input
+		if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
+		if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000))
 		print(plotobj1)
 
 	})	#Brackets closing "renderPlot"

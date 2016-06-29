@@ -24,6 +24,7 @@ sidebar <-
       ),  #Brackets closing "fixedRow"
       checkboxInput("FACET","Stratify by secondary factor",value = FALSE),  #Allow the user to facet the plot by factors other than that stated in the "compare" tab they have chosen. i.e., in "Compare Fed versus Fasted", facet the resultant plot by formulation status
       checkboxInput("SUMSTATS","Show summary statistics",value = FALSE), #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+      checkboxInput("LOGS","Plot on a log-scale",value = FALSE),  #Application initiation will plot concentrations on a linear scale
       selectInput("PI","Prediction intervals:",choices = list("No Prediction Intervals" = 1,"90% Prediction Intervals" = 2,"95% Prediction Intervals" = 3))
 		)	#Brackets closing "sidebarMenu"
 	) #Brackets closing "dashboardSidebar"
