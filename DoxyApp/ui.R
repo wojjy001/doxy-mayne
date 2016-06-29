@@ -1,4 +1,4 @@
-# ui.R script for PrototypeAPAP3
+# ui.R script for DoxyApp
 # The user-interface and widget input for the Shiny application is defined here
 # Sends user-defined input to server.R, calls created output from server.R
 # Now using shinydashboard for the user-interface
@@ -16,7 +16,15 @@ sidebar <-
 		sidebarMenu(
       menuItem("Compare Fed versus Fasted",tabName = "fed-status",icon = icon("child")),
       menuItem("Compare Doryx MPC versus Doryx Tablet",tabName = "form-status",icon = icon("child")),
-      menuItem("Compare Male versus Female",tabName = "gender-status",icon = icon("child"))
+      menuItem("Compare Male versus Female",tabName = "gender-status",icon = icon("child")),
+      hr(),
+      fixedRow(
+        h4(strong("Plotting Features")),  #Allow the user to control plot appearances from the sidebar
+        align = "center"
+      ),  #Brackets closing "fixedRow"
+      checkboxInput("FACET","Stratify by primary factor",value = FALSE),  #Allow the user to facet the plot by factors in the "compare" tab they have chosen. i.e., in "Compare Fed versus Fasted", facet the resultant plot by fed/fasted status
+      selectInput("PI","Prediction intervals:",choices = list("No Prediction Intervals" = 1,"90% Prediction Intervals" = 2,"95% Prediction Intervals" = 3)),
+      checkboxInput("SUMSTATS","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
 		)	#Brackets closing "sidebarMenu"
 	) #Brackets closing "dashboardSidebar"
 # Application's body
