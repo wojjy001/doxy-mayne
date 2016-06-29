@@ -18,7 +18,6 @@
 	TIME.tgrid <- c(tgrid(0,12,0.1),tgrid(16,96,8))
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
-	nsim <- n+1	#Add an individual for the "PRED"
 # 95% prediction interval functions - calculate the 2.5th and 97.5th percentiles
 	CI95lo <- function(x) quantile(x,probs = 0.025)
 	CI95hi <- function(x) quantile(x,probs = 0.975)
@@ -118,12 +117,6 @@
 								// Volume - central
 								double ETA_V = BSV_V;
 
-							// Population parameter values - set ETAs to zero for population typical
-							if (ID == 1) ETA_CL = 0;
-							if (ID == 1) ETA_KTR = 0;
-							if (ID == 1) ETA_V = 0;
-							if (ID == 1) ETA_VP1 = 0;
-
 							// Individual parameter values
 							double CL = POPCL*pow(FFM/70,0.75)*exp(ETA_CL)*COVSTDF*COVSTDCL*FEDCOV2*SEXCOV;
 							double V = POPV*(FFM/70)*exp(ETA_V)*COVSTDF*COVSTDV*FEDCOV2;
@@ -161,7 +154,7 @@
 		$TABLE		table(IPRE) = CENT/V;
 							table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
 
-		$CAPTURE	CL V CLP1 VP1 KTR F ETA_CL ETA_V ETA_VP1 ETA_KTR
+		$CAPTURE	CL V CLP1 VP1 KTR F ETA_CL ETA_V ETA_VP1 ETA_KTR FED SEX FFM TRT PER
 		'
 	# Compile the model code
 		mod <- mcode("popDOXY",code)
