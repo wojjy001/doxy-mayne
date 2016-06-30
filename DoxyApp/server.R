@@ -9,9 +9,7 @@ shinyServer(function(input,output,session) {
 	# Simulate a population that will compare fed versus fasted status
 	Rfed.data <- reactive({
 		# Simulate concentration-time profiles for the population
-			input.fed.data <- expand.ev(ID = 1:n,amt = 120*1000,evid = 1,cmt = 1,time = 0,
-				FED = c(0,1),
-				TRT = c(1,3,1,3))
+			input.fed.data <- expand.ev(ID = 1:n,amt = 120*1000,evid = 1,cmt = 1,time = 0)
 				# n individuals
 				# amt in microg
 				# evid = 1; dosing event
@@ -19,29 +17,50 @@ shinyServer(function(input,output,session) {
 				# time = 0; dose at time = 0
 			fed.data <- mod %>% data_set(input.fed.data) %>% mrgsim(tgrid = TIME.tgrid)
 			fed.data <- as.data.frame(fed.data)	#Convert to a data frame so that it is more useful for me!
-			fed.data
 	})	#Brackets closing "Rfed.data"
+
+	# Summarise Rfed.data in median and prediction intervals
+	Rfed.summary <- reactive({
+		# Read in the reactive fed.data
+		fed.data <- Rfed.data()
+		# Specify percentile probabilities given input
+		if (input$PI == 2) {
+			input.CIlo <- 0.05	#5th percentile
+			input.CIhi <- 0.95	#95th percentile
+		}
+		if (input$PI == 3) {
+			input.CIlo <- 0.025	#2.5th percentile
+			input.CIhi <- 0.975	#97.5th percentile
+		}
+		# Summary function for median and prediction intervals
+		summary.function <- function(x) {
+			median <- median(x)
+			summary <- c("Median" = median)
+			if (input$PI > 1) {
+				CIlo <- quantile(x,probs = input.CIlo)
+				CIhi <- quantile(x,probs = input.CIhi)
+				summary <- c("Median" = median,CIlo,CIhi)
+				names(summary)[c(2,3)] <- c("CIlo","CIhi")
+				summary
+			}
+			summary
+		}
+		# Calculate the median and prediction intervals for calculations at each time-point
+		fed.summary <- ddply(fed.data, .(time), function(fed.data) summary.function(fed.data$IPRE))
+	})	#Brackets closing "Rfed.summary"
 
 	############
 	##_OUTPUT_##
 	############
 	# Plot simulation results of fed versus fasted
 	output$Rfed.plot <- renderPlot({
-		# Read in the reactive data frame for fed.data
-		fed.data <- Rfed.data()
+		# Read in the reactive data frame for fed.summary
+		fed.summary <- Rfed.summary()
 
 		# Plot
-		plotobj1 <- ggplot(fed.data)
-			# Fasted
-			plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$FED == 0,],geom = "line",fun.y = median,colour = "red")	#Population typical individual
-			# Plot 90% or 95% prediction intervals depending on what value was selected
-			if (input$PI == 2) plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$FED == 0,],geom = "ribbon",fun.ymin = "CI90lo",fun.ymax = "CI90hi",fill = "red",alpha = 0.3)	#90% prediction intervals
-			if (input$PI == 3) plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$FED == 0,],geom = "ribbon",fun.ymin = "CI95lo",fun.ymax = "CI95hi",fill = "red",alpha = 0.3)	#95% prediction intervals
-			# Fed
-			plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$FED == 1,],geom = "line",fun.y = median,colour = "blue")	#Population typical individual
-			# Plot 90% or 95% prediction intervals depending on what value was selected
-			if (input$PI == 2) plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$FED == 1,],geom = "ribbon",fun.ymin = "CI90lo",fun.ymax = "CI90hi",fill = "blue",alpha = 0.3)	#90% prediction intervals
-			if (input$PI == 3) plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = fed.data[fed.data$FED == 1,],geom = "ribbon",fun.ymin = "CI95lo",fun.ymax = "CI95hi",fill = "blue",alpha = 0.3)	#95% prediction intervals
+		plotobj1 <- ggplot(fed.summary)
+		plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),colour = "red")
+		if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),fill = "red",alpha = 0.3)
 		# Plot horizontal line representing LLOQ
 		plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
 		plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
@@ -49,7 +68,7 @@ shinyServer(function(input,output,session) {
 		if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
 		if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,3000))
 		# Facet for formulation (Doryx MPC or Doryx tablet) if "Stratify by secondary factor" is selected
-	if (input$FACET == TRUE) plotobj1 <- plotobj1 + facet_wrap(~TRT)
+		if (input$FACET == TRUE) plotobj1 <- plotobj1 + facet_wrap(~TRT)
 		print(plotobj1)
 	})	#Brackets closing "renderPlot"
 

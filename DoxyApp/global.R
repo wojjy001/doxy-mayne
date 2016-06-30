@@ -18,12 +18,6 @@
 	TIME.tgrid <- c(tgrid(0,12,0.1),tgrid(16,96,8))
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
-# 95% prediction interval functions - calculate the 2.5th and 97.5th percentiles
-	CI95lo <- function(x) quantile(x,probs = 0.025)
-	CI95hi <- function(x) quantile(x,probs = 0.975)
-# 90% prediction interval functions - calculate the 5th and 95th percentiles
-	CI90lo <- function(x) quantile(x,probs = 0.05)
-	CI90hi <- function(x) quantile(x,probs = 0.95)
 # Set seed for reproducible numbers
 	set.seed(123456)
 #One per ID function
