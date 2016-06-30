@@ -29,6 +29,9 @@ sidebar <-
 # Application's body
 body <-
 	dashboardBody(
+    tags$head(
+			tags$link(rel = "stylesheet",type = "text/css",href = "custom.css")
+		),    
 		tabItems(
 			tabItem(tabName = "fed-status",
         fixedRow(
