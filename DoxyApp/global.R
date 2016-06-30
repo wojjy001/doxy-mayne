@@ -151,8 +151,7 @@
 							dxdt_TRANS2 = K23*TRANS1 -K34*TRANS2;
 							dxdt_CENT = K34*TRANS2 -K45*CENT +K54*PERI -K46*CENT;
 							dxdt_PERI = K45*CENT -K54*PERI;
-              dxdt_AUC = 0;
-              if (CENT/V > 0) dxdt_AUC = 1;
+              dxdt_AUC = CENT/V;
 
 		$TABLE		table(IPRE) = CENT/V;
 							table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
