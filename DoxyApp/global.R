@@ -11,11 +11,13 @@
   library(dplyr)  #New plyr
   library(mrgsolve) #Metrum differential equation solver for pharmacometrics
 # Define a custom ggplot2 theme
-  theme_bw2 <- theme_set(theme_bw(base_size = 16))
+  theme_bw2 <- theme_set(theme_bw(base_size = 12))
 
 # ------------------------------------------------------------------------------
 # Define time sequence - using mrgsolve's tgrid function
-	TIME.tgrid <- c(tgrid(0,12,0.1),tgrid(16,96,8))
+  time.fine <- tgrid(0,8,0.25)
+  time.coarse <- tgrid(12,24,4)
+	TIME.tgrid <- c(time.fine,time.coarse,time.fine+24,time.coarse+24,time.fine+48,time.coarse+48,time.fine+72,time.coarse+72)
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
 # Set seed for reproducible numbers
@@ -139,18 +141,27 @@
 							if (FED == 1) FTLAG = FTLAG2;	// Fed
 							double ALAG_DEPOT = TLAG+FTLAG;
 
-		$ODE			// Differential equations
+    $ODE			// Differential equations
 							dxdt_DEPOT = -K12*DEPOT;
 							dxdt_TRANS1 = K12*DEPOT -K23*TRANS1;
 							dxdt_TRANS2 = K23*TRANS1 -K34*TRANS2;
 							dxdt_CENT = K34*TRANS2 -K45*CENT +K54*PERI -K46*CENT;
 							dxdt_PERI = K45*CENT -K54*PERI;
-              dxdt_AUC = CENT/V;
+							dxdt_AUC = CENT/V;
+
+							// Cmax and Tmax
+              double CP = CENT/V;
+							if (SOLVERTIME == 0) double Cmax = 0;
+							if (SOLVERTIME == 0) double Tmax = 0;
+              if (CP > Cmax) {
+								Cmax = CP;
+								Tmax = SOLVERTIME;
+							}
 
 		$TABLE		table(IPRE) = CENT/V;
 							table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
 
-		$CAPTURE	CL V CLP1 VP1 KTR F ETA_CL ETA_V ETA_VP1 ETA_KTR FED SEX FFM TRT PER
+		$CAPTURE	CL V CLP1 VP1 KTR F ETA_CL ETA_V ETA_VP1 ETA_KTR FED SEX FFM TRT PER Cmax Tmax
 		'
 	# Compile the model code
 		mod <- mcode("popDOXY",code)
