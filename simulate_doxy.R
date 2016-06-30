@@ -10,9 +10,9 @@
 
 # ------------------------------------------------------------------------------
 # Define time sequence - using mrgsolve's tgrid function
-	TIME.tgrid <- c(tgrid(0,3,0.1),tgrid(4,12,2),tgrid(16,96,8))
+	TIME.tgrid <- c(tgrid(0,3,0.25),tgrid(4,12,4),tgrid(16,96,8))
 # Set number of individuals that make up the 95% prediction intervals
-	n <- 2000
+	n <- 1
 # 95% prediction interval functions - calculate the 2.5th and 97.5th percentiles
 	CI95lo <- function(x) quantile(x,probs = 0.025)
 	CI95hi <- function(x) quantile(x,probs = 0.975)
@@ -146,10 +146,19 @@
 							dxdt_PERI = K45*CENT -K54*PERI;
 							dxdt_AUC = CENT/V;
 
+							// Cmax and Tmax
+              double CP = CENT/V;
+							if (SOLVERTIME == 0) double Cmax = 0;
+							if (SOLVERTIME == 0) double Tmax = 0;
+              if (CP > Cmax) {
+								Cmax = CP;
+								Tmax = SOLVERTIME;
+							}
+
 		$TABLE		table(IPRE) = CENT/V;
 							table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
 
-		$CAPTURE	CL V CLP1 VP1 KTR F ETA_CL ETA_V ETA_VP1 ETA_KTR
+		$CAPTURE	CL V CLP1 VP1 KTR F ETA_CL ETA_V ETA_VP1 ETA_KTR Cmax Tmax
 		'
 	# Compile the model code
 		mod <- mcode("popDOXY",code)
@@ -157,7 +166,7 @@
 
 # ------------------------------------------------------------------------------
 # Simulate concentration-time profiles for the population
-	input.conc.data <- expand.ev(ID = 1:nsim,amt = 120*1000,evid = 1,cmt = 1,time = 0)
+	input.conc.data <- expand.ev(ID = 1:n,amt = 120*1000,evid = 1,cmt = 1,time = 0)
 		# n individuals
 		# amt in microg
 		# evid = 1; dosing event
@@ -167,7 +176,6 @@
 	# Test speed of mrgsolve
 		system.time(conc.data <- mod %>% data_set(input.conc.data) %>% mrgsim(tgrid = TIME.tgrid))
 	conc.data <- as.data.frame(conc.data)	#Convert to a data frame so that it is more useful for me!
-	median(conc.data$AUC[conc.data$time == 96])
 
 # ------------------------------------------------------------------------------
 # Plot results
