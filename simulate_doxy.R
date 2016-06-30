@@ -12,8 +12,7 @@
 # Define time sequence - using mrgsolve's tgrid function
 	TIME.tgrid <- c(tgrid(0,3,0.1),tgrid(4,12,2),tgrid(16,96,8))
 # Set number of individuals that make up the 95% prediction intervals
-	n <- 1000
-	nsim <- n+1	#Add an individual for the "PRED"
+	n <- 2000
 # 95% prediction interval functions - calculate the 2.5th and 97.5th percentiles
 	CI95lo <- function(x) quantile(x,probs = 0.025)
 	CI95hi <- function(x) quantile(x,probs = 0.975)
@@ -21,7 +20,7 @@
 	CI90lo <- function(x) quantile(x,probs = 0.05)
 	CI90hi <- function(x) quantile(x,probs = 0.95)
 # Set seed for reproducible numbers
-	set.seed(123456)
+	# set.seed(123456)
 
 # ------------------------------------------------------------------------------
 # Define the model parameters and equations
@@ -61,10 +60,10 @@
 							COVSTDV = 0.786,	//Study averaged V for simulation
 
 							// Default covariate values for simulation
-							FED = 1,	// Fed (1) or fasted (0)
+							FED = 0,	// Fed (1) or fasted (0)
 							SEX = 1,	// Male (1) or female (0)
 							FFM = 55.49,	// Fat free mass (kg)
-							TRT = 1,	// Formulation; Doryx MPC (1), Doryx tablet (2), Doryx capsule (3)
+							TRT = 2,	// Formulation; Doryx MPC (1), Doryx tablet (2), Doryx capsule (3)
 							PER = 1	// Period; first occassion (1) or second occassion (2)
 
 		$OMEGA		name = "BSV"
@@ -112,12 +111,6 @@
 								// Volume - central
 								double ETA_V = BSV_V;
 
-							// Population parameter values - set ETAs to zero for population typical
-							if (ID == 1) ETA_CL = 0;
-							if (ID == 1) ETA_KTR = 0;
-							if (ID == 1) ETA_V = 0;
-							if (ID == 1) ETA_VP1 = 0;
-
 							// Individual parameter values
 							double CL = POPCL*pow(FFM/70,0.75)*exp(ETA_CL)*COVSTDF*COVSTDCL*FEDCOV2*SEXCOV;
 							double V = POPV*(FFM/70)*exp(ETA_V)*COVSTDF*COVSTDV*FEDCOV2;
@@ -151,8 +144,7 @@
 							dxdt_TRANS2 = K23*TRANS1 -K34*TRANS2;
 							dxdt_CENT = K34*TRANS2 -K45*CENT +K54*PERI -K46*CENT;
 							dxdt_PERI = K45*CENT -K54*PERI;
-							dxdt_AUC = 0;
-							if (CENT/V > 0) dxdt_AUC = 1;
+							dxdt_AUC = CENT/V;
 
 		$TABLE		table(IPRE) = CENT/V;
 							table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
@@ -175,13 +167,14 @@
 	# Test speed of mrgsolve
 		system.time(conc.data <- mod %>% data_set(input.conc.data) %>% mrgsim(tgrid = TIME.tgrid))
 	conc.data <- as.data.frame(conc.data)	#Convert to a data frame so that it is more useful for me!
+	median(conc.data$AUC[conc.data$time == 96])
 
 # ------------------------------------------------------------------------------
 # Plot results
 	plotobj1 <- NULL
-	plotobj1 <- ggplot()
-	plotobj1 <- plotobj1 + geom_line(aes(x = time,y = IPRE),data = conc.data[conc.data$ID == 1,],colour = "red")
-	plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),data = conc.data[conc.data$ID != 1,],geom = "ribbon",fun.ymin = "CI90lo",fun.ymax = "CI90hi",fill = "red",alpha = 0.3)
+	plotobj1 <- ggplot(conc.data)
+	plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),geom = "line",fun.y = median,colour = "red")
+	plotobj1 <- plotobj1 + stat_summary(aes(x = time,y = IPRE),geom = "ribbon",fun.ymin = "CI90lo",fun.ymax = "CI90hi",fill = "red",alpha = 0.3)
 	plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
 	plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
 	plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,1000))
