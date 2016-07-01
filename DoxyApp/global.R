@@ -27,7 +27,7 @@
 
 # ------------------------------------------------------------------------------
 # Define the model parameters and equations
-	# Using mrgsolve - analytical solutions
+	# Using mrgsolve - differential equations
 	# This compiled model is used for simulating n individuals and their concentration-time profiles
 		code <- '
 		$INIT			// Initial conditions for compartments
