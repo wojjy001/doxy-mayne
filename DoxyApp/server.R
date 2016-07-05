@@ -32,13 +32,13 @@ shinyServer(function(input,output,session) {
 		}
 	})	#Brackets closing "Rsummary.function"
 
-	# Simulate a population of fed individuals administered Doryx MPC
+	# Simulate a population of fed and fasted individuals administered Doryx MPC
 	RdoryxMPC.data <- reactive({
 		# Simulate concentration-time profiles for the population
 		# Specify dosing input
 		if (input$DOSE_DORYXMPC1 == 1) DOSE_DORYXMPC1 <- 120	#mg
 		if (input$DOSE_DORYXMPC1 == 2) DOSE_DORYXMPC1 <- 240	#mg
-		# Specify number of doses and frequency from input
+		# Specify number of additional doses from input
 		if (input$NUMDOSE_DORYXMPC1 == 1) NUMDOSE_DORYXMPC1 <- 0	#No additional doses
 		if (input$NUMDOSE_DORYXMPC1 == 2) NUMDOSE_DORYXMPC1 <- 96/24-1	#Number of additional doses for 24-hourly dosing
 		# Create input data frame for mrgsim
@@ -79,7 +79,7 @@ shinyServer(function(input,output,session) {
 				evid = 1,	# evid = 1; dosing event
 				cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
 				time = 0,	# time = 0; begin dosing at time = 0
-				TRT = 1,	# Doryx TAB
+				TRT = 2,	# Doryx TAB
 				FED = c(0,1),	# Fasted and Fed status
 				ii = 24,	# Dosing interval
 				addl = NUMDOSE_DORYXTAB1)	#Number of additional doses
