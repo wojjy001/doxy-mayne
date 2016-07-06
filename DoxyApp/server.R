@@ -49,9 +49,9 @@ shinyServer(function(input,output,session) {
 			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
 			time = 0,	# time = 0; begin dosing at time = 0
 			TRT = 1,	# Doryx MPC
-			FED = rbinom(n,size = 1,prob = 0.5),
+			FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
 			SEX = rbinom(n,size = 1,prob = 0.5),
-			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09),	# Fasted and Fed status
+			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09),	
 			ii = 24,	# Dosing interval
 			addl = NUMDOSE_DORYXMPC1 #Number of additional doses
 		)
@@ -78,15 +78,19 @@ shinyServer(function(input,output,session) {
 			if (input$NUMDOSE_DORYXTAB1 == 1) NUMDOSE_DORYXTAB1 <- 0	#No additional doses
 			if (input$NUMDOSE_DORYXTAB1 == 2) NUMDOSE_DORYXTAB1 <- 96/24-1	#Number of additional doses for 24-hourly dosing
 			# Create input data frame for mrgsim
-			input.doryxTAB.data <- expand.ev(ID = 1:n,	# n individuals
+			input.doryxTAB.data <- data.frame(
+			  ID = 1:n,	# n individuals                             
 				amt = DOSE_DORYXTAB1*1000,	# amt in microg
 				evid = 1,	# evid = 1; dosing event
 				cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
 				time = 0,	# time = 0; begin dosing at time = 0
 				TRT = 1,	# Doryx TAB
-				FED = c(0,1),	# Fasted and Fed status
+				FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
+				SEX = rbinom(n,size = 1,prob = 0.5),
+				FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09),
 				ii = 24,	# Dosing interval
-				addl = NUMDOSE_DORYXTAB1)	#Number of additional doses
+				addl = NUMDOSE_DORYXTAB1 	#Number of additional doses
+				)
 			doryxTAB.data <- mod %>% data_set(input.doryxTAB.data) %>% mrgsim(tgrid = TIME.tgrid,add = 96)
 			doryxTAB.data <- as.data.frame(doryxTAB.data)	#Convert to a data frame so that it is more useful for me!
 		}
