@@ -32,25 +32,29 @@ shinyServer(function(input,output,session) {
 		}
 	})	#Brackets closing "Rsummary.function"
 
-	# Simulate a population of fed and fasted individuals administered Doryx MPC
+	# Simulate a population of fed individuals administered Doryx MPC
 	RdoryxMPC.data <- reactive({
 		# Simulate concentration-time profiles for the population
 		# Specify dosing input
 		if (input$DOSE_DORYXMPC1 == 1) DOSE_DORYXMPC1 <- 120	#mg
 		if (input$DOSE_DORYXMPC1 == 2) DOSE_DORYXMPC1 <- 240	#mg
-		# Specify number of additional doses from input
+		# Specify number of doses and frequency from input
 		if (input$NUMDOSE_DORYXMPC1 == 1) NUMDOSE_DORYXMPC1 <- 0	#No additional doses
 		if (input$NUMDOSE_DORYXMPC1 == 2) NUMDOSE_DORYXMPC1 <- 96/24-1	#Number of additional doses for 24-hourly dosing
 		# Create input data frame for mrgsim
-		input.doryxMPC.data <- expand.ev(ID = 1:n,	# n individuals
+		input.doryxMPC.data <- data.frame(
+			ID = 1:n,	# n individuals
 			amt = DOSE_DORYXMPC1*1000,	# amt in microg
 			evid = 1,	# evid = 1; dosing event
 			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
 			time = 0,	# time = 0; begin dosing at time = 0
 			TRT = 1,	# Doryx MPC
-			FED = c(0,1),	# Fasted and Fed status
+			FED = rbinom(n,size = 1,prob = 0.5),
+			SEX = rbinom(n,size = 1,prob = 0.5),
+			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09),	# Fasted and Fed status
 			ii = 24,	# Dosing interval
-			addl = NUMDOSE_DORYXMPC1)	#Number of additional doses
+			addl = NUMDOSE_DORYXMPC1 #Number of additional doses
+		)
 		doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim(tgrid = TIME.tgrid,add = 96)
 		doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxMPC.data"
@@ -79,7 +83,7 @@ shinyServer(function(input,output,session) {
 				evid = 1,	# evid = 1; dosing event
 				cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
 				time = 0,	# time = 0; begin dosing at time = 0
-				TRT = 2,	# Doryx TAB
+				TRT = 1,	# Doryx TAB
 				FED = c(0,1),	# Fasted and Fed status
 				ii = 24,	# Dosing interval
 				addl = NUMDOSE_DORYXTAB1)	#Number of additional doses
@@ -121,28 +125,28 @@ shinyServer(function(input,output,session) {
 		print(plotobj1)
 	})	#Brackets closing "renderPlot"
 
-	output$RdoryxMPC.table <- renderTable({
+	output$RdoryxTAB.table <- renderTable({
 		# Read in the necessary reactive expressions
-		doryxMPC.data <- RdoryxMPC.data()
-		doryxMPC.data96 <- subset(doryxMPC.data,time == 96)
+		doryxTAB.data <- RdoryxTAB.data()
+		doryxTAB.data96 <- subset(doryxTAB.data,time == 96)
 		summary.function <- Rsummary.function()
 		# Only summarise AUC, Tmax and Cmax for single dose simulations
 		# Summarise AUC at t = 96 hours
-		if (input$NUMDOSE_DORYXMPC1 == 1) {
-			AUC.table <- ddply(doryxMPC.data96, .(FED), function(doryxMPC.data96) summary.function(doryxMPC.data96$AUC))
+		if (input$NUMDOSE_DORYXTAB1 == 1) {
+			AUC.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$AUC))
 			AUC.table$Variable <- "AUC (microg*h/L)"
 			# Summarise Cmax (value will be found at time = 96)
-			Cmax.table <- ddply(doryxMPC.data96, .(FED), function(doryxMPC.data96) summary.function(doryxMPC.data96$Cmax))
+			Cmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Cmax))
 			Cmax.table$Variable <- "Cmax (microg/L)"
 			# Summarise Tmax (value will be found at time = 96)
-			Tmax.table <- ddply(doryxMPC.data96, .(FED), function(doryxMPC.data96) summary.function(doryxMPC.data96$Tmax))
+			Tmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Tmax))
 			Tmax.table$Variable <- "Tmax (h)"
-			doryxMPC.table <- rbind(AUC.table,Cmax.table,Tmax.table)
+			doryxTAB.table <- rbind(AUC.table,Cmax.table,Tmax.table)
 		}
-		if (input$NUMDOSE_DORYXMPC1 == 2) {
-			doryxMPC.table <- ""
+		if (input$NUMDOSE_DORYXTAB1 == 2) {
+			doryxTAB.table <- NA
 		}
-		doryxMPC.table
+		doryxTAB.table
 	})	#Brackets closing "renderText"
 
 	# Plot simulation results of fed versus fasted for Doryx Tablet
@@ -188,7 +192,7 @@ shinyServer(function(input,output,session) {
 			doryxTAB.table <- rbind(AUC.table,Cmax.table,Tmax.table)
 		}
 		if (input$NUMDOSE_DORYXTAB1 == 2) {
-			doryxTAB.table <- ""
+			doryxTAB.table <- NA
 		}
 		doryxTAB.table
 	})	#Brackets closing "renderText"
