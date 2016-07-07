@@ -84,8 +84,8 @@
 
 		$SIGMA		block = FALSE
 							labels = s(ERR_PRO,ERR_ADD)
-							0.196	// Proportional error
-							19.8	// Additive error
+							0.0384	// Proportional error - I think this should be updated from 0.196
+							392.04	// Additive error - I think this should be updated from 19.8
 
 		$MAIN			// Covariate effects
 							double FEDCOV2 = 1;	// Fasted
