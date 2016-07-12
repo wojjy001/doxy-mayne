@@ -36,20 +36,8 @@ body <-
 			tabItem(tabName = "fed-status",
         fixedRow(
           column(3,
-            selectInput("DOSE_DORYXMPC1","Doryx MPC Dose:",choices = list("120 mg" = 1,"240 mg" = 2)),
-            radioButtons("NUMDOSE_DORYXMPC1","Number of Doses:",choices = list("Single dose" = 1,"Multiple doses (once daily)" = 2)),
-            conditionalPanel(condition = "input.NUMDOSE_DORYXMPC1 == 1",
-              checkboxInput("SUMSTATS_DORYXMPC1","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
-            ),  #Brackets closing "condtionalPanel"
-            hr(),
-            checkboxInput("ADD_DORYXTAB1","Compare with Doryx Tablet",value = FALSE),
-            conditionalPanel(condition = "input.ADD_DORYXTAB1",
-              selectInput("DOSE_DORYXTAB1","Doryx Tablet Dose:",choices = list("100 mg" = 1,"200 mg" = 2)),
-              radioButtons("NUMDOSE_DORYXTAB1","Number of Doses:",choices = list("Single dose" = 1,"Multiple doses (once daily)" = 2)),
-              conditionalPanel(condition = "input.NUMDOSE_DORYXMPC1 == 1",
-                checkboxInput("SUMSTATS_DORYXTAB1","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
-              )  #Brackets closing "condtionalPanel"
-            )  #Brackets closing "condtionalPanel"
+            selectInput("DOSE1","Doryx MPC Dose:",choices = list("120 mg Doryx MPC versus 100 mg Doryx tablet" = 1,"240 mg Doryx MPC versus 200 mg Doryx tablet" = 2,"Clinical Regimen Comparison"= 3)),
+            checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
           ),  #Brackets closing "column"
           column(9,
             fixedRow(
@@ -87,10 +75,18 @@ body <-
           )  #Brackets closing "column"
         ) #Brackets closing "fixedRow"
 			),	#Brackets closing "tabItem" for "fed-status"
-      tabItem(tabName = "form-status",
-        h4("Compare Doryx MPC versus Doryx Tablet")
-      ),  #Brackets closing "tabItem" for "form-status"
-      tabItem(tabName = "gender-status",
+			tabItem(tabName = "form-status",
+			        fixedRow(
+			          column(3,
+			                 selectInput("DOSE_CHOICE1","Formulation Comparison:",choices = list("120 mg Doryx MPC vs 100 mg Doryx tablet" = 1,"240 mg Doryx MPC vs 200 mg Doryx tablet" = 2)),
+			                 radioButtons("NUMDOSE_CHOICE1","Number of Doses:",choices = list("Single dose" = 1,"Multiple doses (once daily)" = 2)),
+			                 conditionalPanel(condition = "input.NUMDOSE_DORYXMPC2 == 1",
+			                                  checkboxInput("SUMSTATS_DORYXMPC2","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+			   )  #Brackets closing "condtionalPanel"
+			  ) 
+			 )  
+			),  
+			tabItem(tabName = "gender-status",
         h4("Compare Male versus Female")
       ) #Brackets closing "tabItem" for "gender-status"
 		)  #Brackets closing "tabItems"
