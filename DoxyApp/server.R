@@ -53,22 +53,30 @@ shinyServer(function(input,output,session) {
   		)
 	  }
 		if (input$DOSE1 == 3) {
-		  DOSE_DORYXMPC_CLIN <- c(240,rep(120,times = 6))
+			dose.times <- c(0,24,48,72,96,120,144)
 		  # Create input data frame for mrgsim
 		  input.doryxMPC.data <- data.frame(
 		    ID = 1:n,	# n individuals
-		    amt = DOSE_DORYXMPC_CLIN*1000,	# amt in microg
+				time = 0,
+		    amt = 240*1000,	# amt in microg
 		    evid = 1,	# evid = 1; dosing event
 		    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-		    time = 0,	# time = 0; begin dosing at time = 0
 		    TRT = 1,	# Doryx MPC
 		    FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
 		    SEX = rbinom(n,size = 1,prob = 0.5),
-		    FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09),	
-		    ii = 24	# Dosing interval
+		    FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
 		  )
+			print(head(input.doryxMPC.data))
+			input.doryxMPC.data <- lapply(input.doryxMPC.data,rep.int,times = length(time.multiple))
+			input.doryxMPC.data <- as.data.frame(input.doryxMPC.data)
+			input.doryxMPC.data <- input.doryxMPC.data[with(input.doryxMPC.data, order(input.doryxMPC.data$ID)),]
+			input.doryxMPC.data$time <- time.multiple
+			input.doryxMPC.data$evid[!c(input.doryxMPC.data$time %in% dose.times)] <- 0
+			input.doryxMPC.data$amt[input.doryxMPC.data$time > 0] <- 120*1000
+			print(head(input.doryxMPC.data[input.doryxMPC.data$time %in% dose.times,]))
+			input.doryxMPC.data
 		}
-		doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim(tgrid = TIME.tgrid)
+		doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim()
 		doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxMPC.data"
 
@@ -88,7 +96,7 @@ shinyServer(function(input,output,session) {
   	if (input$DOSE1 == 2) DOSE1 <- 200	#mg
   	# Create input data frame for mrgsim
   	input.doryxTAB.data <- data.frame(
-  	  ID = 1:n,	# n individuals                             
+  	  ID = 1:n,	# n individuals
   		amt = DOSE1*1000,	# amt in microg
   		evid = 1,	# evid = 1; dosing event
   		cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
