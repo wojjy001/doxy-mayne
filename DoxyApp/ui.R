@@ -36,7 +36,7 @@ body <-
 			tabItem(tabName = "fed-status",
         fixedRow(
           column(3,
-            selectInput("DOSE1","Doryx MPC Dose:",choices = list("120 mg Doryx MPC versus 100 mg Doryx tablet" = 1,"240 mg Doryx MPC versus 200 mg Doryx tablet" = 2,"Clinical Regimen Comparison"= 3)),
+            selectInput("DOSE1","Doryx MPC Dose:",choices = list("120 mg Doryx MPC versus 100 mg Doryx tablet" = 1,"240 mg Doryx MPC versus 200 mg Doryx tablet" = 2,"Clinical Regimen Comparison"= 3),width = 500),
             checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
           ),  #Brackets closing "column"
           column(9,

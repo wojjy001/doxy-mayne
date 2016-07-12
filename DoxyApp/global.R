@@ -17,7 +17,7 @@
 # Define time sequence - using mrgsolve's tgrid function
   time.fine <- tgrid(0,8,0.25)
   time.coarse <- tgrid(12,24,4)
-	TIME.tgrid <- c(time.fine,time.coarse,time.fine+24,time.coarse+24,time.fine+48,time.coarse+48,time.fine+72,time.coarse+72)
+	TIME.tgrid <- c(time.fine,time.coarse,time.fine+24,time.coarse+24,time.fine+48,time.coarse+48,time.fine+72,time.coarse+72,time.fine+96,time.coarse+96,time.fine+120,time.coarse+120,time.fine+144,time.coarse+144)
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 2000
 # Set seed for reproducible numbers
