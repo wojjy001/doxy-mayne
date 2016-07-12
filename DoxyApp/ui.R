@@ -87,60 +87,9 @@ body <-
           )  #Brackets closing "column"
         ) #Brackets closing "fixedRow"
 			),	#Brackets closing "tabItem" for "fed-status"
-			tabItem(tabName = "form-status",
-			        fixedRow(
-			          column(3,
-			                 selectInput("DOSE_DORYXMPC2","Doryx MPC Dose:",choices = list("120 mg" = 1,"240 mg" = 2)),
-			                 radioButtons("NUMDOSE_DORYXMPC2","Number of Doses:",choices = list("Single dose" = 1,"Multiple doses (once daily)" = 2)),
-			                 conditionalPanel(condition = "input.NUMDOSE_DORYXMPC2 == 1",
-			                                  checkboxInput("SUMSTATS_DORYXMPC2","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
-			                 ),  #Brackets closing "condtionalPanel"
-			                 hr(),
-			                 checkboxInput("ADD_DORYXTAB2","Compare with Doryx Tablet",value = FALSE),
-			                 conditionalPanel(condition = "input.ADD_DORYXTAB2",
-			                                  selectInput("DOSE_DORYXTAB2","Doryx Tablet Dose:",choices = list("100 mg" = 1,"200 mg" = 2)),
-			                                  radioButtons("NUMDOSE_DORYXTAB2","Number of Doses:",choices = list("Single dose" = 1,"Multiple doses (once daily)" = 2)),
-			                                  conditionalPanel(condition = "input.NUMDOSE_DORYXMPC2 == 1",
-			                                                   checkboxInput("SUMSTATS_DORYXTAB2","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
-			                                  )  #Brackets closing "condtionalPanel"
-			                 )  #Brackets closing "condtionalPanel"
-			          ),  #Brackets closing "column"
-			          column(9,
-			                 fixedRow(
-			                   column(6,
-			                          box(
-			                            plotOutput("RdoryxMPC.plot"),
-			                            conditionalPanel(condition = "input.SUMSTATS_DORYXMPC2",
-			                                             conditionalPanel(condition = "input.NUMDOSE_DORYXMPC2 == 1",
-			                                                              tableOutput("RdoryxMPC.table")
-			                                             ) #Brackets closing "conditionalPanel"
-			                            ),  #Brackets closing "condtionalPanel"
-			                            title = strong("Concentration-Time Profile - Doryx MPC"),
-			                            solidHeader = TRUE,
-			                            status = "primary",
-			                            width = 12
-			                          ) #Brackets closing "box"
-			                   ),  #Brackets closing "column"
-			                   conditionalPanel(condition = "input.ADD_DORYXTAB2",
-			                                    column(6,
-			                                           box(
-			                                             plotOutput("RdoryxTAB.plot"),
-			                                             conditionalPanel(condition = "input.SUMSTATS_DORYXTAB2",
-			                                                              conditionalPanel(condition = "input.NUMDOSE_DORYXTAB2 == 1",
-			                                                                               tableOutput("RdoryxTAB.table")
-			                                                              ) #Brackets closing "conditionalPanel"
-			                                             ),  #Brackets closing "conditionalPanel"
-			                                             title = strong("Concentration-Time Profile - Doryx Tablet"),
-			                                             solidHeader = TRUE,
-			                                             status = "primary",
-			                                             width = 12
-			                                           ) #Brackets closing "box"
-			                                    )  #Brackets closing "column"
-			                   )  #Brackets closing "conditionalPanel"
-			                 ) #Brackets closing "fixedRow"
-			          )  #Brackets closing "column"
-			        ) #Brackets closing "fixedRow"
-			),	#Brackets closing "tabItem" for "form-status"
+      tabItem(tabName = "form-status",
+        h4("Compare Doryx MPC versus Doryx Tablet")
+      ),  #Brackets closing "tabItem" for "form-status"
       tabItem(tabName = "gender-status",
         h4("Compare Male versus Female")
       ) #Brackets closing "tabItem" for "gender-status"
