@@ -191,7 +191,6 @@ shinyServer(function(input,output,session) {
 		}
 		doryxTAB.table
 	})	#Brackets closing "renderText"
-<<<<<<< HEAD
 	
 	# Plot simulation results of Doryx MPC versus Doryx for Fasted
 	output$RformFasted.plot <- renderPlot({
@@ -237,11 +236,7 @@ shinyServer(function(input,output,session) {
 	  if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
 	  if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
 	  print(plotobj1)
-	})	#Brackets closing "renderPlot"	
-	
-	
-=======
->>>>>>> parent of 5070e57... Add RformFasted.plot to server
+	})	#Brackets closing "renderPlot
 
 	# Plot simulation results of fed versus fasted for Doryx Tablet
 	output$RdoryxTAB.plot <- renderPlot({
