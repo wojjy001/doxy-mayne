@@ -37,9 +37,9 @@ shinyServer(function(input,output,session) {
 	RdoryxMPC.data <- reactive({
 		# Simulate concentration-time profiles for the population
 		# Specify dosing input
-	  if (input$DOSE1 != 3 | input$DOSE2 != 3) {
-  		if (input$DOSE1 == 1 | input$DOSE2 == 1) DOSE_DORYXMPC1 <- 120	#mg
-  		if (input$DOSE1 == 2 | input$DOSE2 == 2) DOSE_DORYXMPC1 <- 240	#mg
+	  if (input$DOSE1 != 3) {
+  		if (input$DOSE1 == 1) DOSE_DORYXMPC1 <- 120	#mg
+  		if (input$DOSE1 == 2) DOSE_DORYXMPC1 <- 240	#mg
   		# Create input data frame for mrgsim
   		input.doryxMPC.data <- data.frame(
   			ID = 1:n,	# n individuals
@@ -53,7 +53,7 @@ shinyServer(function(input,output,session) {
   			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
   		)
 	  }
-		if (input$DOSE1 == 3 | input$DOSE2 == 3) {
+		if (input$DOSE1 == 3) {
 			dose.times <- c(0,24,48,72,96,120,144)
 		  # Create input data frame for mrgsim
 		  input.doryxMPC.data <- data.frame(
@@ -92,9 +92,9 @@ shinyServer(function(input,output,session) {
 	RdoryxTAB.data <- reactive({
   # Simulate concentration-time profiles for the population
   	# Specify dosing input
-	  if (input$DOSE1 != 3 | input$DOSE2 != 3) {	  
-    	if (input$DOSE1 == 1 | input$DOSE2 == 1) DOSE_DORYXTAB1 <- 100	#mg
-    	if (input$DOSE1 == 2 | input$DOSE2 == 2) DOSE_DORYXTAB1 <- 200	#mg
+	  if (input$DOSE1 != 3) {	  
+    	if (input$DOSE1 == 1) DOSE_DORYXTAB1 <- 100	#mg
+    	if (input$DOSE1 == 2) DOSE_DORYXTAB1 <- 200	#mg
     	# Create input data frame for mrgsim
     	input.doryxTAB.data <- data.frame(
     	  ID = 1:n,	# n individuals
@@ -109,7 +109,7 @@ shinyServer(function(input,output,session) {
     		ii = 24	# Dosing interval
     		)
 	  }
-	  if (input$DOSE1 == 3 | input$DOSE2 == 3) {
+	  if (input$DOSE1 == 3) {
 	    dose.times <- c(0,24,48,72,96,120,144)
 	    # Create input data frame for mrgsim
 	    input.doryxTAB.data <- data.frame(
