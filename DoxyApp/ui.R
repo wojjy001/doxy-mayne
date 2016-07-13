@@ -83,16 +83,25 @@ body <-
 			          fixedRow(
 			            column(6,
 			                   box(
-			                     plotOutput("RformFasted.plot")
-			                     ),
-			                   title = strong("Concentration-Time Profile - Fasted"),
-			                   solidHeader = TRUE,
-			                   status = "primary",
-			                   width = 12
-			            )
-			          )
-			   )
-			)
+			                     plotOutput("RformFasted.plot"),
+			                     title = strong("Concentration-Time Profile - Fasted"),
+			                     solidHeader = TRUE,
+			                     status = "primary",
+			                     width = 12
+			                   ) #Brackets closing "box"
+			            ),  #Brackets closing "column"
+			            column(6,
+			                   box(
+			                     plotOutput("RdoryxTAB.plot"),
+			                     title = strong("Concentration-Time Profile - Fed"),
+			                     solidHeader = TRUE,
+			                     status = "primary",
+			                     width = 12
+			                   ) #Brackets closing "box"
+			                  )  #Brackets closing "column"
+			                ) #Brackets closing "fixedRow"
+			          )  #Brackets closing "column"
+			  )
 			 ), 
 			tabItem(tabName = "gender-status",
         h4("Compare Male versus Female")
