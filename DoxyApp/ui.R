@@ -15,7 +15,7 @@ sidebar <-
 		width = 300,	#Width of sidebar the same as width of header
 		sidebarMenu(
       menuItem("Compare Fed versus Fasted",tabName = "fed-status",icon = icon("child")),
-      menuItem("Compare Doryx MPC versus Doryx tablet",tabName = "form-status",icon = icon("child")),
+      menuItem("Compare Doryx MPC versus Doryx Tablet",tabName = "form-status",icon = icon("child")),
       menuItem("Compare Male versus Female",tabName = "gender-status",icon = icon("child")),
       hr(),
       fixedRow(
@@ -54,10 +54,26 @@ body <-
                   status = "primary",
                   width = 12
                 ) #Brackets closing "box"
+              ),  #Brackets closing "column"
+              conditionalPanel(condition = "input.ADD_DORYXTAB1",
+                column(6,
+                  box(
+                    plotOutput("RdoryxTAB.plot"),
+                    conditionalPanel(condition = "input.SUMSTATS_DORYXTAB1",
+                      conditionalPanel(condition = "input.NUMDOSE_DORYXTAB1 == 1",
+                        tableOutput("RdoryxTAB.table")
+                      ) #Brackets closing "conditionalPanel"
+                    ),  #Brackets closing "conditionalPanel"
+                    title = strong("Concentration-Time Profile - Doryx Tablet"),
+                    solidHeader = TRUE,
+                    status = "primary",
+                    width = 12
+                  ) #Brackets closing "box"
+                )  #Brackets closing "column"
+              )  #Brackets closing "conditionalPanel"
+            ) #Brackets closing "fixedRow"
           )  #Brackets closing "column"
-         )  #Brackets closing "fixedRow"
-        ) #Brackets closing "column"
-       ) #Brackets closing "fixedRow"
+        ) #Brackets closing "fixedRow"
 			),	#Brackets closing "tabItem" for "fed-status"
 			tabItem(tabName = "form-status",
 			        fixedRow(
