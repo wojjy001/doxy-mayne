@@ -191,6 +191,7 @@ shinyServer(function(input,output,session) {
 		}
 		doryxTAB.table
 	})	#Brackets closing "renderText"
+<<<<<<< HEAD
 	
 	# Plot simulation results of Doryx MPC versus Doryx for Fasted
 	output$RformFasted.plot <- renderPlot({
@@ -239,6 +240,8 @@ shinyServer(function(input,output,session) {
 	})	#Brackets closing "renderPlot"	
 	
 	
+=======
+>>>>>>> parent of 5070e57... Add RformFasted.plot to server
 
 	# Plot simulation results of fed versus fasted for Doryx Tablet
 	output$RdoryxTAB.plot <- renderPlot({
