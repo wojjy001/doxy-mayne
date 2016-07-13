@@ -78,14 +78,11 @@ body <-
 			tabItem(tabName = "form-status",
 			        fixedRow(
 			          column(3,
-			                 selectInput("DOSE_CHOICE1","Formulation Comparison:",choices = list("120 mg Doryx MPC vs 100 mg Doryx tablet" = 1,"240 mg Doryx MPC vs 200 mg Doryx tablet" = 2)),
-			                 radioButtons("NUMDOSE_CHOICE1","Number of Doses:",choices = list("Single dose" = 1,"Multiple doses (once daily)" = 2)),
-			                 conditionalPanel(condition = "input.NUMDOSE_DORYXMPC2 == 1",
-			                                  checkboxInput("SUMSTATS_DORYXMPC2","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
-			   )  #Brackets closing "condtionalPanel"
+			                 selectInput("DOSE1","Formulation Comparison:",choices = list("120 mg Doryx MPC versus 100 mg Doryx tablet" = 1,"240 mg Doryx MPC versus 200 mg Doryx tablet" = 2,"Clinical Regimen Comparison"= 3),width = 500),
+			                 checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+			   )
 			  ) 
-			 )  
-			),  
+			 ), 
 			tabItem(tabName = "gender-status",
         h4("Compare Male versus Female")
       ) #Brackets closing "tabItem" for "gender-status"
