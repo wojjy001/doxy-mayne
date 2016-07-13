@@ -31,7 +31,9 @@ shinyServer(function(input,output,session) {
 			summary
 		}
 	})	#Brackets closing "Rsummary.function"
-
+	
+######Simulate populations for the fed status tab	
+	
 	# Simulate a population of fed/ fasted individuals administered Doryx MPC
 	#------------------------------------------------------------------------
 	RdoryxMPC.data <- reactive({
@@ -142,7 +144,121 @@ shinyServer(function(input,output,session) {
 		# Calculate the median and prediction intervals for calculations at each time-point
 		doryxTAB.summary <- ddply(doryxTAB.data, .(time,FED), function(doryxTAB.data) summary.function(doryxTAB.data$IPRE))
 	})	#Brackets closing "RdoryxTAB.summary"
+	
+######Simulate populations for the form status tab##########	
 
+	# Simulate a population of fed/ fasted individuals administered Doryx MPC
+	#------------------------------------------------------------------------
+	RdoryxMPC2.data <- reactive({
+	  # Simulate concentration-time profiles for the population
+	  # Specify dosing input
+	  if (input$DOSE2 != 3) {
+	    if (input$DOSE2 == 1) DOSE_DORYXMPC2 <- 120	#mg
+	    if (input$DOSE2 == 2) DOSE_DORYXMPC2 <- 240	#mg
+	    # Create input data frame for mrgsim
+	    input.doryxMPC2.data <- data.frame(
+	      ID = 1:n,	# n individuals
+	      amt = DOSE_DORYXMPC2*1000,	# amt in microg
+	      evid = 1,	# evid = 1; dosing event
+	      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	      time = 0,	# time = 0; begin dosing at time = 0
+	      TRT = 1,	# Doryx MPC
+	      FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
+	      SEX = rbinom(n,size = 1,prob = 0.5),
+	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
+	    )
+	  }
+	  if (input$DOSE2 == 3) {
+	    dose.times <- c(0,24,48,72,96,120,144)
+	    # Create input data frame for mrgsim
+	    input.doryxMPC2.data <- data.frame(
+	      ID = 1:n,	# n individuals
+	      time = 0,
+	      amt = 240*1000,	# amt in microg
+	      evid = 1,	# evid = 1; dosing event
+	      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	      TRT = 1,	# Doryx MPC
+	      FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
+	      SEX = rbinom(n,size = 1,prob = 0.5),
+	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
+	    )
+	    input.doryxMPC2.data <- lapply(input.doryxMPC2.data,rep.int,times = length(time.multiple))
+	    input.doryxMPC2.data <- as.data.frame(input.doryxMPC2.data)
+	    input.doryxMPC2.data <- input.doryxMPC2.data[with(input.doryxMPC2.data, order(input.doryxMPC2.data$ID)),]
+	    input.doryxMPC2.data$time <- time.multiple
+	    input.doryxMPC2.data$evid[!c(input.doryxMPC2.data$time %in% dose.times)] <- 0
+	    input.doryxMPC2.data$amt[input.doryxMPC2.data$time > 0] <- 120*1000
+	    input.doryxMPC2.data
+	  }
+	  doryxMPC2.data <- mod %>% data_set(input.doryxMPC2.data) %>% mrgsim()
+	  doryxMPC2.data <- as.data.frame(doryxMPC2.data)	#Convert to a data frame so that it is more useful for me!
+	})	#Brackets closing "RdoryxMPC.data"
+	
+	RdoryxMPC2.summary <- reactive({
+	  # Read in the necessary reactive expressions
+	  doryxMPC2.data <- RdoryxMPC2.data()
+	  summary.function <- Rsummary.function()
+	  # Calculate the median and prediction intervals for calculations at each time-point
+	  doryxMPC2.summary <- ddply(doryxMPC2.data, .(time,FED), function(doryxMPC2.data) summary.function(doryxMPC2.data$IPRE))
+	})	#Brackets closing "RdoryxMPC.summary"
+	
+	# Simulate a population of fed/ fasted individuals administered Doryx Tablet
+	#---------------------------------------------------------------------------
+	RdoryxTAB2.data <- reactive({
+	  # Simulate concentration-time profiles for the population
+	  # Specify dosing input
+	  if (input$DOSE2 != 3) {	  
+	    if (input$DOSE2 == 1) DOSE_DORYXTAB2 <- 100	#mg
+	    if (input$DOSE2 == 2) DOSE_DORYXTAB2 <- 200	#mg
+	    # Create input data frame for mrgsim
+	    input.doryxTAB2.data <- data.frame(
+	      ID = 1:n,	# n individuals
+	      amt = DOSE_DORYXTAB2*1000,	# amt in microg
+	      evid = 1,	# evid = 1; dosing event
+	      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	      time = 0,	# time = 0; begin dosing at time = 0
+	      TRT = 2,	# Doryx TAB
+	      FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
+	      SEX = rbinom(n,size = 1,prob = 0.5),
+	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09),
+	      ii = 24	# Dosing interval
+	    )
+	  }
+	  if (input$DOSE2 == 3) {
+	    dose.times <- c(0,24,48,72,96,120,144)
+	    # Create input data frame for mrgsim
+	    input.doryxTAB2.data <- data.frame(
+	      ID = 1:n,	# n individuals
+	      time = 0,
+	      amt = 200*1000,	# amt in microg
+	      evid = 1,	# evid = 1; dosing event
+	      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	      TRT = 2,	# Doryx MPC
+	      FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
+	      SEX = rbinom(n,size = 1,prob = 0.5),
+	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
+	    )
+	    input.doryxTAB2.data <- lapply(input.doryxTAB2.data,rep.int,times = length(time.multiple))
+	    input.doryxTAB2.data <- as.data.frame(input.doryxTAB2.data)
+	    input.doryxTAB2.data <- input.doryxTAB2.data[with(input.doryxTAB2.data, order(input.doryxTAB2.data$ID)),]
+	    input.doryxTAB2.data$time <- time.multiple
+	    input.doryxTAB2.data$evid[!c(input.doryxTAB2.data$time %in% dose.times)] <- 0
+	    input.doryxTAB2.data$amt[input.doryxTAB2.data$time > 0] <- 100*1000
+	    input.doryxTAB2.data
+	  }
+	  doryxTAB2.data <- mod %>% data_set(input.doryxTAB2.data) %>% mrgsim()
+	  doryxTAB2.data <- as.data.frame(doryxTAB2.data)	#Convert to a data frame so that it is more useful for me!
+	})	#Brackets closing "RdoryxTAB.data"
+	
+	RdoryxTAB2.summary <- reactive({
+	  # Read in the necessary reactive expressions
+	  doryxTAB2.data <- RdoryxTAB2.data()
+	  summary.function <- Rsummary.function()
+	  # Calculate the median and prediction intervals for calculations at each time-point
+	  doryxTAB2.summary <- ddply(doryxTAB2.data, .(time,FED), function(doryxTAB2.data) summary.function(doryxTAB2.data$IPRE))
+	})	#Brackets closing "RdoryxTAB.summary"
+	
+	
 	############
 	##_OUTPUT_##
 	############
@@ -195,17 +311,17 @@ shinyServer(function(input,output,session) {
 	# Plot simulation results of Doryx MPC versus Doryx for Fasted
 	output$RformFasted.plot <- renderPlot({
 	  # Read in the reactive data frames for summary
-	  doryxMPC.summary <- RdoryxMPC.summary()
-	  doryxTAB.summary <- RdoryxTAB.summary()
+	  doryxMPC2.summary <- RdoryxMPC2.summary()
+	  doryxTAB2.summary <- RdoryxTAB2.summary()
 	  
 	  # Plot
-	  plotobj1 <- ggplot(doryxMPC.summary)
+	  plotobj1 <- ggplot(doryxMPC2.summary)
 	  # MPC
-	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],colour = "red")
-	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],fill = "red",alpha = 0.3)
+	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC2.summary[doryxMPC2.summary$FED == 0,],colour = "red")
+	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC2.summary[doryxMPC2.summary$FED == 0,],fill = "red",alpha = 0.3)
 	  # Doryx
-	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],colour = "blue")
-	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],fill = "blue",alpha = 0.3)
+	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB2.summary[doryxTAB2.summary$FED == 0,],colour = "blue")
+	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB2.summary[doryxTAB2.summary$FED == 0,],fill = "blue",alpha = 0.3)
 	  # Plot horizontal line representing LLOQ
 	  plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
 	  plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
@@ -218,17 +334,17 @@ shinyServer(function(input,output,session) {
 	# Plot simulation results of Doryx MPC versus Doryx for Fed
 	output$RformFed.plot <- renderPlot({
 	  # Read in the reactive data frames for summary
-	  doryxMPC.summary <- RdoryxMPC.summary()
-	  doryxTAB.summary <- RdoryxTAB.summary()
+	  doryxMPC2.summary <- RdoryxMPC2.summary()
+	  doryxTAB2.summary <- RdoryxTAB2.summary()
 	  
 	  # Plot
-	  plotobj1 <- ggplot(doryxMPC.summary)
+	  plotobj1 <- ggplot(doryxMPC2.summary)
 	  # MPC
-	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],colour = "red")
-	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],fill = "red",alpha = 0.3)
+	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC2.summary[doryxMPC2.summary$FED == 1,],colour = "red")
+	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC2.summary[doryxMPC2.summary$FED == 1,],fill = "red",alpha = 0.3)
 	  # Doryx
-	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],colour = "blue")
-	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],fill = "blue",alpha = 0.3)
+	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB2.summary[doryxTAB2.summary$FED == 1,],colour = "blue")
+	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB2.summary[doryxTAB2.summary$FED == 1,],fill = "blue",alpha = 0.3)
 	  # Plot horizontal line representing LLOQ
 	  plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
 	  plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
