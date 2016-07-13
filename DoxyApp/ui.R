@@ -55,22 +55,20 @@ body <-
                   width = 12
                 ) #Brackets closing "box"
               ),  #Brackets closing "column"
-              conditionalPanel(condition = "input.ADD_DORYXTAB1",
-                column(6,
-                  box(
-                    plotOutput("RdoryxTAB.plot"),
-                    conditionalPanel(condition = "input.SUMSTATS_DORYXTAB1",
-                      conditionalPanel(condition = "input.NUMDOSE_DORYXTAB1 == 1",
-                        tableOutput("RdoryxTAB.table")
-                      ) #Brackets closing "conditionalPanel"
-                    ),  #Brackets closing "conditionalPanel"
-                    title = strong("Concentration-Time Profile - Doryx Tablet"),
-                    solidHeader = TRUE,
-                    status = "primary",
-                    width = 12
-                  ) #Brackets closing "box"
-                )  #Brackets closing "column"
-              )  #Brackets closing "conditionalPanel"
+              column(6,
+                box(
+                  plotOutput("RdoryxTAB.plot"),
+                  conditionalPanel(condition = "input.SUMSTATS_DORYXTAB1",
+                    conditionalPanel(condition = "input.NUMDOSE_DORYXTAB1 == 1",
+                      tableOutput("RdoryxTAB.table")
+                    ) #Brackets closing "conditionalPanel"
+                  ),  #Brackets closing "conditionalPanel"
+                  title = strong("Concentration-Time Profile - Doryx Tablet"),
+                  solidHeader = TRUE,
+                  status = "primary",
+                  width = 12
+                ) #Brackets closing "box"
+              )  #Brackets closing "column"
             ) #Brackets closing "fixedRow"
           )  #Brackets closing "column"
         ) #Brackets closing "fixedRow"
