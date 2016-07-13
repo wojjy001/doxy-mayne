@@ -66,14 +66,12 @@ shinyServer(function(input,output,session) {
 		    SEX = rbinom(n,size = 1,prob = 0.5),
 		    FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
 		  )
-			print(head(input.doryxMPC.data))
 			input.doryxMPC.data <- lapply(input.doryxMPC.data,rep.int,times = length(time.multiple))
 			input.doryxMPC.data <- as.data.frame(input.doryxMPC.data)
 			input.doryxMPC.data <- input.doryxMPC.data[with(input.doryxMPC.data, order(input.doryxMPC.data$ID)),]
 			input.doryxMPC.data$time <- time.multiple
 			input.doryxMPC.data$evid[!c(input.doryxMPC.data$time %in% dose.times)] <- 0
 			input.doryxMPC.data$amt[input.doryxMPC.data$time > 0] <- 120*1000
-			print(head(input.doryxMPC.data[input.doryxMPC.data$time %in% dose.times,]))
 			input.doryxMPC.data
 		}
 		doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim()
