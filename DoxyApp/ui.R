@@ -78,8 +78,21 @@ body <-
 			          column(3,
 			                 selectInput("DOSE2","Formulation Comparison:",choices = list("120 mg Doryx MPC versus 100 mg Doryx tablet" = 1,"240 mg Doryx MPC versus 200 mg Doryx tablet" = 2,"Clinical Regimen Comparison"= 3),width = 500),
 			                 checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+			   ),
+			   column(9,
+			          fixedRow(
+			            column(6,
+			                   box(
+			                     plotOutput("RformFasted.plot")
+			                     ),
+			                   title = strong("Concentration-Time Profile - Fasted"),
+			                   solidHeader = TRUE,
+			                   status = "primary",
+			                   width = 12
+			            )
+			          )
 			   )
-			  ) 
+			)
 			 ), 
 			tabItem(tabName = "gender-status",
         h4("Compare Male versus Female")

@@ -191,8 +191,32 @@ shinyServer(function(input,output,session) {
 		}
 		doryxTAB.table
 	})	#Brackets closing "renderText"
-
-	# Plot simulation results of fed versus fasted for Doryx Tablet
+	
+	# Plot simulation results of Doryx MPC versus Doryx for Fasted
+	output$RformFasted.plot <- renderPlot({
+	  # Read in the reactive data frames for summary
+	  doryxMPC.summary <- RdoryxMPC.summary()
+	  doryxTAB.summary <- RdoryxTAB.summary()
+	  
+	  # Plot
+	  plotobj1 <- ggplot(doryxMPC.summary)
+	  # MPC
+	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],colour = "red")
+	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],fill = "red",alpha = 0.3)
+	  # Doryx
+	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],colour = "blue")
+	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],fill = "blue",alpha = 0.3)
+	  # Plot horizontal line representing LLOQ
+	  plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
+	  plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
+	  # Plot on linear or log-scale depending on input
+	  if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
+	  if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
+	  print(plotobj1)
+	})	#Brackets closing "renderPlot"	
+	
+	
+  # Plot simulation results of fed versus fasted for Doryx Tablet
 	output$RdoryxTAB.plot <- renderPlot({
 			# Read in the reactive data frame for fed.summary
 			doryxTAB.summary <- RdoryxTAB.summary()
