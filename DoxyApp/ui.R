@@ -76,11 +76,43 @@ body <-
 			tabItem(tabName = "form-status",
 			        fixedRow(
 			          column(3,
-			                 selectInput("DOSE1","Formulation Comparison:",choices = list("120 mg Doryx MPC versus 100 mg Doryx tablet" = 1,"240 mg Doryx MPC versus 200 mg Doryx tablet" = 2,"Clinical Regimen Comparison"= 3),width = 500),
-			                 checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
-			   )
-			  ) 
-			 ), 
+			                 selectInput("DOSE2","Formulation Comparison:",choices = list("120 mg Doryx MPC versus 100 mg Doryx tablet" = 1,"240 mg Doryx MPC versus 200 mg Doryx tablet" = 2,"Clinical Regimen Comparison"= 3),width = 500),
+			                 checkboxInput("SUMSTATS","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+			   ),  #Brackets closing "column"
+			   column(9,
+			          fixedRow(
+			            column(6,
+			                   box(
+			                     plotOutput("RdoryxMPC.plot2"),
+			                     conditionalPanel(condition = "input.SUMSTATS_DORYXMPC1",
+			                                      conditionalPanel(condition = "input.NUMDOSE_DORYXMPC1 == 1",
+			                                                       tableOutput("RdoryxMPC.table2")
+			                                      ) #Brackets closing "conditionalPanel"
+			                     ),  #Brackets closing "condtionalPanel"
+			                     title = strong("Concentration-Time Profile - Fasted"),
+			                     solidHeader = TRUE,
+			                     status = "primary",
+			                     width = 12
+			                   ) #Brackets closing "box"
+			            ),  #Brackets closing "column"
+			            column(6,
+			                   box(
+			                     plotOutput("RdoryxTAB.plot2"),
+			                     conditionalPanel(condition = "input.SUMSTATS_DORYXTAB1",
+			                                      conditionalPanel(condition = "input.NUMDOSE_DORYXTAB1 == 1",
+			                                                       tableOutput("RdoryxTAB.table")
+			                                      ) #Brackets closing "conditionalPanel"
+			                     ),  #Brackets closing "conditionalPanel"
+			                     title = strong("Concentration-Time Profile - Fasted"),
+			                     solidHeader = TRUE,
+			                     status = "primary",
+			                     width = 12
+			                   ) #Brackets closing "box"
+			            )  #Brackets closing "column"
+			          ) #Brackets closing "fixedRow"
+			   )  #Brackets closing "column"			   
+			  )    #Brackets closing "fixed-row"  
+			),	#Brackets closing "tabItem" for "form-status" 
 			tabItem(tabName = "gender-status",
         h4("Compare Male versus Female")
       ) #Brackets closing "tabItem" for "gender-status"
