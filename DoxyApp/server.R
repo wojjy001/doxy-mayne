@@ -240,7 +240,6 @@ shinyServer(function(input,output,session) {
 
 	# Plot simulation results of fed versus fasted for Doryx Tablet
 	output$RdoryxTAB.plot <- renderPlot({
-		if (input$ADD_DORYXTAB1 == TRUE) {
 			# Read in the reactive data frame for fed.summary
 			doryxTAB.summary <- RdoryxTAB.summary()
 
@@ -259,7 +258,6 @@ shinyServer(function(input,output,session) {
 			if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
 			if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
 			print(plotobj1)
-		}
 	})	#Brackets closing "renderPlot"
 
 	output$RdoryxTAB.table <- renderTable({
