@@ -191,6 +191,7 @@ shinyServer(function(input,output,session) {
 		}
 		doryxTAB.table
 	})	#Brackets closing "renderText"
+<<<<<<< HEAD
 	
 	# Plot simulation results of Doryx MPC versus Doryx for Fasted
 	output$RformFasted.plot <- renderPlot({
@@ -239,7 +240,7 @@ shinyServer(function(input,output,session) {
 	})	#Brackets closing "renderPlot"	
 	
 	
-  # Plot simulation results of fed versus fasted for Doryx Tablet
+	# Plot simulation results of fed versus fasted for Doryx Tablet
 	output$RdoryxTAB.plot <- renderPlot({
 			# Read in the reactive data frame for fed.summary
 			doryxTAB.summary <- RdoryxTAB.summary()

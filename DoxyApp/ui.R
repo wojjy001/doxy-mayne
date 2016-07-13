@@ -101,8 +101,8 @@ body <-
 			                  )  #Brackets closing "column"
 			                ) #Brackets closing "fixedRow"
 			          )  #Brackets closing "column"
-			  )
-			 ), 
+			        )
+			        ),
 			tabItem(tabName = "gender-status",
         h4("Compare Male versus Female")
       ) #Brackets closing "tabItem" for "gender-status"
