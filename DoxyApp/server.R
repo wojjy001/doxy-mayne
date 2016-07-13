@@ -37,9 +37,9 @@ shinyServer(function(input,output,session) {
 	RdoryxMPC.data <- reactive({
 		# Simulate concentration-time profiles for the population
 		# Specify dosing input
-	  if (input$DOSE1 != 3 | input$DOSE2 != 3) {
-  		if (input$DOSE1 == 1 | input$DOSE2 == 1) DOSE_DORYXMPC1 <- 120	#mg
-  		if (input$DOSE1 == 2 | input$DOSE2 == 1) DOSE_DORYXMPC1 <- 240	#mg
+	  if (input$DOSE1 != 3) {
+  		if (input$DOSE1 == 1) DOSE_DORYXMPC1 <- 120	#mg
+  		if (input$DOSE1 == 2) DOSE_DORYXMPC1 <- 240	#mg
   		# Create input data frame for mrgsim
   		input.doryxMPC.data <- data.frame(
   			ID = 1:n,	# n individuals
@@ -53,7 +53,7 @@ shinyServer(function(input,output,session) {
   			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
   		)
 	  }
-		if (input$DOSE1 == 3 | input$DOSE2 == 3) {
+		if (input$DOSE1 == 3) {
 			dose.times <- c(0,24,48,72,96,120,144)
 		  # Create input data frame for mrgsim
 		  input.doryxMPC.data <- data.frame(
@@ -92,9 +92,9 @@ shinyServer(function(input,output,session) {
 	RdoryxTAB.data <- reactive({
   # Simulate concentration-time profiles for the population
   	# Specify dosing input
-	  if (input$DOSE1 != 3 | input$DOSE2 != 3) {	  
-    	if (input$DOSE1 == 1 | input$DOSE2 == 1) DOSE_DORYXTAB1 <- 100	#mg
-    	if (input$DOSE1 == 2 | input$DOSE2 == 2) DOSE_DORYXTAB1 <- 200	#mg
+	  if (input$DOSE1 != 3) {	  
+    	if (input$DOSE1 == 1) DOSE_DORYXTAB1 <- 100	#mg
+    	if (input$DOSE1 == 2) DOSE_DORYXTAB1 <- 200	#mg
     	# Create input data frame for mrgsim
     	input.doryxTAB.data <- data.frame(
     	  ID = 1:n,	# n individuals
@@ -109,7 +109,7 @@ shinyServer(function(input,output,session) {
     		ii = 24	# Dosing interval
     		)
 	  }
-	  if (input$DOSE1 == 3 | input$DOSE2 == 3) {
+	  if (input$DOSE1 == 3) {
 	    dose.times <- c(0,24,48,72,96,120,144)
 	    # Create input data frame for mrgsim
 	    input.doryxTAB.data <- data.frame(
@@ -166,28 +166,6 @@ shinyServer(function(input,output,session) {
 		if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
 		if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
 		print(plotobj1)
-	})	#Brackets closing "renderPlot"
-	
-	# Plot simulation results of Doryx MPC versus Doryx for Fasted
-	output$RdoryxMPC.plot2 <- renderPlot({
-	  # Read in the reactive data frame for summary
-	  doryxMPC.summary <- RdoryxMPC.summary()
-	  
-	  # Plot
-	  plotobj1 <- ggplot(doryxMPC.summary)
-	  # Fasted
-	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],colour = "red")
-	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],fill = "red",alpha = 0.3)
-	  # Fed
-	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],colour = "blue")
-	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],fill = "blue",alpha = 0.3)
-	  # Plot horizontal line representing LLOQ
-	  plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
-	  plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
-	  # Plot on linear or log-scale depending on input
-	  if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
-	  if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
-	  print(plotobj1)
 	})	#Brackets closing "renderPlot"
 
 	output$RdoryxTAB.table <- renderTable({
