@@ -92,7 +92,7 @@ body <-
 			            ),  #Brackets closing "column"
 			            column(6,
 			                   box(
-			                     plotOutput("RdoryxTAB.plot"),
+			                     plotOutput("RformFed.plot"),
 			                     title = strong("Concentration-Time Profile - Fed"),
 			                     solidHeader = TRUE,
 			                     status = "primary",
