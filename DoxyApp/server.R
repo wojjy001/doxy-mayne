@@ -395,7 +395,7 @@ shinyServer(function(input,output,session) {
 		summary.function <- Rsummary.function()
 		# Only summarise AUC, Tmax and Cmax for single dose simulations
 		# Summarise AUC at t = 96 hours
-		if (input$NUMDOSE_DORYXTAB1 == 1) {
+		if (input$DOSE1 != 3) {
 			AUC.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$AUC))
 			AUC.table$Variable <- "AUC (microg*h/L)"
 			# Summarise Cmax (value will be found at time = 96)
@@ -406,7 +406,7 @@ shinyServer(function(input,output,session) {
 			Tmax.table$Variable <- "Tmax (h)"
 			doryxTAB.table <- rbind(AUC.table,Cmax.table,Tmax.table)
 		}
-		if (input$NUMDOSE_DORYXTAB1 == 2) {
+		if (input$DOSE1 == 3) {
 			doryxTAB.table <- NA
 		}
 		doryxTAB.table

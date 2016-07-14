@@ -65,10 +65,8 @@ body <-
               column(6,
                 box(
                   plotOutput("RdoryxMPC.plot"),
-                  conditionalPanel(condition = "input.SUMSTATS_DORYXMPC1",
-                    conditionalPanel(condition = "input.NUMDOSE_DORYXMPC1 == 1",
+                  conditionalPanel(condition = "input.SUMSTATS1",
                       tableOutput("RdoryxMPC.table")
-                    ) #Brackets closing "conditionalPanel"
                   ),  #Brackets closing "condtionalPanel"
                   title = strong("Concentration-Time Profile - Doryx MPC"),
                   solidHeader = TRUE,
@@ -79,10 +77,8 @@ body <-
               column(6,
                 box(
                   plotOutput("RdoryxTAB.plot"),
-                  conditionalPanel(condition = "input.SUMSTATS_DORYXTAB1",
-                    conditionalPanel(condition = "input.NUMDOSE_DORYXTAB1 == 1",
+                  conditionalPanel(condition = "input.SUMSTATS1",
                       tableOutput("RdoryxTAB.table")
-                    ) #Brackets closing "conditionalPanel"
                   ),  #Brackets closing "conditionalPanel"
                   title = strong("Concentration-Time Profile - Doryx Tablet"),
                   solidHeader = TRUE,
