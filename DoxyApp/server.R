@@ -84,7 +84,7 @@ shinyServer(function(input,output,session) {
 					input.doryxMPC.data
 			}
 		# Simulate
-			doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim(add = c(48,72,96))
+			doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim(add = TIME.tgrid)
 			doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxMPC.data"
 
@@ -111,7 +111,7 @@ shinyServer(function(input,output,session) {
 	  			evid = 1,	# evid = 1; dosing event
 	  			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
 	  			time = 0,	# time = 0; begin dosing at time = 0
-	  			TRT = 1,	# Doryx MPC
+	  			TRT = 2,	# Doryx MPC
 	  			FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
 	  			SEX = rbinom(n,size = 1,prob = 0.5),
 	  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
@@ -127,7 +127,7 @@ shinyServer(function(input,output,session) {
 				    amt = 200*1000,	# amt in microg
 				    evid = 1,	# evid = 1; dosing event
 				    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-				    TRT = 1,	# Doryx MPC
+				    TRT = 2,	# Doryx MPC
 				    FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
 				    SEX = rbinom(n,size = 1,prob = 0.5),
 				    FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
@@ -141,12 +141,12 @@ shinyServer(function(input,output,session) {
 				# For times that aren't dosing times, make evid = 0
 					input.doryxTAB.data$evid[!c(input.doryxTAB.data$time %in% dose.times)] <- 0
 				# For times that are dosing times (but aren't the first one), make them = 120 mg
-					input.doryxTAB.data$amt[input.doryxTAB.data$time > 0] <- 120*1000
+					input.doryxTAB.data$amt[input.doryxTAB.data$time > 0] <- 100*1000
 				# Return the resulting data frame
 					input.doryxTAB.data
 			}
 		# Simulate
-	  	doryxTAB.data <- mod %>% data_set(input.doryxTAB.data) %>% mrgsim(add = c(48,72,96))
+	  	doryxTAB.data <- mod %>% data_set(input.doryxTAB.data) %>% mrgsim(add = TIME.tgrid)
 	  	doryxTAB.data <- as.data.frame(doryxTAB.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxTAB.data"
 
@@ -166,7 +166,6 @@ shinyServer(function(input,output,session) {
 	  # Simulate concentration-time profiles for the population
 	  # Specify dosing input
 	  if (input$DOSE2 != 3) {
-	    dose.times <- c(0)
 	    if (input$DOSE2 == 1) DOSE_DORYXMPC2 <- 120	#mg
 	    if (input$DOSE2 == 2) DOSE_DORYXMPC2 <- 240	#mg
 	    # Create input data frame for mrgsim
@@ -181,12 +180,6 @@ shinyServer(function(input,output,session) {
 	      SEX = rbinom(n,size = 1,prob = 0.5),
 	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
 	    )
-	    input.doryxMPC2.data <- lapply(input.doryxMPC2.data,rep.int,times = length(TIME.tgrid))
-	    input.doryxMPC2.data <- as.data.frame(input.doryxMPC2.data)
-	    input.doryxMPC2.data <- input.doryxMPC2.data[with(input.doryxMPC2.data, order(input.doryxMPC2.data$ID)),]
-	    input.doryxMPC2.data$time <- TIME.tgrid
-	    input.doryxMPC2.data$evid[!c(input.doryxMPC2.data$time %in% dose.times)] <- 0
-	    input.doryxMPC2.data
 	  }
 	  if (input$DOSE2 == 3) {
 	    dose.times <- c(0,24,48,72,96,120,144)
@@ -207,10 +200,10 @@ shinyServer(function(input,output,session) {
 	    input.doryxMPC2.data <- input.doryxMPC2.data[with(input.doryxMPC2.data, order(input.doryxMPC2.data$ID)),]
 	    input.doryxMPC2.data$time <- time.multiple
 	    input.doryxMPC2.data$evid[!c(input.doryxMPC2.data$time %in% dose.times)] <- 0
-	    input.doryxMPC2.data$amt[input.doryxMPC2.data$time > 0] <- 100*1000
+	    input.doryxMPC2.data$amt[input.doryxMPC2.data$time > 0] <- 120*1000
 	    input.doryxMPC2.data
 	  }
-	  doryxMPC2.data <- mod %>% data_set(input.doryxMPC2.data) %>% mrgsim()
+	  doryxMPC2.data <- mod %>% data_set(input.doryxMPC2.data) %>% mrgsim(add = TIME.tgrid)
 	  doryxMPC2.data <- as.data.frame(doryxMPC2.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxMPC.data"
 
@@ -228,7 +221,6 @@ shinyServer(function(input,output,session) {
 	  # Simulate concentration-time profiles for the population
 	  # Specify dosing input
 	  if (input$DOSE2 != 3) {
-	    dose.times <- c(0)
 	    if (input$DOSE2 == 1) DOSE_DORYXTAB2 <- 100	#mg
 	    if (input$DOSE2 == 2) DOSE_DORYXTAB2 <- 200	#mg
 	    # Create input data frame for mrgsim
@@ -243,12 +235,6 @@ shinyServer(function(input,output,session) {
 	      SEX = rbinom(n,size = 1,prob = 0.5),
 	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
 	    )
-	    input.doryxTAB2.data <- lapply(input.doryxTAB2.data,rep.int,times = length(TIME.tgrid))
-	    input.doryxTAB2.data <- as.data.frame(input.doryxTAB2.data)
-	    input.doryxTAB2.data <- input.doryxTAB2.data[with(input.doryxTAB2.data, order(input.doryxTAB2.data$ID)),]
-	    input.doryxTAB2.data$time <- TIME.tgrid
-	    input.doryxTAB2.data$evid[!c(input.doryxTAB2.data$time %in% dose.times)] <- 0
-	    input.doryxTAB2.data
 	  }
 	  if (input$DOSE2 == 3) {
 	    dose.times <- c(0,24,48,72,96,120,144)
@@ -272,7 +258,7 @@ shinyServer(function(input,output,session) {
 	    input.doryxTAB2.data$amt[input.doryxTAB2.data$time > 0] <- 100*1000
 	    input.doryxTAB2.data
 	  }
-	  doryxTAB2.data <- mod %>% data_set(input.doryxTAB2.data) %>% mrgsim()
+	  doryxTAB2.data <- mod %>% data_set(input.doryxTAB2.data) %>% mrgsim(add = TIME.tgrid)
 	  doryxTAB2.data <- as.data.frame(doryxTAB2.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxTAB.data"
 

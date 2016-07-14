@@ -16,6 +16,10 @@
 
 # ------------------------------------------------------------------------------
 # Define time sequence - using mrgsolve's tgrid function
+  time.fine <- seq(from = 0,to = 8,by = 0.25)
+  time.coarse <- seq(from = 12,to = 24,by = 4)
+  TIME.tgrid <- c(time.fine,time.coarse,time.fine+24,time.coarse+24,time.fine+48,time.coarse+48,time.fine+72,time.coarse+72)
+  
   # Time sequences for the multiple dosing scenario
     time.multiple.fine <- seq(from = 0,to = 8,by = 0.5)  # Intense sampling early on
     time.multiple.coarse <- seq(from = 12,to = 24,by = 6) # Less intense later in the interval
