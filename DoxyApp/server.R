@@ -207,7 +207,7 @@ shinyServer(function(input,output,session) {
 	    input.doryxMPC2.data <- input.doryxMPC2.data[with(input.doryxMPC2.data, order(input.doryxMPC2.data$ID)),]
 	    input.doryxMPC2.data$time <- time.multiple
 	    input.doryxMPC2.data$evid[!c(input.doryxMPC2.data$time %in% dose.times)] <- 0
-	    input.doryxMPC2.data$amt[input.doryxMPC2.data$time > 0] <- 120*1000
+	    input.doryxMPC2.data$amt[input.doryxMPC2.data$time > 0] <- 100*1000
 	    input.doryxMPC2.data
 	  }
 	  doryxMPC2.data <- mod %>% data_set(input.doryxMPC2.data) %>% mrgsim()
