@@ -54,6 +54,9 @@ shinyServer(function(input,output,session) {
   			SEX = rbinom(n,size = 1,prob = 0.5),
   			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
   		)
+  		
+  		doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim(tgrid = TIME.tgrid)
+  		doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
 	  }
 		if (input$DOSE1 == 3) {
 			dose.times <- c(0,24,48,72,96,120,144)
@@ -76,9 +79,11 @@ shinyServer(function(input,output,session) {
 			input.doryxMPC.data$evid[!c(input.doryxMPC.data$time %in% dose.times)] <- 0
 			input.doryxMPC.data$amt[input.doryxMPC.data$time > 0] <- 120*1000
 			input.doryxMPC.data
+			
+			doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim()
+			doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
 		}
-		doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim()
-		doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
+
 	})	#Brackets closing "RdoryxMPC.data"
 
 	RdoryxMPC.summary <- reactive({
