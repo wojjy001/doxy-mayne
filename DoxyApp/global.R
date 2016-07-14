@@ -4,29 +4,28 @@
 # ------------------------------------------------------------------------------
 # Load package libraries
   library(shiny)
-  library(shinydashboard)  #Package for making cooler user-interface for Shiny applications
-  library(ggplot2)  #Plotting
-  library(grid)  #Plotting
-  library(plyr)  #Split and rearrange data, ddply function
-  library(dplyr)  #New plyr
-  library(mrgsolve) #Metrum differential equation solver for pharmacometrics
+  library(shinydashboard)  # Package for making cooler user-interface for Shiny applications
+  library(ggplot2)  # Plotting
+  library(grid)  # Plotting
+  library(plyr)  # Split and rearrange data, ddply function
+  library(dplyr)  # New plyr
+  library(mrgsolve) # Metrum differential equation solver for pharmacometrics
+  
 # Define a custom ggplot2 theme
   theme_bw2 <- theme_set(theme_bw(base_size = 12))
 
 # ------------------------------------------------------------------------------
 # Define time sequence - using mrgsolve's tgrid function
-  time.fine <- seq(from = 0,to = 8,by = 0.25)
-  time.coarse <- seq(from = 12,to = 24,by = 4)
-	TIME.tgrid <- unique(c(time.fine,time.coarse,time.fine+24,time.coarse+24,time.fine+48,time.coarse+48,time.fine+72,time.coarse+72))
-
-  time.multiple.fine <- seq(from = 0,to = 8,by = 0.25)
-  time.multiple.coarse <- seq(from = 12,to = 24,by = 4)
-  time.multiple <- unique(c(time.multiple.fine,time.multiple.coarse,time.multiple.fine+24,time.multiple.coarse+24,time.multiple.fine+48,time.multiple.coarse+48,time.multiple.fine+72,time.multiple.coarse+72,time.multiple.fine+96,time.multiple.coarse+96,time.multiple.fine+120,time.multiple.coarse+120,time.multiple.fine+144,time.multiple.coarse+144))
+  # Time sequences for the multiple dosing scenario
+    time.multiple.fine <- seq(from = 0,to = 8,by = 0.5)  # Intense sampling early on
+    time.multiple.coarse <- seq(from = 12,to = 24,by = 6) # Less intense later in the interval
+    # Simulate multiple doses for one week (7 days)
+      time.multiple <- unique(c(time.multiple.fine,time.multiple.coarse,time.multiple.fine+24,time.multiple.coarse+24,time.multiple.fine+48,time.multiple.coarse+48,time.multiple.fine+72,time.multiple.coarse+72,time.multiple.fine+96,time.multiple.coarse+96,time.multiple.fine+120,time.multiple.coarse+120,time.multiple.fine+144,time.multiple.coarse+144))
 # Set number of individuals that make up the 95% prediction intervals
-	n <- 2000
+	n <- 1000
 # Set seed for reproducible numbers
 	set.seed(123456)
-#One per ID function
+# One per ID function
   oneperID <- function(x) head(x,1)
 
 # ------------------------------------------------------------------------------

@@ -31,61 +31,61 @@ shinyServer(function(input,output,session) {
 			summary
 		}
 	})	#Brackets closing "Rsummary.function"
-	
-######Simulate populations for the fed status tab	
-	
-	# Simulate a population of fed/ fasted individuals administered Doryx MPC
+
+######Simulate populations for the fed status tab
+
+	# Simulate a population of fed/fasted individuals administered Doryx MPC
 	#------------------------------------------------------------------------
 	RdoryxMPC.data <- reactive({
 		# Simulate concentration-time profiles for the population
 		# Specify dosing input
-	  if (input$DOSE1 != 3) {
-	    dose.times <- c(0)
-  		if (input$DOSE1 == 1) DOSE_DORYXMPC1 <- 120	#mg
-  		if (input$DOSE1 == 2) DOSE_DORYXMPC1 <- 240	#mg
-  		# Create input data frame for mrgsim
-  		input.doryxMPC.data <- data.frame(
-  			ID = 1:n,	# n individuals
-  			amt = DOSE_DORYXMPC1*1000,	# amt in microg
-  			evid = 1,	# evid = 1; dosing event
-  			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-  			time = 0,	# time = 0; begin dosing at time = 0
-  			TRT = 1,	# Doryx MPC
-  			FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
-  			SEX = rbinom(n,size = 1,prob = 0.5),
-  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
-  		)
-  		input.doryxMPC.data <- lapply(input.doryxMPC.data,rep.int,times = length(TIME.tgrid))
-  		input.doryxMPC.data <- as.data.frame(input.doryxMPC.data)
-  		input.doryxMPC.data <- input.doryxMPC.data[with(input.doryxMPC.data, order(input.doryxMPC.data$ID)),]
-  		input.doryxMPC.data$time <- TIME.tgrid
-  		input.doryxMPC.data$evid[!c(input.doryxMPC.data$time %in% dose.times)] <- 0
-  		input.doryxMPC.data
-	  }
-		if (input$DOSE1 == 3) {
-			dose.times <- c(0,24,48,72,96,120,144)
-		  # Create input data frame for mrgsim
-		  input.doryxMPC.data <- data.frame(
-		    ID = 1:n,	# n individuals
-				time = 0,
-		    amt = 240*1000,	# amt in microg
-		    evid = 1,	# evid = 1; dosing event
-		    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-		    TRT = 1,	# Doryx MPC
-		    FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
-		    SEX = rbinom(n,size = 1,prob = 0.5),
-		    FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
-		  )
-			input.doryxMPC.data <- lapply(input.doryxMPC.data,rep.int,times = length(time.multiple))
-			input.doryxMPC.data <- as.data.frame(input.doryxMPC.data)
-			input.doryxMPC.data <- input.doryxMPC.data[with(input.doryxMPC.data, order(input.doryxMPC.data$ID)),]
-			input.doryxMPC.data$time <- time.multiple
-			input.doryxMPC.data$evid[!c(input.doryxMPC.data$time %in% dose.times)] <- 0
-			input.doryxMPC.data$amt[input.doryxMPC.data$time > 0] <- 120*1000
-			input.doryxMPC.data
-		}
-		doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim()
-		doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
+		  if (input$DOSE1 != 3) {
+	  		if (input$DOSE1 == 1) DOSE_DORYXMPC1 <- 120	#mg
+	  		if (input$DOSE1 == 2) DOSE_DORYXMPC1 <- 240	#mg
+	  		# Create input data frame for mrgsim
+	  		input.doryxMPC.data <- data.frame(
+	  			ID = 1:n,	# n individuals
+	  			amt = DOSE_DORYXMPC1*1000,	# amt in microg
+	  			evid = 1,	# evid = 1; dosing event
+	  			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	  			time = 0,	# time = 0; begin dosing at time = 0
+	  			TRT = 1,	# Doryx MPC
+	  			FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
+	  			SEX = rbinom(n,size = 1,prob = 0.5),
+	  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
+	  		)
+		  }
+			if (input$DOSE1 == 3) {
+				# Specify the dosing times for the clinical scenario
+					dose.times <- c(0,24,48,72,96,120,144)
+			  # Create input data frame for mrgsim
+				  input.doryxMPC.data <- data.frame(
+				    ID = 1:n,	# n individuals
+						time = 0,
+				    amt = 240*1000,	# amt in microg
+				    evid = 1,	# evid = 1; dosing event
+				    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+				    TRT = 1,	# Doryx MPC
+				    FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
+				    SEX = rbinom(n,size = 1,prob = 0.5),
+				    FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
+				  )
+				# Multiple input.doryxMPC.data by the length of sample times
+					input.doryxMPC.data <- lapply(input.doryxMPC.data,rep.int,times = length(time.multiple))
+					input.doryxMPC.data <- as.data.frame(input.doryxMPC.data)	# Convert to a data frame
+					input.doryxMPC.data <- input.doryxMPC.data[with(input.doryxMPC.data, order(input.doryxMPC.data$ID)),]	# Sort by ID
+				# Add a time column
+					input.doryxMPC.data$time <- time.multiple
+				# For times that aren't dosing times, make evid = 0
+					input.doryxMPC.data$evid[!c(input.doryxMPC.data$time %in% dose.times)] <- 0
+				# For times that are dosing times (but aren't the first one), make them = 120 mg
+					input.doryxMPC.data$amt[input.doryxMPC.data$time > 0] <- 120*1000
+				# Return the resulting data frame
+					input.doryxMPC.data
+			}
+		# Simulate
+			doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim(add = c(48,72,96))
+			doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxMPC.data"
 
 	RdoryxMPC.summary <- reactive({
@@ -94,60 +94,60 @@ shinyServer(function(input,output,session) {
 		summary.function <- Rsummary.function()
 		# Calculate the median and prediction intervals for calculations at each time-point
 		doryxMPC.summary <- ddply(doryxMPC.data, .(time,FED), function(doryxMPC.data) summary.function(doryxMPC.data$IPRE))
-	})	#Brackets closing "RdoryxMPC.summary"
+	})	# Brackets closing "RdoryxMPC.summary"
 
 	# Simulate a population of fed/ fasted individuals administered Doryx Tablet
 	#---------------------------------------------------------------------------
 	RdoryxTAB.data <- reactive({
   # Simulate concentration-time profiles for the population
   	# Specify dosing input
-	  if (input$DOSE1 != 3) {
-	    dose.times <- c(0)
-    	if (input$DOSE1 == 1) DOSE_DORYXTAB1 <- 100	#mg
-    	if (input$DOSE1 == 2) DOSE_DORYXTAB1 <- 200	#mg
-    	# Create input data frame for mrgsim
-    	input.doryxTAB.data <- data.frame(
-    	  ID = 1:n,	# n individuals
-    		amt = DOSE_DORYXTAB1*1000,	# amt in microg
-    		evid = 1,	# evid = 1; dosing event
-    		cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-    		time = 0,	# time = 0; begin dosing at time = 0
-    		TRT = 2,	# Doryx TAB
-    		FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
-    		SEX = rbinom(n,size = 1,prob = 0.5),
-    		FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
-    		)
-    	input.doryxTAB.data <- lapply(input.doryxTAB.data,rep.int,times = length(TIME.tgrid))
-    	input.doryxTAB.data <- as.data.frame(input.doryxTAB.data)
-    	input.doryxTAB.data <- input.doryxTAB.data[with(input.doryxTAB.data, order(input.doryxTAB.data$ID)),]
-    	input.doryxTAB.data$time <- TIME.tgrid
-    	input.doryxTAB.data$evid[!c(input.doryxTAB.data$time %in% dose.times)] <- 0
-    	input.doryxTAB.data
-	  }
-	  if (input$DOSE1 == 3) {
-	    dose.times <- c(0,24,48,72,96,120,144)
-	    # Create input data frame for mrgsim
-	    input.doryxTAB.data <- data.frame(
-	      ID = 1:n,	# n individuals
-	      time = 0,
-	      amt = 200*1000,	# amt in microg
-	      evid = 1,	# evid = 1; dosing event
-	      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-	      TRT = 2,	# Doryx MPC
-	      FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
-	      SEX = rbinom(n,size = 1,prob = 0.5),
-	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
-	    )
-	    input.doryxTAB.data <- lapply(input.doryxTAB.data,rep.int,times = length(time.multiple))
-	    input.doryxTAB.data <- as.data.frame(input.doryxTAB.data)
-	    input.doryxTAB.data <- input.doryxTAB.data[with(input.doryxTAB.data, order(input.doryxTAB.data$ID)),]
-	    input.doryxTAB.data$time <- time.multiple
-	    input.doryxTAB.data$evid[!c(input.doryxTAB.data$time %in% dose.times)] <- 0
-	    input.doryxTAB.data$amt[input.doryxTAB.data$time > 0] <- 100*1000
-	    input.doryxTAB.data
-	  }
-  	doryxTAB.data <- mod %>% data_set(input.doryxTAB.data) %>% mrgsim()
-  	doryxTAB.data <- as.data.frame(doryxTAB.data)	#Convert to a data frame so that it is more useful for me!
+			if (input$DOSE1 != 3) {
+	  		if (input$DOSE1 == 1) DOSE_DORYXTAB1 <- 100	#mg
+	  		if (input$DOSE1 == 2) DOSE_DORYXTAB1 <- 200	#mg
+	  		# Create input data frame for mrgsim
+	  		input.doryxTAB.data <- data.frame(
+	  			ID = 1:n,	# n individuals
+	  			amt = DOSE_DORYXTAB1*1000,	# amt in microg
+	  			evid = 1,	# evid = 1; dosing event
+	  			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	  			time = 0,	# time = 0; begin dosing at time = 0
+	  			TRT = 1,	# Doryx MPC
+	  			FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
+	  			SEX = rbinom(n,size = 1,prob = 0.5),
+	  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
+	  		)
+		  }
+			if (input$DOSE1 == 3) {
+				# Specify the dosing times for the clinical scenario
+					dose.times <- c(0,24,48,72,96,120,144)
+			  # Create input data frame for mrgsim
+				  input.doryxTAB.data <- data.frame(
+				    ID = 1:n,	# n individuals
+						time = 0,
+				    amt = 200*1000,	# amt in microg
+				    evid = 1,	# evid = 1; dosing event
+				    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+				    TRT = 1,	# Doryx MPC
+				    FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
+				    SEX = rbinom(n,size = 1,prob = 0.5),
+				    FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
+				  )
+				# Multiple input.doryxMPC.data by the length of sample times
+					input.doryxTAB.data <- lapply(input.doryxTAB.data,rep.int,times = length(time.multiple))
+					input.doryxTAB.data <- as.data.frame(input.doryxTAB.data)	# Convert to a data frame
+					input.doryxTAB.data <- input.doryxTAB.data[with(input.doryxTAB.data, order(input.doryxTAB.data$ID)),]	# Sort by ID
+				# Add a time column
+					input.doryxTAB.data$time <- time.multiple
+				# For times that aren't dosing times, make evid = 0
+					input.doryxTAB.data$evid[!c(input.doryxTAB.data$time %in% dose.times)] <- 0
+				# For times that are dosing times (but aren't the first one), make them = 120 mg
+					input.doryxTAB.data$amt[input.doryxTAB.data$time > 0] <- 120*1000
+				# Return the resulting data frame
+					input.doryxTAB.data
+			}
+		# Simulate
+	  	doryxTAB.data <- mod %>% data_set(input.doryxTAB.data) %>% mrgsim(add = c(48,72,96))
+	  	doryxTAB.data <- as.data.frame(doryxTAB.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxTAB.data"
 
 	RdoryxTAB.summary <- reactive({
@@ -157,8 +157,8 @@ shinyServer(function(input,output,session) {
 		# Calculate the median and prediction intervals for calculations at each time-point
 		doryxTAB.summary <- ddply(doryxTAB.data, .(time,FED), function(doryxTAB.data) summary.function(doryxTAB.data$IPRE))
 	})	#Brackets closing "RdoryxTAB.summary"
-	
-######Simulate populations for the form status tab##########	
+
+######Simulate populations for the form status tab##########
 
 	# Simulate a population of fed/ fasted individuals administered Doryx MPC
 	#------------------------------------------------------------------------
@@ -213,7 +213,7 @@ shinyServer(function(input,output,session) {
 	  doryxMPC2.data <- mod %>% data_set(input.doryxMPC2.data) %>% mrgsim()
 	  doryxMPC2.data <- as.data.frame(doryxMPC2.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxMPC.data"
-	
+
 	RdoryxMPC2.summary <- reactive({
 	  # Read in the necessary reactive expressions
 	  doryxMPC2.data <- RdoryxMPC2.data()
@@ -221,7 +221,7 @@ shinyServer(function(input,output,session) {
 	  # Calculate the median and prediction intervals for calculations at each time-point
 	  doryxMPC2.summary <- ddply(doryxMPC2.data, .(time,FED), function(doryxMPC2.data) summary.function(doryxMPC2.data$IPRE))
 	})	#Brackets closing "RdoryxMPC.summary"
-	
+
 	# Simulate a population of fed/ fasted individuals administered Doryx Tablet
 	#---------------------------------------------------------------------------
 	RdoryxTAB2.data <- reactive({
@@ -275,7 +275,7 @@ shinyServer(function(input,output,session) {
 	  doryxTAB2.data <- mod %>% data_set(input.doryxTAB2.data) %>% mrgsim()
 	  doryxTAB2.data <- as.data.frame(doryxTAB2.data)	#Convert to a data frame so that it is more useful for me!
 	})	#Brackets closing "RdoryxTAB.data"
-	
+
 	RdoryxTAB2.summary <- reactive({
 	  # Read in the necessary reactive expressions
 	  doryxTAB2.data <- RdoryxTAB2.data()
@@ -283,8 +283,8 @@ shinyServer(function(input,output,session) {
 	  # Calculate the median and prediction intervals for calculations at each time-point
 	  doryxTAB2.summary <- ddply(doryxTAB2.data, .(time,FED), function(doryxTAB2.data) summary.function(doryxTAB2.data$IPRE))
 	})	#Brackets closing "RdoryxTAB.summary"
-	
-	
+
+
 	############
 	##_OUTPUT_##
 	############
@@ -333,13 +333,13 @@ shinyServer(function(input,output,session) {
 		}
 		doryxTAB.table
 	})	#Brackets closing "renderText"
-	
+
 	# Plot simulation results of Doryx MPC versus Doryx for Fasted
 	output$RformFasted.plot <- renderPlot({
 	  # Read in the reactive data frames for summary
 	  doryxMPC2.summary <- RdoryxMPC2.summary()
 	  doryxTAB2.summary <- RdoryxTAB2.summary()
-	  
+
 	  # Plot
 	  plotobj1 <- ggplot(doryxMPC2.summary)
 	  # MPC
@@ -355,14 +355,14 @@ shinyServer(function(input,output,session) {
 	  if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
 	  if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
 	  print(plotobj1)
-	})	#Brackets closing "renderPlot"	
-	
+	})	#Brackets closing "renderPlot"
+
 	# Plot simulation results of Doryx MPC versus Doryx for Fed
 	output$RformFed.plot <- renderPlot({
 	  # Read in the reactive data frames for summary
 	  doryxMPC2.summary <- RdoryxMPC2.summary()
 	  doryxTAB2.summary <- RdoryxTAB2.summary()
-	  
+
 	  # Plot
 	  plotobj1 <- ggplot(doryxMPC2.summary)
 	  # MPC
