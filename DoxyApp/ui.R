@@ -37,7 +37,10 @@ body <-
         fixedRow(
           column(3,
             selectInput("DOSE1","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"240 mg Doryx MPC and 200 mg Doryx Tablet" = 2,"Clinical Regimen Comparison"= 3),width = 500),
-            checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+            checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE), #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+            br(),
+            h3("RED = Fasted Status", style = "color:red"),
+            h3("BLUE = Fed Status", style = "color:blue")
           ),  #Brackets closing "column"
           column(9,
             fixedRow(
@@ -76,8 +79,11 @@ body <-
 			tabItem(tabName = "form-status",
 			        fixedRow(
 			          column(3,
-			                 selectInput("DOSE2","Formulation Comparison:",choices = list("120 mg Doryx MPC versus 100 mg Doryx Tablet" = 1,"240 mg Doryx MPC versus 200 mg Doryx Tablet" = 2,"Clinical Regimen Comparison"= 3),width = 500),
-			                 checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE) #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+                 selectInput("DOSE2","Formulation Comparison:",choices = list("120 mg Doryx MPC versus 100 mg Doryx Tablet" = 1,"240 mg Doryx MPC versus 200 mg Doryx Tablet" = 2,"Clinical Regimen Comparison"= 3),width = 500),
+                 checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE), #Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+                 br(),
+                 h3("RED = Doryx MPC", style = "color:red"),
+                 h3("BLUE = Doryx Tablet", style = "color:blue")
 			   ),  #Brackets closing "column"
 			   column(9,
 			          fixedRow(
