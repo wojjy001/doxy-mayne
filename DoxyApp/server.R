@@ -101,7 +101,8 @@ shinyServer(function(input,output,session) {
 	RdoryxTAB.data <- reactive({
   # Simulate concentration-time profiles for the population
   	# Specify dosing input
-	  if (input$DOSE1 != 3) {	  
+	  if (input$DOSE1 != 3) {
+	    dose.times <- c(0)
     	if (input$DOSE1 == 1) DOSE_DORYXTAB1 <- 100	#mg
     	if (input$DOSE1 == 2) DOSE_DORYXTAB1 <- 200	#mg
     	# Create input data frame for mrgsim
@@ -114,9 +115,14 @@ shinyServer(function(input,output,session) {
     		TRT = 2,	# Doryx TAB
     		FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
     		SEX = rbinom(n,size = 1,prob = 0.5),
-    		FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09),
-    		ii = 24	# Dosing interval
+    		FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
     		)
+    	input.doryxTAB.data <- lapply(input.doryxTAB.data,rep.int,times = length(TIME.tgrid))
+    	input.doryxTAB.data <- as.data.frame(input.doryxTAB.data)
+    	input.doryxTAB.data <- input.doryxTAB.data[with(input.doryxTAB.data, order(input.doryxTAB.data$ID)),]
+    	input.doryxTAB.data$time <- TIME.tgrid
+    	input.doryxTAB.data$evid[!c(input.doryxTAB.data$time %in% dose.times)] <- 0
+    	input.doryxTAB.data
 	  }
 	  if (input$DOSE1 == 3) {
 	    dose.times <- c(0,24,48,72,96,120,144)
@@ -160,6 +166,7 @@ shinyServer(function(input,output,session) {
 	  # Simulate concentration-time profiles for the population
 	  # Specify dosing input
 	  if (input$DOSE2 != 3) {
+	    dose.times <- c(0)
 	    if (input$DOSE2 == 1) DOSE_DORYXMPC2 <- 120	#mg
 	    if (input$DOSE2 == 2) DOSE_DORYXMPC2 <- 240	#mg
 	    # Create input data frame for mrgsim
@@ -174,6 +181,12 @@ shinyServer(function(input,output,session) {
 	      SEX = rbinom(n,size = 1,prob = 0.5),
 	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
 	    )
+	    input.doryxMPC2.data <- lapply(input.doryxMPC2.data,rep.int,times = length(TIME.tgrid))
+	    input.doryxMPC2.data <- as.data.frame(input.doryxMPC2.data)
+	    input.doryxMPC2.data <- input.doryxMPC2.data[with(input.doryxMPC2.data, order(input.doryxMPC2.data$ID)),]
+	    input.doryxMPC2.data$time <- TIME.tgrid
+	    input.doryxMPC2.data$evid[!c(input.doryxMPC2.data$time %in% dose.times)] <- 0
+	    input.doryxMPC2.data
 	  }
 	  if (input$DOSE2 == 3) {
 	    dose.times <- c(0,24,48,72,96,120,144)
@@ -214,7 +227,8 @@ shinyServer(function(input,output,session) {
 	RdoryxTAB2.data <- reactive({
 	  # Simulate concentration-time profiles for the population
 	  # Specify dosing input
-	  if (input$DOSE2 != 3) {	  
+	  if (input$DOSE2 != 3) {
+	    dose.times <- c(0)
 	    if (input$DOSE2 == 1) DOSE_DORYXTAB2 <- 100	#mg
 	    if (input$DOSE2 == 2) DOSE_DORYXTAB2 <- 200	#mg
 	    # Create input data frame for mrgsim
@@ -227,9 +241,14 @@ shinyServer(function(input,output,session) {
 	      TRT = 2,	# Doryx TAB
 	      FED = rbinom(n,size = 1,prob = 0.5), # Simulations comparing Fasted and Fed status
 	      SEX = rbinom(n,size = 1,prob = 0.5),
-	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09),
-	      ii = 24	# Dosing interval
+	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)
 	    )
+	    input.doryxTAB2.data <- lapply(input.doryxTAB2.data,rep.int,times = length(TIME.tgrid))
+	    input.doryxTAB2.data <- as.data.frame(input.doryxTAB2.data)
+	    input.doryxTAB2.data <- input.doryxTAB2.data[with(input.doryxTAB2.data, order(input.doryxTAB2.data$ID)),]
+	    input.doryxTAB2.data$time <- TIME.tgrid
+	    input.doryxTAB2.data$evid[!c(input.doryxTAB2.data$time %in% dose.times)] <- 0
+	    input.doryxTAB2.data
 	  }
 	  if (input$DOSE2 == 3) {
 	    dose.times <- c(0,24,48,72,96,120,144)
