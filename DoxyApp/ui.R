@@ -36,7 +36,7 @@ body <-
 			tabItem(tabName = "fed-status",
         fixedRow(
           column(3,
-            selectInput("DOSE1","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"240 mg Doryx MPC and 200 mg Doryx Tablet" = 2,"Clinical Regimen Comparison"= 3),width = 500),
+            selectInput("DOSE1","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3),width = 500),
             conditionalPanel(condition = "input.DOSE1 == 1",
               h4("Dose Regimen:"),
               h5("Doryx MPC: A single 120 mg dose"),
@@ -44,13 +44,13 @@ body <-
             ),  # Brackets closing "conditionalPanel"
             conditionalPanel(condition = "input.DOSE1 == 2",
               h4("Dose Regimen:"),
-              h5("Doryx MPC: A single 240 mg dose"),
-              h5("Doryx Tablet: A single 200 mg dose")
+              h5("Doryx MPC: 120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals"),
+              h5("Doryx Tablet: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals")
             ),  # Brackets closing "conditionalPanel"
             conditionalPanel(condition = "input.DOSE1 == 3",
               h4("Dose Regimen:"),
-              h5("Doryx MPC: A single 240 mg dose, followed by six 120 mg doses at 24 hour intervals"),
-              h5("Doryx Tablet: A single 200 mg dose, followed by six 100 mg doses at 24 hour intervals")
+              h5("Doryx MPC: 120 mg every 12 hours for 7 days"),
+              h5("Doryx Tablet: 100 mg every 12 hours for 7 days")
             ),  # Brackets closing "conditionalPanel"
             br(),
             checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE), # Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
