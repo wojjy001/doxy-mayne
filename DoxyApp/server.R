@@ -39,9 +39,8 @@ shinyServer(function(input,output,session) {
 		RdoryxMPC.data1 <- reactive({
 			# Simulate concentration-time profiles for the population
 			# Specify dosing input
-			  if (input$DOSE1 != 3) {	# Single dose scenarios
-		  		if (input$DOSE1 == 1) DOSE_DORYXMPC1 <- 120	#mg
-		  		if (input$DOSE1 == 2) DOSE_DORYXMPC1 <- 240	#mg
+			  if (input$DOSE1 == 1) {	# Single dose scenario
+			    DOSE_DORYXMPC1 <- 120	#mg
 		  		# Create input data frame for mrgsim
 		  		input.doryxMPC.data1 <- data.frame(
 		  			ID = 1:n,	# n individuals
@@ -55,14 +54,15 @@ shinyServer(function(input,output,session) {
 		  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
 		  		)
 			  }
-				if (input$DOSE1 == 3) {	# Multiple dose scenario
+		  
+				if (input$DOSE1 == 2) {	# Multiple dose scenario: 120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals
 					# Specify the dosing times for the clinical scenario
-						dose.times <- c(0,24,48,72,96,120,144)
+						dose.times <- c(0,12,24,48,72,96,120,144)
 				  # Create input data frame for mrgsim
 					  input.doryxMPC.data1 <- data.frame(
 					    ID = 1:n,	# n individuals
 							time = 0,	# Begin dosing at time = 0
-					    amt = 240*1000,	# amt in microg
+					    amt = 120*1000,	# amt in microg
 					    evid = 1,	# evid = 1; dosing event
 					    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
 					    TRT = 1,	# Doryx MPC
@@ -78,15 +78,41 @@ shinyServer(function(input,output,session) {
 						input.doryxMPC.data1$time <- time.multiple
 					# For times that aren't dosing times, make evid = 0
 						input.doryxMPC.data1$evid[!c(input.doryxMPC.data1$time %in% dose.times)] <- 0
-					# For times that are dosing times (but aren't the first one), make them = 120 mg
-						input.doryxMPC.data1$amt[input.doryxMPC.data1$time > 0] <- 120*1000
 					# Return the resulting data frame
 						input.doryxMPC.data1
 				}
-			# Simulate
+		  
+    		if (input$DOSE1 == 3) {	# Multiple dose scenario: 120 mg every 12 hours for 7 days
+    		  # Specify the dosing times for the clinical scenario
+    		  dose.times <- seq(from = 0,to = 156,by = 12)
+    		  # Create input data frame for mrgsim
+    		  input.doryxMPC.data1 <- data.frame(
+    		    ID = 1:n,	# n individuals
+    		    time = 0,	# Begin dosing at time = 0
+    		    amt = 120*1000,	# amt in microg
+    		    evid = 1,	# evid = 1; dosing event
+    		    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+    		    TRT = 1,	# Doryx MPC
+    		    FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
+    		    SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+    		    FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+    		  )
+    		  # Multiple input.doryxMPC.data by the length of sample times
+    		  input.doryxMPC.data1 <- lapply(input.doryxMPC.data1,rep.int,times = length(time.multiple))
+    		  input.doryxMPC.data1 <- as.data.frame(input.doryxMPC.data1)	# Convert to a data frame
+    		  input.doryxMPC.data1 <- input.doryxMPC.data1[with(input.doryxMPC.data1, order(input.doryxMPC.data1$ID)),]	# Sort by ID
+    		  # Add a time column
+    		  input.doryxMPC.data1$time <- time.multiple
+    		  # For times that aren't dosing times, make evid = 0
+    		  input.doryxMPC.data1$evid[!c(input.doryxMPC.data1$time %in% dose.times)] <- 0
+    		  # Return the resulting data frame
+    		  input.doryxMPC.data1
+    		}
+    			# Simulate
 				doryxMPC.data1 <- mod %>% data_set(input.doryxMPC.data1) %>% mrgsim(tgrid = TIME.tgrid)
 				doryxMPC.data1 <- as.data.frame(doryxMPC.data1)	#Convert to a data frame so that it is more useful for me!
-		})	#Brackets closing "RdoryxMPC.data1"
+		
+				})	#Brackets closing "RdoryxMPC.data1"
 
 	RdoryxMPC.summary1 <- reactive({
 		# Read in the necessary reactive expressions
@@ -100,9 +126,8 @@ shinyServer(function(input,output,session) {
 		RdoryxTAB.data1 <- reactive({
 	  # Simulate concentration-time profiles for the population
 	  	# Specify dosing input
-				if (input$DOSE1 != 3) {	# Single dose scenarios
-		  		if (input$DOSE1 == 1) DOSE_DORYXTAB1 <- 100	#mg
-		  		if (input$DOSE1 == 2) DOSE_DORYXTAB1 <- 200	#mg
+		  if (input$DOSE1 == 1) {	# Single dose scenario
+		  		DOSE_DORYXTAB1 <- 100	#mg
 		  		# Create input data frame for mrgsim
 			  		input.doryxTAB.data1 <- data.frame(
 			  			ID = 1:n,	# n individuals
@@ -116,14 +141,14 @@ shinyServer(function(input,output,session) {
 			  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
 			  		)
 			  }
-				if (input$DOSE1 == 3) {	# Multiple dose scenarios
+				if (input$DOSE1 == 2) {	# Multiple dose scenario: Doryx TAB: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals
 					# Specify the dosing times for the clinical scenario
-						dose.times <- c(0,24,48,72,96,120,144)
+						dose.times <- c(0,12,24,48,72,96,120,144)
 				  # Create input data frame for mrgsim
 					  input.doryxTAB.data1 <- data.frame(
 					    ID = 1:n,	# n individuals
 							time = 0,
-					    amt = 200*1000,	# amt in microg
+					    amt = 100*1000,	# amt in microg
 					    evid = 1,	# evid = 1; dosing event
 					    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
 					    TRT = 2,	# Doryx tablet
@@ -139,11 +164,35 @@ shinyServer(function(input,output,session) {
 						input.doryxTAB.data1$time <- time.multiple
 					# For times that aren't dosing times, make evid = 0
 						input.doryxTAB.data1$evid[!c(input.doryxTAB.data1$time %in% dose.times)] <- 0
-					# For times that are dosing times (but aren't the first one), make them = 120 mg
-						input.doryxTAB.data1$amt[input.doryxTAB.data1$time > 0] <- 100*1000
 					# Return the resulting data1 frame
 						input.doryxTAB.data1
 				}
+		  if (input$DOSE1 == 3) {	# Multiple dose scenario: Doryx TAB: 100 mg every 12 hours for 7 days
+		    # Specify the dosing times for the clinical scenario
+		    dose.times <- seq(from = 0,to = 156,by = 12)
+		    # Create input data frame for mrgsim
+		    input.doryxTAB.data1 <- data.frame(
+		      ID = 1:n,	# n individuals
+		      time = 0,
+		      amt = 100*1000,	# amt in microg
+		      evid = 1,	# evid = 1; dosing event
+		      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+		      TRT = 2,	# Doryx tablet
+		      FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
+		      SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+		      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+		    )
+		    # Multiple input.doryxMPC.data1 by the length of sample times
+		    input.doryxTAB.data1 <- lapply(input.doryxTAB.data1,rep.int,times = length(time.multiple))
+		    input.doryxTAB.data1 <- as.data.frame(input.doryxTAB.data1)	# Convert to a data frame
+		    input.doryxTAB.data1 <- input.doryxTAB.data1[with(input.doryxTAB.data1, order(input.doryxTAB.data1$ID)),]	# Sort by ID
+		    # Add a time column
+		    input.doryxTAB.data1$time <- time.multiple
+		    # For times that aren't dosing times, make evid = 0
+		    input.doryxTAB.data1$evid[!c(input.doryxTAB.data1$time %in% dose.times)] <- 0
+		    # Return the resulting data1 frame
+		    input.doryxTAB.data1
+		  }
 			# Simulate
 		  	doryxTAB.data1 <- mod %>% data_set(input.doryxTAB.data1) %>% mrgsim(tgrid = TIME.tgrid)
 		  	doryxTAB.data1 <- as.data.frame(doryxTAB.data1)	#Convert to a data frame so that it is more useful for me!
@@ -335,7 +384,7 @@ shinyServer(function(input,output,session) {
 		  # Read in the necessary reactive expressions
 			  doryxMPC.data1 <- RdoryxMPC.data1()
 			  summary.function <- Rsummary.function()
-			  if (input$DOSE1 != 3) {
+			  if (input$DOSE1 == 1) {
 					# Summarise at t = 96 hours for single dose scenarios
 						doryxMPC.data96 <- subset(doryxMPC.data1,time == 96)
 						# Summarise AUC
@@ -357,7 +406,7 @@ shinyServer(function(input,output,session) {
 						}
 			  }
 			  
-			  if (input$DOSE1 == 3) {
+			  if (input$DOSE1 != 1) {
 					# Summarise at t = 240 for multiple dose scenario
 				  	doryxMPC.data240 <- subset(doryxMPC.data1,time == 240)
 						# Summarise AUC
@@ -387,7 +436,7 @@ shinyServer(function(input,output,session) {
 		  # Read in the necessary reactive expressions
 		  doryxTAB.data1 <- RdoryxTAB.data1()
 		  summary.function <- Rsummary.function()
-		  if (input$DOSE1 != 3) {
+		  if (input$DOSE1 == 1) {
 		    # Summarise at t = 96 hours for single dose scenarios
 		    doryxTAB.data96 <- subset(doryxTAB.data1,time == 96)
 		    # Summarise AUC
@@ -409,7 +458,7 @@ shinyServer(function(input,output,session) {
 		    }
 		  }
 		  
-		  if (input$DOSE1 == 3) {
+		  if (input$DOSE1 != 1) {
 		    # Summarise at t = 240 for multiple dose scenario
 		    doryxTAB.data240 <- subset(doryxTAB.data1,time == 240)
 		    # Summarise AUC
