@@ -10,16 +10,17 @@
   library(plyr)  # Split and rearrange data, ddply function
   library(dplyr)  # New plyr
   library(mrgsolve) # Metrum differential equation solver for pharmacometrics
-  
+
 # Define a custom ggplot2 theme
   theme_bw2 <- theme_set(theme_bw(base_size = 12))
 
 # ------------------------------------------------------------------------------
 # Define time sequence - using mrgsolve's tgrid function
-  time.fine <- seq(from = 0,to = 8,by = 0.25)
-  time.coarse <- seq(from = 12,to = 24,by = 4)
-  TIME.tgrid <- c(time.fine,time.coarse,time.fine+24,time.coarse+24,time.fine+48,time.coarse+48,time.fine+72,time.coarse+72)
-  
+  time.fine <- tgrid(0,8,0.25) # Intense sampling early on
+  time.coarse <- tgrid(12,96,6)  # Less intense sampling later in the interval
+  # Simulate concentrations for 96 hour time-period
+    TIME.tgrid <- c(time.fine,time.coarse)
+
   # Time sequences for the multiple dosing scenario
     time.multiple.fine <- seq(from = 0,to = 8,by = 0.5)  # Intense sampling early on
     time.multiple.coarse <- seq(from = 12,to = 24,by = 6) # Less intense later in the interval
