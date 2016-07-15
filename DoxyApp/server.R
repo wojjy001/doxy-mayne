@@ -340,7 +340,7 @@ shinyServer(function(input,output,session) {
 						doryxMPC.data96 <- subset(doryxMPC.data1,time == 96)
 						# Summarise AUC
 					    AUC.table <- ddply(doryxMPC.data96, .(FED), function(doryxMPC.data96) summary.function(doryxMPC.data96$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
+					    AUC.table$Variable <- "AUC(0-96 h) (microg*h/L)"
 				    # Summarise Cmax (value will be found at time = 96)
 					    Cmax.table <- ddply(doryxMPC.data96, .(FED), function(doryxMPC.data96) summary.function(doryxMPC.data96$Cmax))
 					    Cmax.table$Variable <- "Cmax (microg/L)"
@@ -349,13 +349,20 @@ shinyServer(function(input,output,session) {
 					    Tmax.table$Variable <- "Tmax (h)"
 					# Return data frame
 						doryxMPC.table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
+						doryxMPC.table1$FED[doryxMPC.table1$FED== 0] <- "Fasted"
+						doryxMPC.table1$FED[doryxMPC.table1$FED== 1] <- "Fed"
+						if (input$PI == 1) {doryxMPC.table1 <- data.frame(Status = doryxMPC.table1$FED,Median = doryxMPC.table1$Median,Variable = doryxMPC.table1$Variable)
+						}
+						if (input$PI > 1) {doryxMPC.table1 <- data.frame(Status = doryxMPC.table1$FED,Median = doryxMPC.table1$Median,CIlo = doryxMPC.table1$CIlo,CIhi = doryxMPC.table1$CIhi,Variable = doryxMPC.table1$Variable)
+						}
 			  }
+			  
 			  if (input$DOSE1 == 3) {
-					# Summarise the last 24 hours for multiple dose scenario
+					# Summarise at t = 240 for multiple dose scenario
 				  	doryxMPC.data240 <- subset(doryxMPC.data1,time == 240)
 						# Summarise AUC
 					    AUC.table <- ddply(doryxMPC.data240, .(FED), function(doryxMPC.data240) summary.function(doryxMPC.data240$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
+					    AUC.table$Variable <- "AUC(0-240 h) (microg*h/L)"
 				    # Summarise Cmax (value will be found at time = 240)
 					    Cmax.table <- ddply(doryxMPC.data240, .(FED), function(doryxMPC.data240) summary.function(doryxMPC.data240$Cmax))
 					    Cmax.table$Variable <- "Cmax (microg/L)"
@@ -364,7 +371,14 @@ shinyServer(function(input,output,session) {
 					    Tmax.table$Variable <- "Tmax (h)"
 					# Return data frame
 				    doryxMPC.table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
-			  }
+				    #Name Fasted and Fed Values
+				    doryxMPC.table1$FED[doryxMPC.table1$FED== 0] <- "Fasted"
+				    doryxMPC.table1$FED[doryxMPC.table1$FED== 1] <- "Fed"
+				    if (input$PI == 1) {doryxMPC.table1 <- data.frame(Status = doryxMPC.table1$FED,Median = doryxMPC.table1$Median,Variable = doryxMPC.table1$Variable)
+				    } #close if
+				    if (input$PI > 1) {doryxMPC.table1 <- data.frame(Status = doryxMPC.table1$FED,Median = doryxMPC.table1$Median,CIlo = doryxMPC.table1$CIlo,CIhi = doryxMPC.table1$CIhi,Variable = doryxMPC.table1$Variable)
+				    } #close if
+			  } #close if
 			  doryxMPC.table1
 		})	#Brackets closing "renderText"
 
@@ -387,7 +401,7 @@ shinyServer(function(input,output,session) {
 					    Tmax.table$Variable <- "Tmax (h)"
 					# Return data frame
 						doryxTAB.table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
-			  }
+						}
 			  if (input$DOSE1 == 3) {
 					# Summarise the last 24 hours for multiple dose scenario
 				  	doryxTAB.data144 <- subset(doryxTAB.data1,time >= 144)
