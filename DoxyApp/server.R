@@ -39,7 +39,7 @@ shinyServer(function(input,output,session) {
 		RdoryxMPC.data1 <- reactive({
 			# Simulate concentration-time profiles for the population
 			# Specify dosing input
-			  if (input$DOSE1 == 1) {	# Single dose scenario
+			  if (input$DOSE1 == 1) {	# Single dose scenario : A single 120 mg MPC dose
 			    DOSE_DORYXMPC1 <- 120	#mg
 		  		# Create input data frame for mrgsim
 		  		input.doryxMPC.data1 <- data.frame(
@@ -126,7 +126,7 @@ shinyServer(function(input,output,session) {
 		RdoryxTAB.data1 <- reactive({
 	  # Simulate concentration-time profiles for the population
 	  	# Specify dosing input
-		  if (input$DOSE1 == 1) {	# Single dose scenario
+		  if (input$DOSE1 == 1) {	# Single dose scenario: A single 100 mg dose of Doryx Tablet
 		  		DOSE_DORYXTAB1 <- 100	#mg
 		  		# Create input data frame for mrgsim
 			  		input.doryxTAB.data1 <- data.frame(
