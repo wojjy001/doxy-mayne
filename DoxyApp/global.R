@@ -21,10 +21,8 @@
   # Simulate concentrations for 96 hour time-period
     TIME.tgrid <- c(time.fine,time.coarse)
 
-  # Time sequences for the multiple dosing scenario
-    time.multiple.fine <- seq(from = 0,to = 24,by = 0.5)  # Intense sampling
-    # Simulate multiple doses for one week (7 days)
-    time.multiple <- unique(c(time.multiple.fine,time.multiple.fine+24,time.multiple.fine+48,time.multiple.fine+72,time.multiple.fine+96,time.multiple.fine+120,time.multiple.fine+144,time.multiple.fine+168,time.multiple.fine+192,time.multiple.fine+216))
+  # Time sequences for the multiple dosing scenarios
+    time.multiple <- unique(seq(from = 0,to = 240,by = 0.5))  # Intense sampling
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
 # Set seed for reproducible numbers
