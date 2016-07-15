@@ -25,7 +25,7 @@
     time.multiple.fine <- seq(from = 0,to = 8,by = 0.5)  # Intense sampling early on
     time.multiple.coarse <- seq(from = 12,to = 24,by = 6) # Less intense later in the interval
     # Simulate multiple doses for one week (7 days)
-      time.multiple <- unique(c(time.multiple.fine,time.multiple.coarse,time.multiple.fine+24,time.multiple.coarse+24,time.multiple.fine+48,time.multiple.coarse+48,time.multiple.fine+72,time.multiple.coarse+72,time.multiple.fine+96,time.multiple.coarse+96,time.multiple.fine+120,time.multiple.coarse+120,time.multiple.fine+144,time.multiple.coarse+144,time.multiple.fine+168,time.multiple.coarse+168,time.multiple.fine+192,time.multiple.coarse+192))
+      time.multiple <- unique(c(time.multiple.fine,time.multiple.coarse,time.multiple.fine+24,time.multiple.coarse+24,time.multiple.fine+48,time.multiple.coarse+48,time.multiple.fine+72,time.multiple.coarse+72,time.multiple.fine+96,time.multiple.coarse+96,time.multiple.fine+120,time.multiple.coarse+120,time.multiple.fine+144,time.multiple.coarse+144,time.multiple.fine+168,time.multiple.coarse+168,time.multiple.fine+192,time.multiple.coarse+192,time.multiple.fine+216,time.multiple.coarse+216))
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
 # Set seed for reproducible numbers

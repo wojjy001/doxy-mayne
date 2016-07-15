@@ -352,15 +352,15 @@ shinyServer(function(input,output,session) {
 			  }
 			  if (input$DOSE1 == 3) {
 					# Summarise the last 24 hours for multiple dose scenario
-				  	doryxMPC.data144 <- subset(doryxMPC.data1,time >= 144)
+				  	doryxMPC.data240 <- subset(doryxMPC.data1,time == 240)
 						# Summarise AUC
-					    AUC.table <- ddply(doryxMPC.data144, .(FED), function(doryxMPC.data144) summary.function(doryxMPC.data144$AUC))
+					    AUC.table <- ddply(doryxMPC.data240, .(FED), function(doryxMPC.data240) summary.function(doryxMPC.data240$AUC))
 					    AUC.table$Variable <- "AUC (microg*h/L)"
-				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(doryxMPC.data144, .(FED), function(doryxMPC.data144) summary.function(doryxMPC.data144$Cmax))
+				    # Summarise Cmax (value will be found at time = 240)
+					    Cmax.table <- ddply(doryxMPC.data240, .(FED), function(doryxMPC.data240) summary.function(doryxMPC.data240$Cmax))
 					    Cmax.table$Variable <- "Cmax (microg/L)"
-				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(doryxMPC.data144, .(FED), function(doryxMPC.data144) summary.function(doryxMPC.data144$Tmax))
+				    # Summarise Tmax (value will be found at time = 240)
+					    Tmax.table <- ddply(doryxMPC.data240, .(FED), function(doryxMPC.data240) summary.function(doryxMPC.data240$Tmax))
 					    Tmax.table$Variable <- "Tmax (h)"
 					# Return data frame
 				    doryxMPC.table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
