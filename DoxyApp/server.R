@@ -385,39 +385,53 @@ shinyServer(function(input,output,session) {
 	# Summary table of fed versus fasted for Doryx TAB
 		output$RdoryxTAB.table1 <- renderTable({
 		  # Read in the necessary reactive expressions
-			  doryxTAB.data1 <- RdoryxTAB.data1()
-			  summary.function <- Rsummary.function()
-			  if (input$DOSE1 != 3) {
-					# Summarise at t = 96 hours for single dose scenarios
-						doryxTAB.data96 <- subset(doryxTAB.data1,time == 96)
-						# Summarise AUC
-					    AUC.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
-				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Cmax))
-					    Cmax.table$Variable <- "Cmax (microg/L)"
-				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Tmax))
-					    Tmax.table$Variable <- "Tmax (h)"
-					# Return data frame
-						doryxTAB.table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
-						}
-			  if (input$DOSE1 == 3) {
-					# Summarise the last 24 hours for multiple dose scenario
-				  	doryxTAB.data144 <- subset(doryxTAB.data1,time >= 144)
-						# Summarise AUC
-					    AUC.table <- ddply(doryxTAB.data144, .(FED), function(doryxTAB.data144) summary.function(doryxTAB.data144$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
-				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(doryxTAB.data144, .(FED), function(doryxTAB.data144) summary.function(doryxTAB.data144$Cmax))
-					    Cmax.table$Variable <- "Cmax (microg/L)"
-				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(doryxTAB.data144, .(FED), function(doryxTAB.data144) summary.function(doryxTAB.data144$Tmax))
-					    Tmax.table$Variable <- "Tmax (h)"
-					# Return data frame
-				    doryxTAB.table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
-			  }
-			  doryxTAB.table1
+		  doryxTAB.data1 <- RdoryxTAB.data1()
+		  summary.function <- Rsummary.function()
+		  if (input$DOSE1 != 3) {
+		    # Summarise at t = 96 hours for single dose scenarios
+		    doryxTAB.data96 <- subset(doryxTAB.data1,time == 96)
+		    # Summarise AUC
+		    AUC.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$AUC))
+		    AUC.table$Variable <- "AUC(0-96 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 96)
+		    Cmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 96)
+		    Tmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    doryxTAB.table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    doryxTAB.table1$FED[doryxTAB.table1$FED== 0] <- "Fasted"
+		    doryxTAB.table1$FED[doryxTAB.table1$FED== 1] <- "Fed"
+		    if (input$PI == 1) {doryxTAB.table1 <- data.frame(Status = doryxTAB.table1$FED,Median = doryxTAB.table1$Median,Variable = doryxTAB.table1$Variable)
+		    }
+		    if (input$PI > 1) {doryxTAB.table1 <- data.frame(Status = doryxTAB.table1$FED,Median = doryxTAB.table1$Median,CIlo = doryxTAB.table1$CIlo,CIhi = doryxTAB.table1$CIhi,Variable = doryxTAB.table1$Variable)
+		    }
+		  }
+		  
+		  if (input$DOSE1 == 3) {
+		    # Summarise at t = 240 for multiple dose scenario
+		    doryxTAB.data240 <- subset(doryxTAB.data1,time == 240)
+		    # Summarise AUC
+		    AUC.table <- ddply(doryxTAB.data240, .(FED), function(doryxTAB.data240) summary.function(doryxTAB.data240$AUC))
+		    AUC.table$Variable <- "AUC(0-240 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 240)
+		    Cmax.table <- ddply(doryxTAB.data240, .(FED), function(doryxTAB.data240) summary.function(doryxTAB.data240$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 240)
+		    Tmax.table <- ddply(doryxTAB.data240, .(FED), function(doryxTAB.data240) summary.function(doryxTAB.data240$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    doryxTAB.table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    #Name Fasted and Fed Values
+		    doryxTAB.table1$FED[doryxTAB.table1$FED== 0] <- "Fasted"
+		    doryxTAB.table1$FED[doryxTAB.table1$FED== 1] <- "Fed"
+		    if (input$PI == 1) {doryxTAB.table1 <- data.frame(Status = doryxTAB.table1$FED,Median = doryxTAB.table1$Median,Variable = doryxTAB.table1$Variable)
+		    } #close if
+		    if (input$PI > 1) {doryxTAB.table1 <- data.frame(Status = doryxTAB.table1$FED,Median = doryxTAB.table1$Median,CIlo = doryxTAB.table1$CIlo,CIhi = doryxTAB.table1$CIhi,Variable = doryxTAB.table1$Variable)
+		    } #close if
+		  } #close if
+		  doryxTAB.table1
 		})	#Brackets closing "renderText"
 
 	#################
