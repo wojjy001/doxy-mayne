@@ -274,7 +274,10 @@ shinyServer(function(input,output,session) {
 	############
 	##_OUTPUT_##
 	############
-	# Plot simulation results of fed versus fasted for Doryx MPC
+	
+######Plot populations for the fed status tab##########	
+	
+# Plot simulation results of fed versus fasted for Doryx MPC
 	output$RdoryxMPC.plot <- renderPlot({
 		# Read in the reactive data frame for summary
 		doryxMPC.summary <- RdoryxMPC.summary()
@@ -296,30 +299,88 @@ shinyServer(function(input,output,session) {
 		print(plotobj1)
 	})	#Brackets closing "renderPlot"
 
-	output$RdoryxTAB.table <- renderTable({
-		# Read in the necessary reactive expressions
-		doryxTAB.data <- RdoryxTAB.data()
-		doryxTAB.data96 <- subset(doryxTAB.data,time == 96)
-		summary.function <- Rsummary.function()
-		# Only summarise AUC, Tmax and Cmax for single dose simulations
-		# Summarise AUC at t = 96 hours
-		if (input$NUMDOSE_DORYXTAB1 == 1) {
-			AUC.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$AUC))
-			AUC.table$Variable <- "AUC (microg*h/L)"
-			# Summarise Cmax (value will be found at time = 96)
-			Cmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Cmax))
-			Cmax.table$Variable <- "Cmax (microg/L)"
-			# Summarise Tmax (value will be found at time = 96)
-			Tmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Tmax))
-			Tmax.table$Variable <- "Tmax (h)"
-			doryxTAB.table <- rbind(AUC.table,Cmax.table,Tmax.table)
-		}
-		if (input$NUMDOSE_DORYXTAB1 == 2) {
-			doryxTAB.table <- NA
-		}
-		doryxTAB.table
-	})	#Brackets closing "renderText"
+	output$RdoryxMPC.table <- renderTable({
+	  # Read in the necessary reactive expressions
+	  doryxMPC.data <- RdoryxMPC.data()
+	  doryxMPC.data96 <- subset(doryxMPC.data,time == 96)
+	  doryxMPC.data144 <- subset(doryxMPC.data,time >= 144)
+	  summary.function <- Rsummary.function()
+	  # Only summarise AUC, Tmax and Cmax for single dose simulations
+	  # Summarise AUC at t = 96 hours
+	  if (input$DOSE1 != 3) {
+	    AUC.table <- ddply(doryxMPC.data96, .(FED), function(doryxMPC.data96) summary.function(doryxMPC.data96$AUC))
+	    AUC.table$Variable <- "AUC (microg*h/L)"
+	    # Summarise Cmax (value will be found at time = 96)
+	    Cmax.table <- ddply(doryxMPC.data96, .(FED), function(doryxMPC.data96) summary.function(doryxMPC.data96$Cmax))
+	    Cmax.table$Variable <- "Cmax (microg/L)"
+	    # Summarise Tmax (value will be found at time = 96)
+	    Tmax.table <- ddply(doryxMPC.data96, .(FED), function(doryxMPC.data96) summary.function(doryxMPC.data96$Tmax))
+	    Tmax.table$Variable <- "Tmax (h)"
+	    doryxMPC.table <- rbind(AUC.table,Cmax.table,Tmax.table)
+	  }
+	  if (input$DOSE1 == 3) {
+	    AUC.table <- ddply(doryxMPC.data, .(FED), function(doryxMPC.data) summary.function(doryxMPC.data$AUC))
+	    AUC.table$Variable <- "AUC (microg*h/L)"
+	    # Summarise Cmax (value will be found at time = 96)
+	    Cmax.table <- ddply(doryxMPC.data144, .(FED), function(doryxMPC.data144) summary.function(doryxMPC.data144$Cmax))
+	    Cmax.table$Variable <- "Cmax (microg/L)"
+	    # Summarise Tmax (value will be found at time = 96)
+	    Tmax.table <- ddply(doryxMPC.data144, .(FED), function(doryxMPC.data144) summary.function(doryxMPC.data144$Tmax))
+	    Tmax.table$Variable <- "Tmax (h)"
+	    doryxMPC.table <- rbind(AUC.table,Cmax.table,Tmax.table)
+	  }
+	  doryxMPC.table
+	})	#Brackets closing "renderText"	
+	
 
+# Plot simulation results of fed versus fasted for Doryx Tablet
+	output$RdoryxTAB.plot <- renderPlot({
+	  # Read in the reactive data frame for fed.summary
+	  doryxTAB.summary <- RdoryxTAB.summary()
+	  
+	  # Plot
+	  plotobj1 <- ggplot(doryxTAB.summary)
+	  # Fasted
+	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],colour = "red")
+	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],fill = "red",alpha = 0.3)
+	  # Fed
+	  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],colour = "blue")
+	  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],fill = "blue",alpha = 0.3)
+	  # Plot horizontal line representing LLOQ
+	  plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
+	  plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
+	  # Plot on linear or log-scale depending on input
+	  if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
+	  if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
+	  print(plotobj1)
+	})	#Brackets closing "renderPlot"
+	
+	output$RdoryxTAB.table <- renderTable({
+	  # Read in the necessary reactive expressions
+	  doryxTAB.data <- RdoryxTAB.data()
+	  doryxTAB.data96 <- subset(doryxTAB.data,time == 96)
+	  summary.function <- Rsummary.function()
+	  # Only summarise AUC, Tmax and Cmax for single dose simulations
+	  # Summarise AUC at t = 96 hours
+	  if (input$DOSE1 != 3) {
+	    AUC.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$AUC))
+	    AUC.table$Variable <- "AUC (microg*h/L)"
+	    # Summarise Cmax (value will be found at time = 96)
+	    Cmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Cmax))
+	    Cmax.table$Variable <- "Cmax (microg/L)"
+	    # Summarise Tmax (value will be found at time = 96)
+	    Tmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Tmax))
+	    Tmax.table$Variable <- "Tmax (h)"
+	    doryxTAB.table <- rbind(AUC.table,Cmax.table,Tmax.table)
+	  }
+	  if (input$DOSE1 == 3) {
+	    doryxTAB.table <- NA
+	  }
+	  doryxTAB.table
+	})	#Brackets closing "renderText"	
+	
+	######Plot populations for the form status tab##########		
+	
 	# Plot simulation results of Doryx MPC versus Doryx for Fasted
 	output$RformFasted.plot <- renderPlot({
 	  # Read in the reactive data frames for summary
@@ -366,51 +427,6 @@ shinyServer(function(input,output,session) {
 	  print(plotobj1)
 	})	#Brackets closing "renderPlot
 
-	# Plot simulation results of fed versus fasted for Doryx Tablet
-	output$RdoryxTAB.plot <- renderPlot({
-			# Read in the reactive data frame for fed.summary
-			doryxTAB.summary <- RdoryxTAB.summary()
-
-			# Plot
-			plotobj1 <- ggplot(doryxTAB.summary)
-			# Fasted
-				plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],colour = "red")
-				if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],fill = "red",alpha = 0.3)
-			# Fed
-				plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],colour = "blue")
-				if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],fill = "blue",alpha = 0.3)
-			# Plot horizontal line representing LLOQ
-			plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
-			plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
-			# Plot on linear or log-scale depending on input
-			if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
-			if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
-			print(plotobj1)
-	})	#Brackets closing "renderPlot"
-
-	output$RdoryxTAB.table <- renderTable({
-		# Read in the necessary reactive expressions
-		doryxTAB.data <- RdoryxTAB.data()
-		doryxTAB.data96 <- subset(doryxTAB.data,time == 96)
-		summary.function <- Rsummary.function()
-		# Only summarise AUC, Tmax and Cmax for single dose simulations
-		# Summarise AUC at t = 96 hours
-		if (input$DOSE1 != 3) {
-			AUC.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$AUC))
-			AUC.table$Variable <- "AUC (microg*h/L)"
-			# Summarise Cmax (value will be found at time = 96)
-			Cmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Cmax))
-			Cmax.table$Variable <- "Cmax (microg/L)"
-			# Summarise Tmax (value will be found at time = 96)
-			Tmax.table <- ddply(doryxTAB.data96, .(FED), function(doryxTAB.data96) summary.function(doryxTAB.data96$Tmax))
-			Tmax.table$Variable <- "Tmax (h)"
-			doryxTAB.table <- rbind(AUC.table,Cmax.table,Tmax.table)
-		}
-		if (input$DOSE1 == 3) {
-			doryxTAB.table <- NA
-		}
-		doryxTAB.table
-	})	#Brackets closing "renderText"
 
   #############
   ##_SESSION_##
