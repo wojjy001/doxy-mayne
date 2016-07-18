@@ -92,17 +92,17 @@ body <-
         fixedRow(
           column(3,
                  selectInput("DOSE2","Dose Regimen:",choices = list("120 mg Doryx MPC versus 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3),width = 500),
-                 conditionalPanel(condition = "input.DOSE1 == 1",
+                 conditionalPanel(condition = "input.DOSE2 == 1",
                                   h4("Dose Regimen:"),
                                   h5("Doryx MPC: A single 120 mg dose"),
                                   h5("Doryx Tablet: A single 100 mg dose")
                  ),  # Brackets closing "conditionalPanel"
-                 conditionalPanel(condition = "input.DOSE1 == 2",
+                 conditionalPanel(condition = "input.DOSE2 == 2",
                                   h4("Dose Regimen:"),
                                   h5("Doryx MPC: 120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals"),
                                   h5("Doryx Tablet: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals")
                  ),  # Brackets closing "conditionalPanel"
-                 conditionalPanel(condition = "input.DOSE1 == 3",
+                 conditionalPanel(condition = "input.DOSE2 == 3",
                                   h4("Dose Regimen:"),
                                   h5("Doryx MPC: 120 mg every 12 hours for 7 days"),
                                   h5("Doryx Tablet: 100 mg every 12 hours for 7 days")
@@ -118,6 +118,9 @@ body <-
 	            column(6,
                 box(
                   plotOutput("RformFasted.plot"),
+                  conditionalPanel(condition = "input.SUMSTATS2",
+                                   tableOutput("Rformfast.table2")
+                  ), # Brackets closing "conditionalPanel"
                   title = strong("Concentration-Time Profile - Fasted"),
                   solidHeader = TRUE,
                   status = "primary",
@@ -127,6 +130,9 @@ body <-
 	            column(6,
                 box(
                   plotOutput("RformFed.plot"),
+                  conditionalPanel(condition = "input.SUMSTATS2",
+                                   tableOutput("Rformfed.table2")
+                  ), # Brackets closing "conditionalPanel"
                   title = strong("Concentration-Time Profile - Fed"),
                   solidHeader = TRUE,
                   status = "primary",

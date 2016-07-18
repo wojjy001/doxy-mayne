@@ -483,7 +483,7 @@ shinyServer(function(input,output,session) {
 		  print(plotobj2)
 		})	#Brackets closing "renderPlot"
 		
-		# Summary table of fed versus fasted for Doryx MPC
+		# Summary table of Doryx MPC versus Doryx TAB for fasted
 		output$Rformfast.table2 <- renderTable({
 		  # Read in the necessary reactive expressions
 		  doryxMPC.data2 <- RdoryxMPC.data2()
@@ -537,11 +537,65 @@ shinyServer(function(input,output,session) {
 		    } #close if
 		  } #close if
 		  formfast.table2
-		})	#Brackets closing "renderText"		
+		})	#Brackets closing "renderText"
+		
+		# Summary table of Doryx MPC versus Doryx TAB for fed
+		output$Rformfed.table2 <- renderTable({
+		  # Read in the necessary reactive expressions
+		  doryxMPC.data2 <- RdoryxMPC.data2()
+		  doryxMPCfed.data <- subset(doryxMPC.data2,FED == 1)
+		  doryxTAB.data2 <- RdoryxTAB.data2()
+		  doryxTABfed.data <- subset(doryxTAB.data2,FED == 1)
+		  fed.data <- rbind(doryxMPCfed.data,doryxTABfed.data)
+		  summary.function <- Rsummary.function()
+		  if (input$DOSE2 == 1) {
+		    # Summarise at t = 96 hours for single dose scenarios
+		    fed.data96 <- subset(fed.data,time == 96)
+		    # Summarise AUC
+		    AUC.table <- ddply(fed.data96, .(TRT), function(fed.data96) summary.function(fed.data96$AUC))
+		    AUC.table$Variable <- "AUC(0-96 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 96)
+		    Cmax.table <- ddply(fed.data96, .(TRT), function(fed.data96) summary.function(fed.data96$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 96)
+		    Tmax.table <- ddply(fed.data96, .(TRT), function(fed.data96) summary.function(fed.data96$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    formfed.table2 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    formfed.table2$TRT[formfed.table2$TRT== 1] <- "Doryx MPC"
+		    formfed.table2$TRT[formfed.table2$TRT== 2] <- "Doryx Tablet"
+		    if (input$PI == 1) {formfed.table2 <- data.frame(Formulation = formfed.table2$TRT,Median = formfed.table2$Median,Variable = formfed.table2$Variable)
+		    }
+		    if (input$PI > 1) {formfed.table2 <- data.frame(Formulation = formfed.table2$TRT,Median = formfed.table2$Median,CIlo = formfed.table2$CIlo,CIhi = formfed.table2$CIhi,Variable = formfed.table2$Variable)
+		    }
+		  }
+		  
+		  if (input$DOSE2 != 1) {
+		    # Summarise at t = 240 for multiple dose scenario
+		    fed.data240 <- subset(fed.data,time == 240)
+		    # Summarise AUC
+		    AUC.table <- ddply(fed.data240, .(TRT), function(fed.data240) summary.function(fed.data240$AUC))
+		    AUC.table$Variable <- "AUC(0-240 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 240)
+		    Cmax.table <- ddply(fed.data240, .(TRT), function(fed.data240) summary.function(fed.data240$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 240)
+		    Tmax.table <- ddply(fed.data240, .(TRT), function(fed.data240) summary.function(fed.data240$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    formfed.table2 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    #Name feded and TRT Values
+		    formfed.table2$TRT[formfed.table2$TRT== 1] <- "Doryx MPC"
+		    formfed.table2$TRT[formfed.table2$TRT== 2] <- "Doryx Tablet"
+		    if (input$PI == 1) {formfed.table2 <- data.frame(Formulation = formfed.table2$TRT,Median = formfed.table2$Median,Variable = formfed.table2$Variable)
+		    } #close if
+		    if (input$PI > 1) {formfed.table2 <- data.frame(Formulation = formfed.table2$TRT,Median = formfed.table2$Median,CIlo = formfed.table2$CIlo,CIhi = formfed.table2$CIhi,Variable = formfed.table2$Variable)
+		    } #close if
+		  } #close if
+		  formfed.table2
+		})	#Brackets closing "renderText"
 		
 		
-		
-
   #############
   ##_SESSION_##
   #############
