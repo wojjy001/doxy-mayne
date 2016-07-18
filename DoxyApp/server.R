@@ -279,6 +279,130 @@ shinyServer(function(input,output,session) {
 	  doryxTAB.summary2 <- ddply(doryxTAB.data2, .(time,FED), function(doryxTAB.data2) summary.function(doryxTAB.data2$IPRE))
 	})	#Brackets closing "RdoryxTAB.summary2"
 
+	################
+	##_SEX_STATUS_##
+	################
+	# Simulate a population of male/female individuals administered Doryx MPC (fasted)
+	RdoryxMPC.data3 <- reactive({
+	  # Simulate concentration-time profiles for the population
+	  # Specify dosing input
+	  if (input$DOSE3 == 1) {	# Single dose scenario : A single 120 mg MPC dose (fasted)
+	    DOSE_DORYXMPC3 <- 120	#mg
+	    # Create input data frame for mrgsim
+	    input.doryxMPC.data3 <- data.frame(
+	      ID = 1:n,	# n individuals
+	      amt = DOSE_DORYXMPC3*1000,	# amt in microg
+	      evid = 1,	# evid = 1; dosing event
+	      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	      time = 0,	# time = 0; begin dosing at time = 0
+	      TRT = 1,	# Doryx MPC
+	      FED = 0,	# Fasted status
+	      SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+	    )
+	  }
+	  
+	  if (input$DOSE3 != 1) {	# Multiple dose scenario 
+	    # Specify the dosing times for the clinical scenario
+	    if (input$DOSE3 == 2) dose.times <- c(0,12,24,48,72,96,120,144) #120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals (fasted)
+	    if (input$DOSE3 == 3) dose.times <- dose.times <- seq(from = 0,to = 156,by = 12) #120 mg every 12 hours for 7 days (fasted)
+	    # Create input data frame for mrgsim
+	    input.doryxMPC.data3 <- data.frame(
+	      ID = 1:n,	# n individuals
+	      time = 0,	# Begin dosing at time = 0
+	      amt = 120*1000,	# amt in microg
+	      evid = 1,	# evid = 1; dosing event
+	      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	      TRT = 1,	# Doryx MPC
+	      FED = 0,	# Randomly assign fed or fasted status
+	      SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+	    )
+	    # Multiple input.doryxMPC.data by the length of sample times
+	    input.doryxMPC.data3 <- lapply(input.doryxMPC.data3,rep.int,times = length(time.multiple))
+	    input.doryxMPC.data3 <- as.data.frame(input.doryxMPC.data3)	# Convert to a data frame
+	    input.doryxMPC.data3 <- input.doryxMPC.data3[with(input.doryxMPC.data3, order(input.doryxMPC.data3$ID)),]	# Sort by ID
+	    # Add a time column
+	    input.doryxMPC.data3$time <- time.multiple
+	    # For times that aren't dosing times, make evid = 0
+	    input.doryxMPC.data3$evid[!c(input.doryxMPC.data3$time %in% dose.times)] <- 0
+	    # Return the resulting data frame
+	    input.doryxMPC.data3
+	  }
+	  # Simulate
+	  doryxMPC.data3 <- mod %>% data_set(input.doryxMPC.data3) %>% mrgsim(tgrid = TIME.tgrid)
+	  doryxMPC.data3 <- as.data.frame(doryxMPC.data3)	#Convert to a data frame so that it is more useful for me!
+	  
+	})	#Brackets closing "RdoryxMPC.data3"
+	
+	RdoryxMPC.summary3 <- reactive({
+	  # Read in the necessary reactive expressions
+	  doryxMPC.data3 <- RdoryxMPC.data3()
+	  summary.function <- Rsummary.function()
+	  # Calculate the median and prediction intervals for calculations at each time-point
+	  doryxMPC.summary3 <- ddply(doryxMPC.data3, .(time,SEX), function(doryxMPC.data3) summary.function(doryxMPC.data3$IPRE))
+	})	# Brackets closing "RdoryxMPC.summary3"
+	
+	# Simulate a population of male/female individuals administered Doryx Tablet (fasted)
+	RdoryxTAB.data3 <- reactive({
+	  # Simulate concentration-time profiles for the population
+	  # Specify dosing input
+	  if (input$DOSE3 == 1) {	# Single dose scenario: A single 100 mg dose of Doryx Tablet
+	    DOSE_DORYXTAB3 <- 100	#mg
+	    # Create input data frame for mrgsim
+	    input.doryxTAB.data3 <- data.frame(
+	      ID = 1:n,	# n individuals
+	      amt = DOSE_DORYXTAB3*1000,	# amt in microg
+	      evid = 1,	# evid = 1; dosing event
+	      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	      time = 0,	# time = 0; begin dosing at time = 0
+	      TRT = 2,	# Doryx tablet
+	      FED = 0,	# Fasted status
+	      SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+	    )
+	  }
+	  if (input$DOSE3 != 1) {	# Multiple dose scenario
+	    # Specify the dosing times for the clinical scenario
+	    if (input$DOSE3 == 2) dose.times <- c(0,12,24,48,72,96,120,144) #Doryx TAB: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals
+	    if (input$DOSE3 == 3) dose.times <- seq(from = 0,to = 156,by = 12) #Doryx TAB: 100 mg every 12 hours for 7 days
+	    # Create input data frame for mrgsim
+	    input.doryxTAB.data3 <- data.frame(
+	      ID = 1:n,	# n individuals
+	      time = 0,
+	      amt = 100*1000,	# amt in microg
+	      evid = 1,	# evid = 1; dosing event
+	      cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+	      TRT = 2,	# Doryx tablet
+	      FED = 0,	# Fasted status
+	      SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+	      FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+	    )
+	    # Multiple input.doryxMPC.data3 by the length of sample times
+	    input.doryxTAB.data3 <- lapply(input.doryxTAB.data3,rep.int,times = length(time.multiple))
+	    input.doryxTAB.data3 <- as.data.frame(input.doryxTAB.data3)	# Convert to a data frame
+	    input.doryxTAB.data3 <- input.doryxTAB.data3[with(input.doryxTAB.data3, order(input.doryxTAB.data3$ID)),]	# Sort by ID
+	    # Add a time column
+	    input.doryxTAB.data3$time <- time.multiple
+	    # For times that aren't dosing times, make evid = 0
+	    input.doryxTAB.data3$evid[!c(input.doryxTAB.data3$time %in% dose.times)] <- 0
+	    # Return the resulting data3 frame
+	    input.doryxTAB.data3
+	  }
+	  # Simulate
+	  doryxTAB.data3 <- mod %>% data_set(input.doryxTAB.data3) %>% mrgsim(tgrid = TIME.tgrid)
+	  doryxTAB.data3 <- as.data.frame(doryxTAB.data3)	#Convert to a data frame so that it is more useful for me!
+	})	#Brackets closing "RdoryxTAB.data3"
+	
+	RdoryxTAB.summary3 <- reactive({
+	  # Read in the necessary reactive expressions
+	  doryxTAB.data3 <- RdoryxTAB.data3()
+	  summary.function <- Rsummary.function()
+	  # Calculate the median and prediction intervals for calculations at each time-point
+	  doryxTAB.summary3 <- ddply(doryxTAB.data3, .(time,SEX), function(doryxTAB.data3) summary.function(doryxTAB.data3$IPRE))
+	})	#Brackets closing "RdoryxTAB.summary3"
+	
+
 	############
 	##_OUTPUT_##
 	############
@@ -594,8 +718,161 @@ shinyServer(function(input,output,session) {
 		  } #close if
 		  formfed.table2
 		})	#Brackets closing "renderText"
+
 		
+		################
+		##_SEX_STATUS_##
+		################
+		# Plot simulation results of male versus female for Doryx MPC (fasted)
+		output$RdoryxMPCSex.plot <- renderPlot({
+		  # Read in the reactive data frame for summary
+		  doryxMPC.summary3 <- RdoryxMPC.summary3()
+		  
+		  # Plot
+		  plotobj1 <- ggplot(doryxMPC.summary3)
+		  # Fasted
+		  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary3[doryxMPC.summary3$SEX == 0,],colour = "red")
+		  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary3[doryxMPC.summary3$SEX == 0,],fill = "red",alpha = 0.3)
+		  # Fed
+		  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary3[doryxMPC.summary3$SEX == 1,],colour = "blue")
+		  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary3[doryxMPC.summary3$SEX == 1,],fill = "blue",alpha = 0.3)
+		  # Plot horizontal line representing LLOQ
+		  plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
+		  plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
+		  # Plot on linear or log-scale depending on input
+		  if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
+		  if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
+		  print(plotobj1)
+		})	#Brackets closing "renderPlot"
 		
+		# Plot simulation results of male versus female for Doryx Tablet (fasted)
+		output$RdoryxTABSex.plot <- renderPlot({
+		  # Read in the reactive data frame for fed.summary
+		  doryxTAB.summary3 <- RdoryxTAB.summary3()
+		  
+		  # Plot
+		  plotobj2 <- ggplot(doryxTAB.summary3)
+		  # Fasted
+		  plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary3[doryxTAB.summary3$SEX == 0,],colour = "red")
+		  if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary3[doryxTAB.summary3$SEX == 0,],fill = "red",alpha = 0.3)
+		  # Fed
+		  plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary3[doryxTAB.summary3$SEX == 1,],colour = "blue")
+		  if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary3[doryxTAB.summary3$SEX == 1,],fill = "blue",alpha = 0.3)
+		  # Plot horizontal line representing LLOQ
+		  plotobj2 <- plotobj2 + geom_hline(aes(yintercept = 10),linetype = "dashed")
+		  plotobj2 <- plotobj2 + scale_x_continuous("\nTime (hours)")
+		  # Plot on linear or log-scale depending on input
+		  if (input$LOGS == FALSE) plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
+		  if (input$LOGS == TRUE) plotobj2 <- plotobj2 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
+		  print(plotobj2)
+		})	#Brackets closing "renderPlot"
+		
+		# Summary table of of male versus female for Doryx Tablet (fasted)
+		output$RdoryxMPCSEX.table3 <- renderTable({
+		  # Read in the necessary reactive expressions
+		  doryxMPC.data3 <- RdoryxMPC.data3()
+		  summary.function <- Rsummary.function()
+		  if (input$DOSE3 == 1) {
+		    # Summarise at t = 96 hours for single dose scenarios
+		    doryxMPC.data96 <- subset(doryxMPC.data3,time == 96)
+		    # Summarise AUC
+		    AUC.table <- ddply(doryxMPC.data96, .(SEX), function(doryxMPC.data96) summary.function(doryxMPC.data96$AUC))
+		    AUC.table$Variable <- "AUC(0-96 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 96)
+		    Cmax.table <- ddply(doryxMPC.data96, .(SEX), function(doryxMPC.data96) summary.function(doryxMPC.data96$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 96)
+		    Tmax.table <- ddply(doryxMPC.data96, .(SEX), function(doryxMPC.data96) summary.function(doryxMPC.data96$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    doryxMPC.table3 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    doryxMPC.table3$SEX[doryxMPC.table3$SEX== 0] <- "Female"
+		    doryxMPC.table3$SEX[doryxMPC.table3$SEX== 1] <- "Male"
+		    if (input$PI == 1) {doryxMPC.table3 <- data.frame(Sex = doryxMPC.table3$SEX,Median = doryxMPC.table3$Median,Variable = doryxMPC.table3$Variable)
+		    }
+		    if (input$PI > 1) {doryxMPC.table3 <- data.frame(Sex = doryxMPC.table3$SEX,Median = doryxMPC.table3$Median,CIlo = doryxMPC.table3$CIlo,CIhi = doryxMPC.table3$CIhi,Variable = doryxMPC.table3$Variable)
+		    }
+		  }
+		  
+		  if (input$DOSE3 != 1) {
+		    # Summarise at t = 240 for multiple dose scenario
+		    doryxMPC.data240 <- subset(doryxMPC.data3,time == 240)
+		    # Summarise AUC
+		    AUC.table <- ddply(doryxMPC.data240, .(SEX), function(doryxMPC.data240) summary.function(doryxMPC.data240$AUC))
+		    AUC.table$Variable <- "AUC(0-240 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 240)
+		    Cmax.table <- ddply(doryxMPC.data240, .(SEX), function(doryxMPC.data240) summary.function(doryxMPC.data240$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 240)
+		    Tmax.table <- ddply(doryxMPC.data240, .(SEX), function(doryxMPC.data240) summary.function(doryxMPC.data240$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    doryxMPC.table3 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    #Name Fasted and Fed Values
+		    doryxMPC.table3$SEX[doryxMPC.table3$SEX== 0] <- "Female"
+		    doryxMPC.table3$SEX[doryxMPC.table3$SEX== 1] <- "Male"
+		    if (input$PI == 1) {doryxMPC.table3 <- data.frame(Sex = doryxMPC.table3$SEX,Median = doryxMPC.table3$Median,Variable = doryxMPC.table3$Variable)
+		    } #close if
+		    if (input$PI > 1) {doryxMPC.table3 <- data.frame(Sex = doryxMPC.table3$SEX,Median = doryxMPC.table3$Median,CIlo = doryxMPC.table3$CIlo,CIhi = doryxMPC.table3$CIhi,Variable = doryxMPC.table3$Variable)
+		    } #close if
+		  } #close if
+		  doryxMPC.table3
+		})	#Brackets closing "renderText"
+		
+		# Summary table of fed versus fasted for Doryx TAB
+		output$RdoryxTABSEX.table3 <- renderTable({
+		  # Read in the necessary reactive expressions
+		  doryxTAB.data3 <- RdoryxTAB.data3()
+		  summary.function <- Rsummary.function()
+		  if (input$DOSE3 == 1) {
+		    # Summarise at t = 96 hours for single dose scenarios
+		    doryxTAB.data96 <- subset(doryxTAB.data3,time == 96)
+		    # Summarise AUC
+		    AUC.table <- ddply(doryxTAB.data96, .(SEX), function(doryxTAB.data96) summary.function(doryxTAB.data96$AUC))
+		    AUC.table$Variable <- "AUC(0-96 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 96)
+		    Cmax.table <- ddply(doryxTAB.data96, .(SEX), function(doryxTAB.data96) summary.function(doryxTAB.data96$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 96)
+		    Tmax.table <- ddply(doryxTAB.data96, .(SEX), function(doryxTAB.data96) summary.function(doryxTAB.data96$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    doryxTAB.table3 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    doryxTAB.table3$SEX[doryxTAB.table3$SEX== 0] <- "Female"
+		    doryxTAB.table3$SEX[doryxTAB.table3$SEX== 1] <- "Male"
+		    if (input$PI == 1) {doryxTAB.table3 <- data.frame(Sex = doryxTAB.table3$SEX,Median = doryxTAB.table3$Median,Variable = doryxTAB.table3$Variable)
+		    }
+		    if (input$PI > 1) {doryxTAB.table3 <- data.frame(Sex = doryxTAB.table3$SEX,Median = doryxTAB.table3$Median,CIlo = doryxTAB.table3$CIlo,CIhi = doryxTAB.table3$CIhi,Variable = doryxTAB.table3$Variable)
+		    }
+		  }
+		  
+		  if (input$DOSE3 != 1) {
+		    # Summarise at t = 240 for multiple dose scenario
+		    doryxTAB.data240 <- subset(doryxTAB.data3,time == 240)
+		    # Summarise AUC
+		    AUC.table <- ddply(doryxTAB.data240, .(SEX), function(doryxTAB.data240) summary.function(doryxTAB.data240$AUC))
+		    AUC.table$Variable <- "AUC(0-240 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 240)
+		    Cmax.table <- ddply(doryxTAB.data240, .(SEX), function(doryxTAB.data240) summary.function(doryxTAB.data240$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 240)
+		    Tmax.table <- ddply(doryxTAB.data240, .(SEX), function(doryxTAB.data240) summary.function(doryxTAB.data240$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    doryxTAB.table3 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    #Name Fasted and Fed Values
+		    doryxTAB.table3$SEX[doryxTAB.table3$SEX== 0] <- "Female"
+		    doryxTAB.table3$SEX[doryxTAB.table3$SEX== 1] <- "Male"
+		    if (input$PI == 1) {doryxTAB.table3 <- data.frame(Sex = doryxTAB.table3$SEX,Median = doryxTAB.table3$Median,Variable = doryxTAB.table3$Variable)
+		    } #close if
+		    if (input$PI > 1) {doryxTAB.table3 <- data.frame(Sex = doryxTAB.table3$SEX,Median = doryxTAB.table3$Median,CIlo = doryxTAB.table3$CIlo,CIhi = doryxTAB.table3$CIhi,Variable = doryxTAB.table3$Variable)
+		    } #close if
+		  } #close if
+		  doryxTAB.table3
+		})	#Brackets closing "renderText"
+		
+
+
   #############
   ##_SESSION_##
   #############
