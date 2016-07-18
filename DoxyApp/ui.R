@@ -144,7 +144,59 @@ body <-
 	      )  # Brackets closing "fixedRow"
 			),  # Brackets closing "tabItem" for "form-status"
 			tabItem(tabName = "gender-status",
-        h4("Compare Male versus Female")
+			fixedRow(
+        column(3,
+               selectInput("DOSE3","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3),width = 500),
+               conditionalPanel(condition = "input.DOSE3 == 1",
+                                h4("Dose Regimen:"),
+                                h5("Doryx MPC: A single 120 mg dose (fasted)"),
+                                h5("Doryx Tablet: A single 100 mg dose (fasted)")
+               ),  # Brackets closing "conditionalPanel"
+               conditionalPanel(condition = "input.DOSE3 == 2",
+                                h4("Dose Regimen:"),
+                                h5("Doryx MPC: 120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals (fasted)"),
+                                h5("Doryx Tablet: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals (fasted)")
+               ),  # Brackets closing "conditionalPanel"
+               conditionalPanel(condition = "input.DOSE3 == 3",
+                                h4("Dose Regimen:"),
+                                h5("Doryx MPC: 120 mg every 12 hours for 7 days (fasted)"),
+                                h5("Doryx Tablet: 100 mg every 12 hours for 7 days (fasted)")
+               ),  # Brackets closing "conditionalPanel"
+               br(),
+               checkboxInput("SUMSTATS3","Show summary statistics",value = FALSE), # Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+               br(),
+               h3("RED = Female", style = "color:red"),
+               h3("BLUE = Male", style = "color:blue")
+	        ),  # Brackets closing "column"
+        column(9,
+               fixedRow(
+                 column(6,
+                        box(
+                          plotOutput("RdoryxMPCSex.plot"),
+                          conditionalPanel(condition = "input.SUMSTATS3",
+                                           tableOutput("RdoryxMPCSEX.table3")
+                          ), # Brackets closing "conditionalPanel"
+                          title = strong("Concentration-Time Profile - Doryx MPC - Fasted"),
+                          solidHeader = TRUE,
+                          status = "primary",
+                          width = 12
+                        ) # Brackets closing "box"
+                 ),  # Brackets closing "column"
+                 column(6,
+                        box(
+                          plotOutput("RdoryxTABSex.plot"),
+                          conditionalPanel(condition = "input.SUMSTATS3",
+                                           tableOutput("RdoryxTABSEX.table3")
+                          ), # Brackets closing "conditionalPanel"
+                          title = strong("Concentration-Time Profile - Doryx Tablet - Fasted"),
+                          solidHeader = TRUE,
+                          status = "primary",
+                          width = 12
+                        ) # Brackets closing "box"
+                 )  # Brackets closing "column"
+               ) # Brackets closing "fixedRow"
+        )  # Brackets closing "column"
+        )  # Brackets closing "fixedRow"
       ) # Brackets closing "tabItem" for "gender-status"
 		)  # Brackets closing "tabItems"
 	) # Brackets closing "dashboardBody"
