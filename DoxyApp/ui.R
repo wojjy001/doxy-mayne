@@ -117,7 +117,7 @@ body <-
 	          fixedRow(
 	            column(6,
                 box(
-                  # plotOutput("RformFasted.plot"),
+                  plotOutput("RformFasted.plot"),
                   title = strong("Concentration-Time Profile - Fasted"),
                   solidHeader = TRUE,
                   status = "primary",
@@ -126,7 +126,7 @@ body <-
 	            ),  # Brackets closing "column"
 	            column(6,
                 box(
-                  # plotOutput("RformFed.plot"),
+                  plotOutput("RformFed.plot"),
                   title = strong("Concentration-Time Profile - Fed"),
                   solidHeader = TRUE,
                   status = "primary",
