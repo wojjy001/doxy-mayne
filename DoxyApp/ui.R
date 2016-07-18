@@ -14,6 +14,7 @@ sidebar <-
 	dashboardSidebar(
 		width = 300,	#Width of sidebar the same as width of header
 		sidebarMenu(
+		  menuItem("About",tabName = "about",icon = icon("child")),
       menuItem("Compare Fed versus Fasted",tabName = "fed-status",icon = icon("child")),
       menuItem("Compare Doryx MPC versus Doryx Tablet",tabName = "form-status",icon = icon("child")),
       menuItem("Compare Male versus Female",tabName = "gender-status",icon = icon("child")),
@@ -197,7 +198,29 @@ body <-
                ) # Brackets closing "fixedRow"
         )  # Brackets closing "column"
         )  # Brackets closing "fixedRow"
-      ) # Brackets closing "tabItem" for "gender-status"
+      ), # Brackets closing "tabItem" for "gender-status"
+			tabItem(tabName = "about",
+			        br(), 
+			        p(strong("Note! This",a("Shiny",href = "http://www.rstudio.com/shiny"),"application was developed with the utilisation of the",a("mrgsolve",href = "http://mrgsolve.github.io/user_guide/"),"package.")),
+			        p("This application has five tabs. Currently the 'About' tab is open which describes the application. The 'Compare Fed versus Fasted', 'Compare Doryx MPC versus Doryx Tablet' and 'Compare Male versus Female' tabs allow users to simulate and plot doxycycline concentrations following various dosage regimens. The final population pharmacokinetic model of doxycycline was a 2-compartment model with oral absorption described by 2-transit compartments",em("(See Figure 1)."),"The pharmacokinetic model was developed using",strong("single- and multi-dose"), "pharmacokinetic data of eight Phase I clinical trials comparing the Doryx tablet, Doryx capsule or Doryx MPC formulations. The 'mrgsolve Model Code' tab outlines the mrgsolve code used to describe the developed model."),
+
+			        img(src = "FinalPKmodelDoxy.png"),
+			        p(strong("Figure 1: A schematic diagram of the final population pharmacokinetic model of doxycycline")),
+			        p("'Plotting Features' allow users to plot with confidence intervals or on a log-scale"),
+			        p(strong("Note!"),"Multi-dose data of Doryx MPC was not used to develop the model, and therefore, these types of simulations are extrapolations."),
+			        p("Simulated concentrations in this application are based on 1000 simulated subjects with the selected dosing design."),
+			        p("Doryx MPC doses above 120mg and multi-dose data of Doryx MPC were not used to develop the model, and therefore, these types of simulations are extrapolations."),
+			        p(strong("Important!"),"Click the", strong(em("Start Simulation")),  "button to update the plot every time you change the dosing regemin or the slider values."),
+			        br(),
+			        br(),
+			        p(strong("Developers:")),
+			        p("Ahmad Abuhelwa, University of South Australia"),
+			        p("Jessica Wojciechowski, University of South Australia"),
+			        p("Ashley M Hopkins, University of South Australia,", a("ashley.hopkins@mymail.unisa.edu.au", href = "mailto:ashley.hopkins@mymail.unisa.edu.au")),
+			        br(),
+			        p(strong("References:")),
+			        p("(1)", strong("Abuhelwa AY, Foster DJ, Upton RN. 2015."), "ADVAN-style analytical solutions for common pharmacokinetic models. J Pharmacol Toxicol Methods 73:42-48.")
+			) # Brackets closing "tabItem" for "about"
 		)  # Brackets closing "tabItems"
 	) # Brackets closing "dashboardBody"
 # ------------------------------------------------------------------------------
