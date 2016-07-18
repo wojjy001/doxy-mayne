@@ -438,7 +438,109 @@ shinyServer(function(input,output,session) {
 	##_FORM_STATUS_##
 	#################
 
-	# Insert output here
+		# Plot simulation results of Doryx MPC vs Doryx TAB for fasted 
+		output$RformFasted.plot <- renderPlot({
+		  # Read in the reactive data frame for summary
+		  doryxMPC.summary2 <- RdoryxMPC.summary2()
+		  doryxTAB.summary2 <- RdoryxTAB.summary2()
+		  
+		  # Plot
+		  plotobj1 <- ggplot(doryxMPC.summary2)
+		  # Fasted - MPC
+		  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary2[doryxMPC.summary2$FED == 0,],colour = "red")
+		  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary2[doryxMPC.summary2$FED == 0,],fill = "red",alpha = 0.3)
+		  # Fasted - TAB
+		  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary2[doryxTAB.summary2$FED == 0,],colour = "blue")
+		  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary2[doryxTAB.summary2$FED == 0,],fill = "blue",alpha = 0.3)
+		  # Plot horizontal line representing LLOQ
+		  plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
+		  plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
+		  # Plot on linear or log-scale depending on input
+		  if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
+		  if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
+		  print(plotobj1)
+		})	#Brackets closing "renderPlot"
+		
+		# Plot simulation results of Doryx MPC vs Doryx TAB for fed 
+		output$RformFed.plot <- renderPlot({
+		  # Read in the reactive data frame for fed.summary
+		  doryxMPC.summary2 <- RdoryxMPC.summary2()
+		  doryxTAB.summary2 <- RdoryxTAB.summary2()
+		  # Plot
+		  plotobj2 <- ggplot(doryxTAB.summary2)
+		  # Fed - MPC
+		  plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary2[doryxMPC.summary2$FED == 1,],colour = "red")
+		  if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary2[doryxMPC.summary2$FED == 1,],fill = "red",alpha = 0.3)
+		  # Fed
+		  plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary2[doryxTAB.summary2$FED == 1,],colour = "blue")
+		  if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary2[doryxTAB.summary2$FED == 1,],fill = "blue",alpha = 0.3)
+		  # Plot horizontal line representing LLOQ
+		  plotobj2 <- plotobj2 + geom_hline(aes(yintercept = 10),linetype = "dashed")
+		  plotobj2 <- plotobj2 + scale_x_continuous("\nTime (hours)")
+		  # Plot on linear or log-scale depending on input
+		  if (input$LOGS == FALSE) plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
+		  if (input$LOGS == TRUE) plotobj2 <- plotobj2 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
+		  print(plotobj2)
+		})	#Brackets closing "renderPlot"
+		
+		# Summary table of fed versus fasted for Doryx MPC
+		output$Rformfast.table2 <- renderTable({
+		  # Read in the necessary reactive expressions
+		  doryxMPC.data2 <- RdoryxMPC.data2()
+		  doryxMPCfast.data <- subset(doryxMPC.data2,FED == 0)
+		  doryxTAB.data2 <- RdoryxTAB.data2()
+		  doryxTABfast.data <- subset(doryxTAB.data2,FED == 0)
+		  fast.data <- rbind(doryxMPCfast.data,doryxTABfast.data)
+		  summary.function <- Rsummary.function()
+		  if (input$DOSE2 == 1) {
+		    # Summarise at t = 96 hours for single dose scenarios
+		    fast.data96 <- subset(fast.data,time == 96)
+		    # Summarise AUC
+		    AUC.table <- ddply(fast.data96, .(TRT), function(fast.data96) summary.function(fast.data96$AUC))
+		    AUC.table$Variable <- "AUC(0-96 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 96)
+		    Cmax.table <- ddply(fast.data96, .(TRT), function(fast.data96) summary.function(fast.data96$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 96)
+		    Tmax.table <- ddply(fast.data96, .(TRT), function(fast.data96) summary.function(fast.data96$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    formfast.table2 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    formfast.table2$TRT[formfast.table2$TRT== 1] <- "Doryx MPC"
+		    formfast.table2$TRT[formfast.table2$TRT== 2] <- "Doryx Tablet"
+		    if (input$PI == 1) {formfast.table2 <- data.frame(Formulation = formfast.table2$TRT,Median = formfast.table2$Median,Variable = formfast.table2$Variable)
+		    }
+		    if (input$PI > 1) {formfast.table2 <- data.frame(Formulation = formfast.table2$TRT,Median = formfast.table2$Median,CIlo = formfast.table2$CIlo,CIhi = formfast.table2$CIhi,Variable = formfast.table2$Variable)
+		    }
+		  }
+		  
+		  if (input$DOSE2 != 1) {
+		    # Summarise at t = 240 for multiple dose scenario
+		    fast.data240 <- subset(fast.data,time == 240)
+		    # Summarise AUC
+		    AUC.table <- ddply(fast.data240, .(TRT), function(fast.data240) summary.function(fast.data240$AUC))
+		    AUC.table$Variable <- "AUC(0-240 h) (microg*h/L)"
+		    # Summarise Cmax (value will be found at time = 240)
+		    Cmax.table <- ddply(fast.data240, .(TRT), function(fast.data240) summary.function(fast.data240$Cmax))
+		    Cmax.table$Variable <- "Cmax (microg/L)"
+		    # Summarise Tmax (value will be found at time = 240)
+		    Tmax.table <- ddply(fast.data240, .(TRT), function(fast.data240) summary.function(fast.data240$Tmax))
+		    Tmax.table$Variable <- "Tmax (h)"
+		    # Return data frame
+		    formfast.table2 <- rbind(AUC.table,Cmax.table,Tmax.table)
+		    #Name Fasted and TRT Values
+		    formfast.table2$TRT[formfast.table2$TRT== 1] <- "Doryx MPC"
+		    formfast.table2$TRT[formfast.table2$TRT== 2] <- "Doryx Tablet"
+		    if (input$PI == 1) {formfast.table2 <- data.frame(Formulation = formfast.table2$TRT,Median = formfast.table2$Median,Variable = formfast.table2$Variable)
+		    } #close if
+		    if (input$PI > 1) {formfast.table2 <- data.frame(Formulation = formfast.table2$TRT,Median = formfast.table2$Median,CIlo = formfast.table2$CIlo,CIhi = formfast.table2$CIhi,Variable = formfast.table2$Variable)
+		    } #close if
+		  } #close if
+		  formfast.table2
+		})	#Brackets closing "renderText"		
+		
+		
+		
 
   #############
   ##_SESSION_##
