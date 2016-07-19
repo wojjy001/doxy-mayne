@@ -34,53 +34,59 @@ shinyServer(function(input,output,session) {
 
 	# Simulate a population of fed/fasted individuals administered Doryx MPC
 		RdoryxMPC.data <- reactive({
-			# Simulate concentration-time profiles for the population
-			# Specify dosing input
-			  if (input$DOSE_REG == 1) {	# Single dose scenario : A single 120 mg MPC dose
-			    DOSE_DORYXMPC <- 120	# mg
-		  		# Create input data frame for mrgsim
-			  		input.doryxMPC.data <- data.frame(
-			  			ID = 1:n,	# n individuals
-			  			amt = DOSE_DORYXMPC*1000,	# amt in microg
-			  			evid = 1,	# evid = 1; dosing event
-			  			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-			  			time = 0,	# time = 0; begin dosing at time = 0
-			  			TRT = 1,	# Doryx MPC
-			  			FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
-			  			SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
-			  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
-			  		)
-			  }
-				if (input$DOSE_REG != 1) {	# Multiple dose scenario
-					# Specify the dosing times for the clinical scenario
-				  	if (input$DOSE_REG == 2) dose.times <- c(0,12,24,48,72,96,120,144) # 120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals
-				  	if (input$DOSE_REG == 3) dose.times <- seq(from = 0,to = 156,by = 12) # 120 mg every 12 hours for 7 days
-				  # Create input data frame for mrgsim
-					  input.doryxMPC.data <- data.frame(
-					    ID = 1:n,	# n individuals
-							time = 0,	# Begin dosing at time = 0
-					    amt = 120*1000,	# amt in microg
-					    evid = 1,	# evid = 1; dosing event
-					    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-					    TRT = 1,	# Doryx MPC
-							FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
-			  			SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
-			  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
-					  )
-					# Multiple input.doryxMPC.data by the length of sample times
-						input.doryxMPC.data <- lapply(input.doryxMPC.data,rep.int,times = length(time.multiple))
-						input.doryxMPC.data <- as.data.frame(input.doryxMPC.data)	# Convert to a data frame
-						input.doryxMPC.data <- input.doryxMPC.data[with(input.doryxMPC.data, order(input.doryxMPC.data$ID)),]	# Sort by ID
-					# Add a time column
-						input.doryxMPC.data$time <- time.multiple
-					# For times that aren't dosing times, make evid = 0
-						input.doryxMPC.data$evid[!c(input.doryxMPC.data$time %in% dose.times)] <- 0
-					# Return the resulting data frame
-						input.doryxMPC.data
-				}
-		  # Simulate
-				doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim(tgrid = TIME.tgrid)
-				doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
+			withProgress(
+				message = "Simulating concentrations...",
+				value = 0,
+				{
+					# Simulate concentration-time profiles for the population
+					# Specify dosing input
+					  if (input$DOSE_REG == 1) {	# Single dose scenario : A single 120 mg MPC dose
+					    DOSE_DORYXMPC <- 120	# mg
+				  		# Create input data frame for mrgsim
+					  		input.doryxMPC.data <- data.frame(
+					  			ID = 1:n,	# n individuals
+					  			amt = DOSE_DORYXMPC*1000,	# amt in microg
+					  			evid = 1,	# evid = 1; dosing event
+					  			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+					  			time = 0,	# time = 0; begin dosing at time = 0
+					  			TRT = 1,	# Doryx MPC
+					  			FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
+					  			SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+					  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+					  		)
+					  }
+						if (input$DOSE_REG != 1) {	# Multiple dose scenario
+							# Specify the dosing times for the clinical scenario
+						  	if (input$DOSE_REG == 2) dose.times <- c(0,12,24,48,72,96,120,144) # 120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals
+						  	if (input$DOSE_REG == 3) dose.times <- seq(from = 0,to = 156,by = 12) # 120 mg every 12 hours for 7 days
+						  # Create input data frame for mrgsim
+							  input.doryxMPC.data <- data.frame(
+							    ID = 1:n,	# n individuals
+									time = 0,	# Begin dosing at time = 0
+							    amt = 120*1000,	# amt in microg
+							    evid = 1,	# evid = 1; dosing event
+							    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+							    TRT = 1,	# Doryx MPC
+									FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
+					  			SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+					  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+							  )
+							# Multiple input.doryxMPC.data by the length of sample times
+								input.doryxMPC.data <- lapply(input.doryxMPC.data,rep.int,times = length(time.multiple))
+								input.doryxMPC.data <- as.data.frame(input.doryxMPC.data)	# Convert to a data frame
+								input.doryxMPC.data <- input.doryxMPC.data[with(input.doryxMPC.data, order(input.doryxMPC.data$ID)),]	# Sort by ID
+							# Add a time column
+								input.doryxMPC.data$time <- time.multiple
+							# For times that aren't dosing times, make evid = 0
+								input.doryxMPC.data$evid[!c(input.doryxMPC.data$time %in% dose.times)] <- 0
+							# Return the resulting data frame
+								input.doryxMPC.data
+						}
+				  # Simulate
+						doryxMPC.data <- mod %>% data_set(input.doryxMPC.data) %>% mrgsim(tgrid = TIME.tgrid)
+						doryxMPC.data <- as.data.frame(doryxMPC.data)	#Convert to a data frame so that it is more useful for me!
+				}	#Brackets closing expression for "withProgress"
+			)	#Brackets closing "withProgress"
 		})	# Brackets closing "RdoryxMPC.data"
 
 	RdoryxMPC.summary <- reactive({
@@ -98,53 +104,59 @@ shinyServer(function(input,output,session) {
 
 	# Simulate a population of fed/fasted individuals administered Doryx Tablet
 		RdoryxTAB.data <- reactive({
-	  # Simulate concentration-time profiles for the population
-	  	# Specify dosing input
-			  if (input$DOSE_REG == 1) {	# Single dose scenario: A single 100 mg dose of Doryx Tablet
-		  		DOSE_DORYXTAB <- 100	# mg
-		  		# Create input data frame for mrgsim
-			  		input.doryxTAB.data <- data.frame(
-			  			ID = 1:n,	# n individuals
-			  			amt = DOSE_DORYXTAB*1000,	# amt in microg
-			  			evid = 1,	# evid = 1; dosing event
-			  			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-			  			time = 0,	# time = 0; begin dosing at time = 0
-			  			TRT = 2,	# Doryx tablet
-							FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
-			  			SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
-			  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
-			  		)
-				}
-				if (input$DOSE_REG != 1) {	# Multiple dose scenario
-					# Specify the dosing times for the clinical scenario
-				  	if (input$DOSE_REG == 2) dose.times <- c(0,12,24,48,72,96,120,144) # Doryx TAB: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals
-				  	if (input$DOSE_REG == 3) dose.times <- seq(from = 0,to = 156,by = 12) # Doryx TAB: 100 mg every 12 hours for 7 days
-				  # Create input data frame for mrgsim
-					  input.doryxTAB.data <- data.frame(
-					    ID = 1:n,	# n individuals
-							time = 0,
-					    amt = 100*1000,	# amt in microg
-					    evid = 1,	# evid = 1; dosing event
-					    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
-					    TRT = 2,	# Doryx tablet
-							FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
-			  			SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
-			  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
-					  )
-					# Multiple input.doryxMPC.data by the length of sample times
-						input.doryxTAB.data <- lapply(input.doryxTAB.data,rep.int,times = length(time.multiple))
-						input.doryxTAB.data <- as.data.frame(input.doryxTAB.data)	# Convert to a data frame
-						input.doryxTAB.data <- input.doryxTAB.data[with(input.doryxTAB.data, order(input.doryxTAB.data$ID)),]	# Sort by ID
-					# Add a time column
-						input.doryxTAB.data$time <- time.multiple
-					# For times that aren't dosing times, make evid = 0
-						input.doryxTAB.data$evid[!c(input.doryxTAB.data$time %in% dose.times)] <- 0
-					# Return the resulting data frame
-						input.doryxTAB.data
-				}
-			# Simulate
-		  	doryxTAB.data <- mod %>% data_set(input.doryxTAB.data) %>% mrgsim(tgrid = TIME.tgrid)
-		  	doryxTAB.data <- as.data.frame(doryxTAB.data)	#Convert to a data frame so that it is more useful for me!
+			withProgress(
+				message = "Simulating concentrations...",
+				value = 0,
+				{
+			  # Simulate concentration-time profiles for the population
+			  	# Specify dosing input
+					  if (input$DOSE_REG == 1) {	# Single dose scenario: A single 100 mg dose of Doryx Tablet
+				  		DOSE_DORYXTAB <- 100	# mg
+				  		# Create input data frame for mrgsim
+					  		input.doryxTAB.data <- data.frame(
+					  			ID = 1:n,	# n individuals
+					  			amt = DOSE_DORYXTAB*1000,	# amt in microg
+					  			evid = 1,	# evid = 1; dosing event
+					  			cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+					  			time = 0,	# time = 0; begin dosing at time = 0
+					  			TRT = 2,	# Doryx tablet
+									FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
+					  			SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+					  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+					  		)
+						}
+						if (input$DOSE_REG != 1) {	# Multiple dose scenario
+							# Specify the dosing times for the clinical scenario
+						  	if (input$DOSE_REG == 2) dose.times <- c(0,12,24,48,72,96,120,144) # Doryx TAB: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals
+						  	if (input$DOSE_REG == 3) dose.times <- seq(from = 0,to = 156,by = 12) # Doryx TAB: 100 mg every 12 hours for 7 days
+						  # Create input data frame for mrgsim
+							  input.doryxTAB.data <- data.frame(
+							    ID = 1:n,	# n individuals
+									time = 0,
+							    amt = 100*1000,	# amt in microg
+							    evid = 1,	# evid = 1; dosing event
+							    cmt = 1,	# cmt = 1; dose goes into compartment 1 = depot
+							    TRT = 2,	# Doryx tablet
+									FED = rbinom(n,size = 1,prob = 0.5),	# Randomly assign fed or fasted status
+					  			SEX = rbinom(n,size = 1,prob = 0.5),	# Randomly assign male or female status
+					  			FFM = rlnorm(n,meanlog = log(55.49),sd = 0.09)	# Randomly generate value for fat free mass (kg)
+							  )
+							# Multiple input.doryxMPC.data by the length of sample times
+								input.doryxTAB.data <- lapply(input.doryxTAB.data,rep.int,times = length(time.multiple))
+								input.doryxTAB.data <- as.data.frame(input.doryxTAB.data)	# Convert to a data frame
+								input.doryxTAB.data <- input.doryxTAB.data[with(input.doryxTAB.data, order(input.doryxTAB.data$ID)),]	# Sort by ID
+							# Add a time column
+								input.doryxTAB.data$time <- time.multiple
+							# For times that aren't dosing times, make evid = 0
+								input.doryxTAB.data$evid[!c(input.doryxTAB.data$time %in% dose.times)] <- 0
+							# Return the resulting data frame
+								input.doryxTAB.data
+						}
+					# Simulate
+				  	doryxTAB.data <- mod %>% data_set(input.doryxTAB.data) %>% mrgsim(tgrid = TIME.tgrid)
+				  	doryxTAB.data <- as.data.frame(doryxTAB.data)	#Convert to a data frame so that it is more useful for me!
+				}	#Brackets closing expression for "withProgress"
+			)	#Brackets closing "withProgress"
 		})	#Brackets closing "RdoryxTAB.data"
 
 	RdoryxTAB.summary <- reactive({
@@ -193,18 +205,19 @@ shinyServer(function(input,output,session) {
 			# Plot the results of male/female - i.e,. plot doryxMPC.data
 				if (input$SIM_STUDY == 3) {
 					# Female = RED
-						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$SEX == 1,],colour = "red")
+						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$SEX == 0,],colour = "red")
 						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$SEX == 0,],fill = "red",alpha = 0.3)
 					# Male = BLUE
-						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$SEX == 0,],colour = "blue")
+						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$SEX == 1,],colour = "blue")
 						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$SEX == 1,],fill = "blue",alpha = 0.3)
 				}
 			# Plot horizontal line representing LLOQ
 				plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
+				if (input$DOSE_REG == 1) plotobj1 <- plotobj1 + annotate("text",x = 25,y = 50,label = "Lower Limit of Quantification",colour = "black",size = 4)
+				if (input$DOSE_REG != 1) plotobj1 <- plotobj1 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
 				plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
 			# Plot on linear or log-scale depending on input
-				if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
-				if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
+				plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n",breaks = plot.breaks,labels = plot.breaks)
 				print(plotobj1)
 		})	#Brackets closing "renderPlot"
 
@@ -237,18 +250,19 @@ shinyServer(function(input,output,session) {
 			# Plot the results of male/female - i.e,. plot doryxTAB.data
 				if (input$SIM_STUDY == 3) {
 					# Female = RED
-						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$SEX == 1,],colour = "red")
+						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$SEX == 0,],colour = "red")
 						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$SEX == 0,],fill = "red",alpha = 0.3)
 					# Male = BLUE
-						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$SEX == 0,],colour = "blue")
+						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$SEX == 1,],colour = "blue")
 						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$SEX == 1,],fill = "blue",alpha = 0.3)
 				}
 			# Plot horizontal line representing LLOQ
 				plotobj2 <- plotobj2 + geom_hline(aes(yintercept = 10),linetype = "dashed")
+				if (input$DOSE_REG == 1) plotobj2 <- plotobj2 + annotate("text",x = 25,y = 50,label = "Lower Limit of Quantification",colour = "black",size = 4)
+				if (input$DOSE_REG != 1) plotobj2 <- plotobj2 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
 				plotobj2 <- plotobj2 + scale_x_continuous("\nTime (hours)")
 			# Plot on linear or log-scale depending on input
-				if (input$LOGS == FALSE) plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (microg/L)\n")
-				if (input$LOGS == TRUE) plotobj2 <- plotobj2 + scale_y_log10("Doxycycline Concentration (microg/L)\n",breaks = c(10,100,1000),lim = c(1,NA))
+				plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (microg/L)\n",breaks = plot.breaks,labels = plot.breaks)
 				print(plotobj2)
 		})	#Brackets closing "renderPlot"
 

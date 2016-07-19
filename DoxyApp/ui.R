@@ -24,7 +24,6 @@ sidebar <-
         h4(strong("Plotting Features")),  # Allow the user to control plot appearances from the sidebar
         align = "center"
       ),  # Brackets closing "fixedRow"
-      checkboxInput("LOGS","Plot on a log-scale",value = FALSE),  # Application initiation will plot concentrations on a linear scale
       selectInput("PI","Prediction intervals:",choices = list("No Prediction Intervals" = 1,"90% Prediction Intervals" = 2,"95% Prediction Intervals" = 3)),
       checkboxInput("SUMSTATS","Show summary statistics",value = FALSE) # Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
 		)	# Brackets closing "sidebarMenu"
@@ -43,14 +42,22 @@ body <-
         pre(includeText("model.R"))
       ),  # Brackets closing "tabItem" for "model"
       tabItem(tabName = "sim",
-        fixedRow(
-          column(6,
-            selectInput("SIM_STUDY","Simulation Study:",choices = list("Fed versus Fasted" = 1,"Doryx MPC versus Doryx Tablet" = 2,"Male versus Female" = 3))
-          ),  # Brackets closing "column"
-          column(6,
-            selectInput("DOSE_REG","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3))
-          )  # Brackets closing "column"
-        ),  # Brackets closing "fixedRow"
+        box(
+          fixedRow(
+            column(6,
+              selectInput("SIM_STUDY","Simulation Study:",choices = list("Fed versus Fasted" = 1,"Doryx MPC versus Doryx Tablet" = 2,"Male versus Female" = 3)),
+              p("")
+            ),  # Brackets closing "column"
+            column(6,
+              selectInput("DOSE_REG","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3)),
+              p("Enter description of dosing regimen")
+            )  # Brackets closing "column"
+          ),  # Brackets closing "fixedRow"
+          title = strong("Simulation Options"),
+          solidHeader = TRUE,
+          status = "primary",
+          width = 12
+        ),  # Brackets closing "box"
         box(
           fixedRow(
             column(6,
