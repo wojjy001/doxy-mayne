@@ -12,7 +12,7 @@
   library(mrgsolve) # Metrum differential equation solver for pharmacometrics
 
 # Define a custom ggplot2 theme
-  theme_bw2 <- theme_set(theme_bw(base_size = 12))
+  theme_bw2 <- theme_set(theme_bw(base_size = 14))
 
 # Source model code
   source("model.R")
@@ -23,12 +23,12 @@
   time.coarse <- tgrid(12,96,6)  # Less intense sampling later in the interval
   # Simulate concentrations for 96 hour time-period
     TIME.tgrid <- c(time.fine,time.coarse)
+# Time sequences for the multiple dosing scenarios
+  time.multiple <- unique(seq(from = 0,to = 240,by = 0.5))  # Intense sampling
 
-  # Time sequences for the multiple dosing scenarios
-    time.multiple <- unique(seq(from = 0,to = 240,by = 0.5))  # Intense sampling
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000
 # Set seed for reproducible numbers
 	set.seed(123456)
 # One per ID function
-  oneperID <- function(x) head(x,1)
+  oneperID <- function(x) tail(x,1)

@@ -7,27 +7,26 @@
 header <-
   dashboardHeader(
 		title = "Doxycycline",
-		titleWidth = 300
+		titleWidth = 250
 	)	# Brackets closing "dashboardHeader"
 # Application's sidebar
 sidebar <-
 	dashboardSidebar(
-		width = 300,	#Width of sidebar the same as width of header
+		width = 250,	# Width of sidebar the same as width of header
 		sidebarMenu(
 		  menuItem("About the Application",tabName = "about",icon = icon("child"),
         menuSubItem("Objective",tabName = "objective",icon = icon("child")),
         menuSubItem("Model (mrgsolve code)",tabName = "model",icon = icon("child"))
       ),  # Brackets closing "menuItem"
-      menuItem("Compare Fed versus Fasted",tabName = "fed-status",icon = icon("child")),
-      menuItem("Compare Doryx MPC versus Doryx Tablet",tabName = "form-status",icon = icon("child")),
-      menuItem("Compare Male versus Female",tabName = "gender-status",icon = icon("child")),
+      menuItem("Simulation Studies",tabName = "sim",icon = icon("child")),
       hr(),
       fixedRow(
         h4(strong("Plotting Features")),  # Allow the user to control plot appearances from the sidebar
         align = "center"
       ),  # Brackets closing "fixedRow"
       checkboxInput("LOGS","Plot on a log-scale",value = FALSE),  # Application initiation will plot concentrations on a linear scale
-      selectInput("PI","Prediction intervals:",choices = list("No Prediction Intervals" = 1,"90% Prediction Intervals" = 2,"95% Prediction Intervals" = 3))
+      selectInput("PI","Prediction intervals:",choices = list("No Prediction Intervals" = 1,"90% Prediction Intervals" = 2,"95% Prediction Intervals" = 3)),
+      checkboxInput("SUMSTATS","Show summary statistics",value = FALSE) # Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
 		)	# Brackets closing "sidebarMenu"
 	) # Brackets closing "dashboardSidebar"
 # Application's body
@@ -43,171 +42,54 @@ body <-
       tabItem(tabName = "model",
         pre(includeText("model.R"))
       ),  # Brackets closing "tabItem" for "model"
-			tabItem(tabName = "fed-status",
+      tabItem(tabName = "sim",
         fixedRow(
-          column(3,
-            selectInput("DOSE1","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3),width = 500),
-            conditionalPanel(condition = "input.DOSE1 == 1",
-              h4("Dose Regimen:"),
-              h5("Doryx MPC: A single 120 mg dose"),
-              h5("Doryx Tablet: A single 100 mg dose")
-            ),  # Brackets closing "conditionalPanel"
-            conditionalPanel(condition = "input.DOSE1 == 2",
-              h4("Dose Regimen:"),
-              h5("Doryx MPC: 120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals"),
-              h5("Doryx Tablet: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals")
-            ),  # Brackets closing "conditionalPanel"
-            conditionalPanel(condition = "input.DOSE1 == 3",
-              h4("Dose Regimen:"),
-              h5("Doryx MPC: 120 mg every 12 hours for 7 days"),
-              h5("Doryx Tablet: 100 mg every 12 hours for 7 days")
-            ),  # Brackets closing "conditionalPanel"
-            br(),
-            checkboxInput("SUMSTATS1","Show summary statistics",value = FALSE), # Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
-            br(),
-            h3("RED = Fasted Status",style = "color:red"),
-            h3("BLUE = Fed Status",style = "color:blue")
+          column(6,
+            selectInput("SIM_STUDY","Simulation Study:",choices = list("Fed versus Fasted" = 1,"Doryx MPC versus Doryx Tablet" = 2,"Male versus Female" = 3))
           ),  # Brackets closing "column"
-          column(9,
-            fixedRow(
-              column(6,
-                box(
-                  plotOutput("RdoryxMPC.plot1"),
-                  conditionalPanel(condition = "input.SUMSTATS1",
-                    tableOutput("RdoryxMPC.table1")
-                  ), # Brackets closing "conditionalPanel"
-                  title = strong("Concentration-Time Profile - Doryx MPC"),
-                  solidHeader = TRUE,
-                  status = "primary",
-                  width = 12
-                ) # Brackets closing "box"
-              ),  # Brackets closing "column"
-              column(6,
-                box(
-                  plotOutput("RdoryxTAB.plot1"),
-                  conditionalPanel(condition = "input.SUMSTATS1",
-                    tableOutput("RdoryxTAB.table1")
-                  ), # Brackets closing "conditionalPanel"
-                  title = strong("Concentration-Time Profile - Doryx Tablet"),
-                  solidHeader = TRUE,
-                  status = "primary",
-                  width = 12
-                ) # Brackets closing "box"
-              )  # Brackets closing "column"
-            ) # Brackets closing "fixedRow"
+          column(6,
+            selectInput("DOSE_REG","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3))
           )  # Brackets closing "column"
-        ) # Brackets closing "fixedRow"
-			),	# Brackets closing "tabItem" for "fed-status"
-			tabItem(tabName = "form-status",
-        fixedRow(
-          column(3,
-            selectInput("DOSE2","Dose Regimen:",choices = list("120 mg Doryx MPC versus 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3),width = 500),
-            conditionalPanel(condition = "input.DOSE2 == 1",
-              h4("Dose Regimen:"),
-              h5("Doryx MPC: A single 120 mg dose"),
-              h5("Doryx Tablet: A single 100 mg dose")
-            ),  # Brackets closing "conditionalPanel"
-            conditionalPanel(condition = "input.DOSE2 == 2",
-              h4("Dose Regimen:"),
-              h5("Doryx MPC: 120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals"),
-              h5("Doryx Tablet: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals")
-            ),  # Brackets closing "conditionalPanel"
-            conditionalPanel(condition = "input.DOSE2 == 3",
-              h4("Dose Regimen:"),
-              h5("Doryx MPC: 120 mg every 12 hours for 7 days"),
-              h5("Doryx Tablet: 100 mg every 12 hours for 7 days")
-            ),  # Brackets closing "conditionalPanel"
-            br(),
-            checkboxInput("SUMSTATS2","Show summary statistics",value = FALSE), # Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
-            br(),
-            h3("RED = Doryx MPC", style = "color:red"),
-            h3("BLUE = Doryx Tablet", style = "color:blue")
-			    ),  # Brackets closing "column"
-			    column(9,
-	          fixedRow(
-	            column(6,
-                box(
-                  plotOutput("RformFasted.plot"),
-                  conditionalPanel(condition = "input.SUMSTATS2",
-                    tableOutput("Rformfast.table2")
-                  ), # Brackets closing "conditionalPanel"
-                  title = strong("Concentration-Time Profile - Fasted"),
-                  solidHeader = TRUE,
-                  status = "primary",
-                  width = 12
-                ) # Brackets closing "box"
-	            ),  # Brackets closing "column"
-	            column(6,
-                box(
-                  plotOutput("RformFed.plot"),
-                  conditionalPanel(condition = "input.SUMSTATS2",
-                    tableOutput("Rformfed.table2")
-                  ), # Brackets closing "conditionalPanel"
-                  title = strong("Concentration-Time Profile - Fed"),
-                  solidHeader = TRUE,
-                  status = "primary",
-                  width = 12
-                ) # Brackets closing "box"
-              )  # Brackets closing "column"
-            ) # Brackets closing "fixedRow"
-	        )  # Brackets closing "column"
-	      )  # Brackets closing "fixedRow"
-			),  # Brackets closing "tabItem" for "form-status"
-			tabItem(tabName = "gender-status",
-  			fixedRow(
-          column(3,
-            selectInput("DOSE3","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3),width = 500),
-            conditionalPanel(condition = "input.DOSE3 == 1",
-              h4("Dose Regimen:"),
-              h5("Doryx MPC: A single 120 mg dose (fasted)"),
-              h5("Doryx Tablet: A single 100 mg dose (fasted)")
-            ),  # Brackets closing "conditionalPanel"
-            conditionalPanel(condition = "input.DOSE3 == 2",
-              h4("Dose Regimen:"),
-              h5("Doryx MPC: 120 mg every 12 hours on the first day, followed by six 120 mg doses at 24 hour intervals (fasted)"),
-              h5("Doryx Tablet: 100 mg every 12 hours on the first day, followed by six 100 mg doses at 24 hour intervals (fasted)")
-            ),  # Brackets closing "conditionalPanel"
-            conditionalPanel(condition = "input.DOSE3 == 3",
-              h4("Dose Regimen:"),
-              h5("Doryx MPC: 120 mg every 12 hours for 7 days (fasted)"),
-              h5("Doryx Tablet: 100 mg every 12 hours for 7 days (fasted)")
-            ),  # Brackets closing "conditionalPanel"
-            br(),
-            checkboxInput("SUMSTATS3","Show summary statistics",value = FALSE), # Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
-            br(),
-            h3("RED = Female", style = "color:red"),
-            h3("BLUE = Male", style = "color:blue")
-  	      ),  # Brackets closing "column"
-          column(9,
-            fixedRow(
-              column(6,
-                box(
-                  plotOutput("RdoryxMPCSex.plot"),
-                  conditionalPanel(condition = "input.SUMSTATS3",
-                                   tableOutput("RdoryxMPCSEX.table3")
-                  ), # Brackets closing "conditionalPanel"
-                  title = strong("Concentration-Time Profile - Doryx MPC - Fasted"),
-                  solidHeader = TRUE,
-                  status = "primary",
-                  width = 12
-                ) # Brackets closing "box"
-               ),  # Brackets closing "column"
-              column(6,
-                box(
-                  plotOutput("RdoryxTABSex.plot"),
-                  conditionalPanel(condition = "input.SUMSTATS3",
-                                   tableOutput("RdoryxTABSEX.table3")
-                  ), # Brackets closing "conditionalPanel"
-                  title = strong("Concentration-Time Profile - Doryx Tablet - Fasted"),
-                  solidHeader = TRUE,
-                  status = "primary",
-                  width = 12
-                ) # Brackets closing "box"
-              )  # Brackets closing "column"
-            ) # Brackets closing "fixedRow"
-          )  # Brackets closing "column"
-        )  # Brackets closing "fixedRow"
-      ) # Brackets closing "tabItem" for "gender-status"
+        ),  # Brackets closing "fixedRow"
+        box(
+          fixedRow(
+            column(6,
+              conditionalPanel(condition = "input.SIM_STUDY == 1",
+                h4(strong("Doryx MPC"))
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 2",
+                h4(strong("Fasted"))
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 3",
+                h4(strong("Doryx MPC"))
+              ),  # Brackets closing "conditionalPanel"
+              plotOutput("Rplot1"),
+              conditionalPanel(condition = "input.SUMSTATS",
+                tableOutput("Rtable1")
+              ) # Brackets closing "conditionalPanel"
+            ),  # Brackets closing "column"
+            column(6,
+              conditionalPanel(condition = "input.SIM_STUDY == 1",
+                h4(strong("Doryx Tablet"))
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 2",
+                h4(strong("Fed"))
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 3",
+                h4(strong("Doryx Tablet"))
+              ),  # Brackets closing "conditionalPanel"
+              plotOutput("Rplot2"),
+              conditionalPanel(condition = "input.SUMSTATS",
+                tableOutput("Rtable2")
+              ) # Brackets closing "conditionalPanel"
+            )  # Brackets closing "column"
+          ), # Brackets closing "fixedRow"
+          title = strong("Simulated Concentration-Time Profiles"),
+          solidHeader = TRUE,
+          status = "primary",
+          width = 12
+        ) # Brackets closing "box"
+      )  # Brackets closing "tabItem" for "sim"
 		)  # Brackets closing "tabItems"
 	) # Brackets closing "dashboardBody"
 # ------------------------------------------------------------------------------
