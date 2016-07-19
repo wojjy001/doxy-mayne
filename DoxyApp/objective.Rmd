@@ -1,5 +1,5 @@
 ---
-title: "Read Me: Doxycycline Simulation Application"
+title: "Objective"
 output: html_document
 ---
 
@@ -21,7 +21,7 @@ Covariate effects include:
 * Effect of formulation type, i.e., Doryx Tablet versus Doryx Capsule versus Doryx MPC on bioavailability 
 * Male versus female gender on clearance
 
-The full model's equations are described in the "Model" tab (mrgsolve code).
+The full model's equations are described in the "Model" tab (written as mrgsolve code).
 
 # Simulation Study Designs
 

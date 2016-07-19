@@ -14,19 +14,22 @@ sidebar <-
 	dashboardSidebar(
 		width = 300,	#Width of sidebar the same as width of header
 		sidebarMenu(
-		  menuItem("Read Me",tabName = "readme",icon = icon("child")),
+		  menuItem("About the Application",tabName = "about",icon = icon("child"),
+        menuSubItem("Objective",tabName = "objective",icon = icon("child")),
+        menuSubItem("Model (mrgsolve code)",tabName = "model",icon = icon("child"))
+      ),  # Brackets closing "menuItem"
       menuItem("Compare Fed versus Fasted",tabName = "fed-status",icon = icon("child")),
       menuItem("Compare Doryx MPC versus Doryx Tablet",tabName = "form-status",icon = icon("child")),
       menuItem("Compare Male versus Female",tabName = "gender-status",icon = icon("child")),
       hr(),
       fixedRow(
-        h4(strong("Plotting Features")),  #Allow the user to control plot appearances from the sidebar
+        h4(strong("Plotting Features")),  # Allow the user to control plot appearances from the sidebar
         align = "center"
-      ),  #Brackets closing "fixedRow"
-      checkboxInput("LOGS","Plot on a log-scale",value = FALSE),  #Application initiation will plot concentrations on a linear scale
+      ),  # Brackets closing "fixedRow"
+      checkboxInput("LOGS","Plot on a log-scale",value = FALSE),  # Application initiation will plot concentrations on a linear scale
       selectInput("PI","Prediction intervals:",choices = list("No Prediction Intervals" = 1,"90% Prediction Intervals" = 2,"95% Prediction Intervals" = 3))
-		)	#Brackets closing "sidebarMenu"
-	) #Brackets closing "dashboardSidebar"
+		)	# Brackets closing "sidebarMenu"
+	) # Brackets closing "dashboardSidebar"
 # Application's body
 body <-
 	dashboardBody(
@@ -34,6 +37,12 @@ body <-
 			tags$link(rel = "stylesheet",type = "text/css",href = "custom.css")
 		),
 		tabItems(
+      tabItem(tabName = "objective",
+        includeMarkdown("objective.Rmd")
+			), # Brackets closing "tabItem" for "readme"
+      tabItem(tabName = "model",
+        pre(includeText("model.R"))
+      ),  # Brackets closing "tabItem" for "model"
 			tabItem(tabName = "fed-status",
         fixedRow(
           column(3,
@@ -198,10 +207,7 @@ body <-
             ) # Brackets closing "fixedRow"
           )  # Brackets closing "column"
         )  # Brackets closing "fixedRow"
-      ), # Brackets closing "tabItem" for "gender-status"
-			tabItem(tabName = "readme",
-        includeMarkdown("readme.Rmd")
-			) # Brackets closing "tabItem" for "readme"
+      ) # Brackets closing "tabItem" for "gender-status"
 		)  # Brackets closing "tabItems"
 	) # Brackets closing "dashboardBody"
 # ------------------------------------------------------------------------------
