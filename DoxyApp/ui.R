@@ -199,27 +199,26 @@ body <-
         )  # Brackets closing "column"
         )  # Brackets closing "fixedRow"
       ), # Brackets closing "tabItem" for "gender-status"
-			tabItem(tabName = "about",
-			        br(), 
+			tabItem(tabName = "about", 
 			        p(strong("Note! This",a("Shiny",href = "http://www.rstudio.com/shiny"),"application was developed with the utilisation of the",a("mrgsolve",href = "http://mrgsolve.github.io/user_guide/"),"package.")),
 			        p("This application has five tabs. Currently the 'About' tab is open which describes the application. The 'Compare Fed versus Fasted', 'Compare Doryx MPC versus Doryx Tablet' and 'Compare Male versus Female' tabs allow users to simulate and plot doxycycline concentrations following various dosage regimens. The final population pharmacokinetic model of doxycycline was a 2-compartment model with oral absorption described by 2-transit compartments",em("(See Figure 1)."),"The pharmacokinetic model was developed using",strong("single- and multi-dose"), "pharmacokinetic data of eight Phase I clinical trials comparing the Doryx tablet, Doryx capsule or Doryx MPC formulations. The 'mrgsolve Model Code' tab outlines the mrgsolve code used to describe the developed model."),
-
 			        img(src = "FinalPKmodelDoxy.png"),
 			        p(strong("Figure 1: A schematic diagram of the final population pharmacokinetic model of doxycycline")),
-			        p("'Plotting Features' allow users to plot with confidence intervals or on a log-scale"),
-			        p(strong("Note!"),"Multi-dose data of Doryx MPC was not used to develop the model, and therefore, these types of simulations are extrapolations."),
-			        p("Simulated concentrations in this application are based on 1000 simulated subjects with the selected dosing design."),
-			        p("Doryx MPC doses above 120mg and multi-dose data of Doryx MPC were not used to develop the model, and therefore, these types of simulations are extrapolations."),
-			        p(strong("Important!"),"Click the", strong(em("Start Simulation")),  "button to update the plot every time you change the dosing regemin or the slider values."),
+			        br(),
+			        p("'Plotting Features' allow users to plot with confidence intervals or on a log-scale. Within each tab users have the option to display summary statisitcs of doxycyline exposure (AUC, Cmax and Tmax) for each dosing scenario."),
+			        p(strong("Note!"),"Multi-dose data of Doryx MPC was not used to develop the model, and therefore, these types of simulations are extrapolations. Simulated median concentrations and confidence intervals in this application are based on 500 simulated subjects with the selected dosing design. Within each tab, three dosage regimens can be simulated including:"),
+			        p(strong("A)"),"120 mg Doryx MPC and 100 mg Doryx tablet: Subjects recieve either a single 120 mg dose of Doryx MPC or a single 100 mg Doryx Tablet."),
+			        p(strong("B)"),"Clinical Regimen 1 (Standard): Subject recieve either 120 mg of Doryx MPC every 12 hours on the first day, followed by six 120 mg doses at 24 hours intervals; or a 100 mg Doryx Tablet every 12 hours on the first day, followed by six 100 mg Doryx Tablets at 24 hours intervals."),
+			        p(strong("C)"),"Clinical Regimen 2 (Severe Infection): Subject recieve either 120 mg of Doryx MPC every 12 hours for seven days; or a 100 mg Doryx Tablet every 12 hours for seven days."),
+			        p(strong("Note!"),"Doxycyline concentrations were simulated to a length of seven days given the apparent reaching of steady state. Thus limited information that can be aquired through a longer simulaiton, although it may be used in the clinic. The population pharmacokinetic model of doxycycline was develoepd from doxycycline concentrations following the oral administration of doxycycline in healthy individuals. Thus the effect of disease status or sickness on doxycycline pharmacokinetics was not investigated here."),
+			        p("The 'Compare Fed versus Fasted' tab allows users to plot doxycyline concentrations following Doryx MPC administration under fasted (red) and fed (blue) conditions. A second plot displays doxycyline concentrations following Doryx Tablet administration under fasted (red) and fed (blue) conditions. The 'Compare Doryx MPC versus Doryx Tablet' tab allows users to display doxycyline concentrations following Doryx MPC (red) and Doryx Tablet (blue) administration under fasted conditions. A second plot displays doxycyline concentrations following Doryx MPC (red) and Doryx Tablet (blue) administration under fed conditions. The 'Compare Male versus Female' tab allows users to display doxycyline concentrations following Doryx MPC adminstration to a female (red) and a male (blue) population under fasted conditions. A second plot displays doxycyline concentrations following Doryx Tablet administration to a female (red) and a male (blue) population under fasted conditions."),
+			        p("Each plot has a dashed line at 10 microg/L as an indicator of the lowest LLOQ from the eight phase 1 clinical trials from which the model was developed."),
 			        br(),
 			        br(),
 			        p(strong("Developers:")),
 			        p("Ahmad Abuhelwa, University of South Australia"),
 			        p("Jessica Wojciechowski, University of South Australia"),
-			        p("Ashley M Hopkins, University of South Australia,", a("ashley.hopkins@mymail.unisa.edu.au", href = "mailto:ashley.hopkins@mymail.unisa.edu.au")),
-			        br(),
-			        p(strong("References:")),
-			        p("(1)", strong("Abuhelwa AY, Foster DJ, Upton RN. 2015."), "ADVAN-style analytical solutions for common pharmacokinetic models. J Pharmacol Toxicol Methods 73:42-48.")
+			        p("Ashley M Hopkins, University of South Australia,", a("ashley.hopkins@mymail.unisa.edu.au", href = "mailto:ashley.hopkins@mymail.unisa.edu.au"))
 			) # Brackets closing "tabItem" for "about"
 		)  # Brackets closing "tabItems"
 	) # Brackets closing "dashboardBody"
