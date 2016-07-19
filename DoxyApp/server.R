@@ -730,10 +730,10 @@ shinyServer(function(input,output,session) {
 		  
 		  # Plot
 		  plotobj1 <- ggplot(doryxMPC.summary3)
-		  # Fasted
+		  # Female
 		  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary3[doryxMPC.summary3$SEX == 0,],colour = "red")
 		  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary3[doryxMPC.summary3$SEX == 0,],fill = "red",alpha = 0.3)
-		  # Fed
+		  # Male
 		  plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary3[doryxMPC.summary3$SEX == 1,],colour = "blue")
 		  if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary3[doryxMPC.summary3$SEX == 1,],fill = "blue",alpha = 0.3)
 		  # Plot horizontal line representing LLOQ
@@ -752,10 +752,10 @@ shinyServer(function(input,output,session) {
 		  
 		  # Plot
 		  plotobj2 <- ggplot(doryxTAB.summary3)
-		  # Fasted
+		  # Female
 		  plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary3[doryxTAB.summary3$SEX == 0,],colour = "red")
 		  if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary3[doryxTAB.summary3$SEX == 0,],fill = "red",alpha = 0.3)
-		  # Fed
+		  # Male
 		  plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary3[doryxTAB.summary3$SEX == 1,],colour = "blue")
 		  if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary3[doryxTAB.summary3$SEX == 1,],fill = "blue",alpha = 0.3)
 		  # Plot horizontal line representing LLOQ
