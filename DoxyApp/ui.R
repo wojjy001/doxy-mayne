@@ -14,11 +14,11 @@ sidebar <-
 	dashboardSidebar(
 		width = 250,	# Width of sidebar the same as width of header
 		sidebarMenu(
-		  menuItem("About the Application",tabName = "about",icon = icon("child"),
-        menuSubItem("Objective",tabName = "objective",icon = icon("child")),
-        menuSubItem("Model (mrgsolve code)",tabName = "model",icon = icon("child"))
+		  menuItem("About the Application",tabName = "about",icon = icon("question-circle"),
+        menuSubItem("Objective",tabName = "objective",icon = icon("dot-circle-o")),
+        menuSubItem("Model (mrgsolve code)",tabName = "model",icon = icon("file-code-o"))
       ),  # Brackets closing "menuItem"
-      menuItem("Simulation Studies",tabName = "sim",icon = icon("child")),
+      menuItem("Simulation Studies",tabName = "sim",icon = icon("line-chart")),
       hr(),
       fixedRow(
         h4(strong("Plotting Features")),  # Allow the user to control plot appearances from the sidebar
@@ -45,12 +45,34 @@ body <-
         box(
           fixedRow(
             column(6,
-              selectInput("SIM_STUDY","Simulation Study:",choices = list("Fed versus Fasted" = 1,"Doryx MPC versus Doryx Tablet" = 2,"Male versus Female" = 3)),
-              p("")
+              selectInput("SIM_STUDY","Simulation Study:",choices = list("Fed versus Fasted" = 1,"Doryx MPC versus Doryx Tablet" = 2,"Male versus Female" = 3),width = 400),
+              conditionalPanel(condition = "input.SIM_STUDY == 1",
+                p("Fasted",style = "color:red"),
+                p("Fed",style = "color:blue")
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 2",
+                p("Doryx MPC",style = "color:red"),
+                p("Doryx Tablet",style = "color:blue")
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 3",
+                p("Female",style = "color:red"),
+                p("Male",style = "color:blue")
+              )  # Brackets closing "conditionalPanel"
             ),  # Brackets closing "column"
             column(6,
-              selectInput("DOSE_REG","Dose Regimen:",choices = list("120 mg Doryx MPC and 100 mg Doryx Tablet" = 1,"Clinical Regimen 1 (Standard)" = 2,"Clinical Regimen 2 (Severe Infection)"= 3)),
-              p("Enter description of dosing regimen")
+              selectInput("DOSE_REG","Dose Regimen:",choices = list("Single dose" = 1,"Clinical Regimen 1 (standard multiple dose regimen)" = 2,"Clinical Regimen 2 (multiple dose regimen for severe infection)"= 3),width = 400),
+              conditionalPanel(condition = "input.DOSE_REG == 1",
+                p("120 mg Doryx MPC over 96 hours ",em("or")),
+                p("100 mg Doryx Tablet over 96 hours")
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.DOSE_REG == 2",
+                p("120 mg Doryx MPC every 12 hours on Day 1, then 120 mg every 24 hours on Days 2 to 7 ",em("or")),
+                p("100 mg Doryx Tablet every 12 hours on Day 1, then 100 mg every 24 hours on Days 2 to 7")
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.DOSE_REG == 3",
+                p("120 mg Doryx MPC every 12 hours for 7 days ",em("or")),
+                p("120 mg Doryx Tablet every 12 hours for 7 days")
+              )  # Brackets closing "conditionalPanel"
             )  # Brackets closing "column"
           ),  # Brackets closing "fixedRow"
           title = strong("Simulation Options"),
@@ -71,6 +93,7 @@ body <-
                 h4(strong("Doryx MPC"))
               ),  # Brackets closing "conditionalPanel"
               plotOutput("Rplot1"),
+              hr(),
               conditionalPanel(condition = "input.SUMSTATS",
                 tableOutput("Rtable1")
               ) # Brackets closing "conditionalPanel"
@@ -86,10 +109,12 @@ body <-
                 h4(strong("Doryx Tablet"))
               ),  # Brackets closing "conditionalPanel"
               plotOutput("Rplot2"),
+              hr(),
               conditionalPanel(condition = "input.SUMSTATS",
                 tableOutput("Rtable2")
               ) # Brackets closing "conditionalPanel"
-            )  # Brackets closing "column"
+            ),  # Brackets closing "column"
+            align = "center"
           ), # Brackets closing "fixedRow"
           title = strong("Simulated Concentration-Time Profiles"),
           solidHeader = TRUE,
