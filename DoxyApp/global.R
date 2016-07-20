@@ -27,7 +27,7 @@
   time.multiple <- 0:240  # Intense sampling (every hour)
 
 # Plot breaks
-  plot.breaks <- c(0,1000,2000,3000,4000,5000,6000)
+  plot.breaks <- seq(from = 0,to = 6000,by = 500)
 
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000

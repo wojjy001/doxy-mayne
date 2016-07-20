@@ -181,6 +181,9 @@ shinyServer(function(input,output,session) {
 			# Read in the reactive data frame for summary
 				doryxMPC.summary <- RdoryxMPC.summary()
 				doryxTAB.summary <- RdoryxTAB.summary()
+			# Calculate maximum concentration from either dataset for plot axes
+				if (input$PI == 1) max.CONC <- max(c(doryxMPC.summary$Median,doryxTAB.summary$Median))
+				if (input$PI != 1) max.CONC <- max(c(doryxMPC.summary$CIhi,doryxTAB.summary$CIhi))
 
 			# Plot
 				plotobj1 <- ggplot()
@@ -217,7 +220,7 @@ shinyServer(function(input,output,session) {
 				if (input$DOSE_REG != 1) plotobj1 <- plotobj1 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
 				plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
 			# Plot on linear or log-scale depending on input
-				plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n",breaks = plot.breaks,labels = plot.breaks)
+				plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
 				print(plotobj1)
 		})	#Brackets closing "renderPlot"
 
@@ -226,6 +229,9 @@ shinyServer(function(input,output,session) {
 			# Read in the reactive data frame for summary
 				doryxMPC.summary <- RdoryxMPC.summary()
 				doryxTAB.summary <- RdoryxTAB.summary()
+			# Calculate maximum concentration from either dataset for plot axes
+				if (input$PI == 1) max.CONC <- max(c(doryxMPC.summary$Median,doryxTAB.summary$Median))
+				if (input$PI != 1) max.CONC <- max(c(doryxMPC.summary$CIhi,doryxTAB.summary$CIhi))
 
 			# Plot
 				plotobj2 <- ggplot()
@@ -262,7 +268,7 @@ shinyServer(function(input,output,session) {
 				if (input$DOSE_REG != 1) plotobj2 <- plotobj2 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
 				plotobj2 <- plotobj2 + scale_x_continuous("\nTime (hours)")
 			# Plot on linear or log-scale depending on input
-				plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (microg/L)\n",breaks = plot.breaks,labels = plot.breaks)
+				plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (microg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
 				print(plotobj2)
 		})	#Brackets closing "renderPlot"
 

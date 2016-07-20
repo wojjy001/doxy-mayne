@@ -46,18 +46,25 @@ body <-
           fixedRow(
             column(6,
               selectInput("SIM_STUDY","Simulation Study:",choices = list("Fed versus Fasted" = 1,"Doryx MPC versus Doryx Tablet" = 2,"Male versus Female" = 3),width = 400),
-              conditionalPanel(condition = "input.SIM_STUDY == 1",
-                p("Fasted",style = "color:red"),
-                p("Fed",style = "color:blue")
-              ),  # Brackets closing "conditionalPanel"
-              conditionalPanel(condition = "input.SIM_STUDY == 2",
-                p("Doryx MPC",style = "color:red"),
-                p("Doryx Tablet",style = "color:blue")
-              ),  # Brackets closing "conditionalPanel"
-              conditionalPanel(condition = "input.SIM_STUDY == 3",
-                p("Female",style = "color:red"),
-                p("Male",style = "color:blue")
-              )  # Brackets closing "conditionalPanel"
+              fixedRow(
+                column(3,
+                  p(strong("Plot Legend:"))
+                ),  # Brackets closing "column"
+                column(9,
+                  conditionalPanel(condition = "input.SIM_STUDY == 1",
+                    p("Fasted",style = "color:red"),
+                    p("Fed",style = "color:blue")
+                  ),  # Brackets closing "conditionalPanel"
+                  conditionalPanel(condition = "input.SIM_STUDY == 2",
+                    p("Doryx MPC",style = "color:red"),
+                    p("Doryx Tablet",style = "color:blue")
+                  ),  # Brackets closing "conditionalPanel"
+                  conditionalPanel(condition = "input.SIM_STUDY == 3",
+                    p("Female",style = "color:red"),
+                    p("Male",style = "color:blue")
+                  )  # Brackets closing "conditionalPanel"
+                ) # Brackets closing "column"
+              ) # Brackets closing "fixedRow"
             ),  # Brackets closing "column"
             column(6,
               selectInput("DOSE_REG","Dose Regimen:",choices = list("Single dose" = 1,"Clinical Regimen 1 (standard multiple dose regimen)" = 2,"Clinical Regimen 2 (multiple dose regimen for severe infection)"= 3),width = 400),
