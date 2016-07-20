@@ -1,7 +1,7 @@
 # Define the model parameters and equations
 # Using mrgsolve - differential equations
 # This compiled model is used for simulating n individuals and their concentration-time profiles
-	code <- '
+code <- '
 	$INIT	// Initial conditions for compartments
 		DEPOT = 0, // Depot - dose is added here
 		TRANS1 = 0, // Transit 1
@@ -134,7 +134,6 @@
 		table(DV) = table(IPRE)*(1+ERR_PRO)+ERR_ADD;
 
 	$CAPTURE CL V CLP1 VP1 KTR F ETA_CL ETA_V ETA_VP1 ETA_KTR FED SEX FFM TRT PER Cmax Tmax
-	'
+'
 # Compile the model code
-	mod <- mcode("popDOXY",code)
-	# There is opportunity to simply update model parameters after the model code has been compiled
+mod <- mcode("popDOXY",code) # There is opportunity to simply update model parameters after the model code has been compiled
