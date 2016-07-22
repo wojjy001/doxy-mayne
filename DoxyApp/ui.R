@@ -67,7 +67,7 @@ body <-
               ) # Brackets closing "fixedRow"
             ),  # Brackets closing "column"
             column(6,
-              selectInput("DOSE_REG","Dose Regimen:",choices = list("Single dose" = 1,"Clinical Regimen 1 (standard multiple dose regimen)" = 2,"Clinical Regimen 2 (multiple dose regimen for severe infection)"= 3),width = 400),
+              selectInput("DOSE_REG","Dose Regimen:",choices = list("Single dose" = 1,"Clinical Regimen 1 (standard multiple dose regimen)" = 2,"Clinical Regimen 2 (multiple dose regimen for severe infection)"= 3),width = 450),
               conditionalPanel(condition = "input.DOSE_REG == 1",
                 p("120 mg Doryx MPC over 96 hours ",em("or")),
                 p("100 mg Doryx Tablet over 96 hours")
