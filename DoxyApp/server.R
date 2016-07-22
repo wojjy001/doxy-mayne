@@ -280,9 +280,7 @@ shinyServer(function(input,output,session) {
 			  summary.function <- Rsummary.function()
 				# Subset for the last time-point for each individual and combine the two formulation data frames together
 					doryxMPC.data.last <- ddply(doryxMPC.data, .(ID), oneperID)
-					doryxMPC.data.last$FORM <- "MPC"
 					doryxTAB.data.last <- ddply(doryxTAB.data, .(ID), oneperID)
-					doryxTAB.data.last$FORM <- "TAB"
 					data.last <- rbind(doryxMPC.data.last,doryxTAB.data.last)
 
 				# Summarise results for fed/fasted for DoryxMPC data
@@ -301,13 +299,13 @@ shinyServer(function(input,output,session) {
 					if (input$SIM_STUDY == 2) {
 						data.last.fasted <- data.last[data.last$FED == 0,]
 						# Summarise AUC
-					    AUC.table <- ddply(data.last.fasted, .(FORM), function(data.last.fasted) summary.function(data.last.fasted$AUC))
+					    AUC.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$AUC))
 					    AUC.table$Variable <- "AUC (microg*h/L)"
 				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(data.last.fasted, .(FORM), function(data.last.fasted) summary.function(data.last.fasted$Cmax))
+					    Cmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Cmax))
 					    Cmax.table$Variable <- "Cmax (microg/L)"
 				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(data.last.fasted, .(FORM), function(data.last.fasted) summary.function(data.last.fasted$Tmax))
+					    Tmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Tmax))
 					    Tmax.table$Variable <- "Tmax (h)"
 					}
 				# Summarise results for male/female for doryxMPC.data
@@ -325,6 +323,8 @@ shinyServer(function(input,output,session) {
 				# Return data frame
 					table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
 					if (input$SIM_STUDY == 1) {
+					  table1$FED[table1$FED == 0] <- "Fasted"
+					  table1$FED[table1$FED == 1] <- "Fed"
 						if (input$PI == 1) {
 							table1 <- data.frame(Status = table1$FED,Median = table1$Median,Variable = table1$Variable)
 						}
@@ -334,20 +334,24 @@ shinyServer(function(input,output,session) {
 						table1
 					}
 					if (input$SIM_STUDY == 2){
+					  table1$TRT[table1$TRT == 1] <- "Doryx MPC"
+					  table1$TRT[table1$TRT == 2] <- "Doryx Tablet"
 						if (input$PI == 1) {
-							table1 <- data.frame(Status = table1$FORM,Median = table1$Median,Variable = table1$Variable)
+							table1 <- data.frame(Formulation = table1$TRT,Median = table1$Median,Variable = table1$Variable)
 						}
 						if (input$PI > 1) {
-							table1 <- data.frame(Status = table1$FORM,Median = table1$Median,CIlo = table1$CIlo,CIhi = table1$CIhi,Variable = table1$Variable)
+							table1 <- data.frame(Formulation = table1$TRT,Median = table1$Median,CIlo = table1$CIlo,CIhi = table1$CIhi,Variable = table1$Variable)
 						}
 						table1
 					}
 					if (input$SIM_STUDY == 3) {
+					  table1$SEX[table1$SEX == 0] <- "Female"
+					  table1$SEX[table1$SEX == 1] <- "Male"
 						if (input$PI == 1) {
-							table1 <- data.frame(Status = table1$SEX,Median = table1$Median,Variable = table1$Variable)
+							table1 <- data.frame(Gender = table1$SEX,Median = table1$Median,Variable = table1$Variable)
 						}
 						if (input$PI > 1) {
-							table1 <- data.frame(Status = table1$SEX,Median = table1$Median,CIlo = table1$CIlo,CIhi = table1$CIhi,Variable = table1$Variable)
+							table1 <- data.frame(Gender = table1$SEX,Median = table1$Median,CIlo = table1$CIlo,CIhi = table1$CIhi,Variable = table1$Variable)
 						}
 						table1
 					}
@@ -362,9 +366,7 @@ shinyServer(function(input,output,session) {
 			  summary.function <- Rsummary.function()
 				# Subset for the last time-point for each individual and combine the two formulation data frames together
 					doryxMPC.data.last <- ddply(doryxMPC.data, .(ID), oneperID)
-					doryxMPC.data.last$FORM <- "MPC"
 					doryxTAB.data.last <- ddply(doryxTAB.data, .(ID), oneperID)
-					doryxTAB.data.last$FORM <- "TAB"
 					data.last <- rbind(doryxMPC.data.last,doryxTAB.data.last)
 
 				# Summarise results for fed/fasted for doryxTAB data
@@ -383,13 +385,13 @@ shinyServer(function(input,output,session) {
 					if (input$SIM_STUDY == 2) {
 						data.last.fasted <- data.last[data.last$FED == 1,]
 						# Summarise AUC
-					    AUC.table <- ddply(data.last.fasted, .(FORM), function(data.last.fasted) summary.function(data.last.fasted$AUC))
+					    AUC.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$AUC))
 					    AUC.table$Variable <- "AUC (microg*h/L)"
 				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(data.last.fasted, .(FORM), function(data.last.fasted) summary.function(data.last.fasted$Cmax))
+					    Cmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Cmax))
 					    Cmax.table$Variable <- "Cmax (microg/L)"
 				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(data.last.fasted, .(FORM), function(data.last.fasted) summary.function(data.last.fasted$Tmax))
+					    Tmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Tmax))
 					    Tmax.table$Variable <- "Tmax (h)"
 					}
 				# Summarise results for male/female for doryxTAB.data
@@ -407,6 +409,8 @@ shinyServer(function(input,output,session) {
 				# Return data frame
 					table2 <- rbind(AUC.table,Cmax.table,Tmax.table)
 					if (input$SIM_STUDY == 1) {
+					  table2$FED[table2$FED == 0] <- "Fasted"
+					  table2$FED[table2$FED == 1] <- "Fed"
 						if (input$PI == 1) {
 							table2 <- data.frame(Status = table2$FED,Median = table2$Median,Variable = table2$Variable)
 						}
@@ -416,20 +420,24 @@ shinyServer(function(input,output,session) {
 						table2
 					}
 					if (input$SIM_STUDY == 2){
+					  table2$TRT[table2$TRT == 1] <- "Doryx MPC"
+					  table2$TRT[table2$TRT == 2] <- "Doryx Tablet"
 						if (input$PI == 1) {
-							table2 <- data.frame(Status = table2$FORM,Median = table2$Median,Variable = table2$Variable)
+							table2 <- data.frame(Formulation = table2$TRT,Median = table2$Median,Variable = table2$Variable)
 						}
 						if (input$PI > 1) {
-							table2 <- data.frame(Status = table2$FORM,Median = table2$Median,CIlo = table2$CIlo,CIhi = table2$CIhi,Variable = table2$Variable)
+							table2 <- data.frame(Formulation = table2$TRT,Median = table2$Median,CIlo = table2$CIlo,CIhi = table2$CIhi,Variable = table2$Variable)
 						}
 						table2
 					}
 					if (input$SIM_STUDY == 3) {
+					  table2$SEX[table2$SEX == 0] <- "Female"
+					  table2$SEX[table2$SEX == 1] <- "Male"
 						if (input$PI == 1) {
-							table2 <- data.frame(Status = table2$SEX,Median = table2$Median,Variable = table2$Variable)
+							table2 <- data.frame(Gender = table2$SEX,Median = table2$Median,Variable = table2$Variable)
 						}
 						if (input$PI > 1) {
-							table2 <- data.frame(Status = table2$SEX,Median = table2$Median,CIlo = table2$CIlo,CIhi = table2$CIhi,Variable = table2$Variable)
+							table2 <- data.frame(Gender = table2$SEX,Median = table2$Median,CIlo = table2$CIlo,CIhi = table2$CIhi,Variable = table2$Variable)
 						}
 						table2
 					}
