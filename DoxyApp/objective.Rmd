@@ -9,17 +9,19 @@ The objective of this application is to demonstrate the impact of a number of co
 
 # Doxycycline Population Pharmacokinetic Model
 
-Doxycycline population pharmacokinetics (PK) in this application are described by a 2-compartment oral absorption (as described by 2 transit compartments) model (Figure 1).  The population PK model was developed using doxycycline plasma concentrations obtained from eight Phase I clinical trials comparing **single- and/or multiple doses** of Doryx Tablet, Doryx Capsule or Doryx MPC formulations.
+Doxycycline population pharmacokinetics (PK) in this application are described by a 2-compartment model with 2-transit absorption compartments  (Figure 1).  The population PK model was developed using doxycycline plasma concentrations obtained from eight Phase I clinical trials comparing **single- and/or multiple doses** of Doryx Tablet, Doryx Capsule or Doryx MPC formulations in the fed or fasted status, in healthy individuals.
 
 ![][id]
 
 **Figure 1: Doxycycline Population Pharmacokinetic Model Schematic**
 
-Covariate effects include:
+The final model includes these covariate effects:
 
-* Fed versus fasted status on bioavailability and the transit compartment first-order rate constant (KTR)
-* Effect of formulation type, i.e., Doryx Tablet versus Doryx Capsule versus Doryx MPC on bioavailability 
-* Male versus female gender on clearance
+* Formulation effects on relative bioavailability
+* Absorption delay due to formulation and fed status effects
+* Formulation effects on the transit absorption rate in the fed status
+* Fed status effects on relative bioavaliability
+* Gender effects on clearance
 
 The full model's equations are described in the "Model" tab (written as mrgsolve code).
 
@@ -44,7 +46,7 @@ In all simulations:
 **Note:**
 
 * Multiple-dose concentration data for Doryx MPC was not used in the development of this population PK model.  Therefore, multiple-dose Doryx MPC simulations performed here are purely extrapolations from single-dose data.
-* The total trial simulation duration presented here is 7 days (due to the attainment of steady-state concentrations).  Limited information can be acquired from performing longer simulations - although longer courses can be administered in the clinic.
+* The total trial simulation duration presented here is 7 days (due to the apparent attainment of steady-state concentrations).  Limited information can be acquired from performing longer simulations - although longer courses can be administered in the clinic.
 * The population PK model was developed from doxycycline plasma concentrations following oral administration in healthy individuals.  Therefore, the effect of disease status and/or sickness on doxycycline pharmacokinetics was not investigated here.
 
 [id]: www/FinalPKmodelDoxy.png "Figure 1"
