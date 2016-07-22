@@ -100,8 +100,8 @@ body <-
                 h4(strong("Doryx MPC"))
               ),  # Brackets closing "conditionalPanel"
               plotOutput("Rplot1"),
-              hr(),
               conditionalPanel(condition = "input.SUMSTATS",
+                hr(),
                 tableOutput("Rtable1")
               ) # Brackets closing "conditionalPanel"
             ),  # Brackets closing "column"
@@ -116,8 +116,8 @@ body <-
                 h4(strong("Doryx Tablet"))
               ),  # Brackets closing "conditionalPanel"
               plotOutput("Rplot2"),
-              hr(),
               conditionalPanel(condition = "input.SUMSTATS",
+                hr(),
                 tableOutput("Rtable2")
               ) # Brackets closing "conditionalPanel"
             ),  # Brackets closing "column"

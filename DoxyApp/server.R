@@ -328,8 +328,11 @@ shinyServer(function(input,output,session) {
 						if (input$PI == 1) {
 							table1 <- data.frame(Status = table1$FED,Median = table1$Median,Variable = table1$Variable)
 						}
-						if (input$PI > 1) {
-							table1 <- data.frame(Status = table1$FED,Median = table1$Median,CIlo = table1$CIlo,CIhi = table1$CIhi,Variable = table1$Variable)
+						if (input$PI == 2) {
+							table1 <- data.frame(Status = table1$FED,Median = table1$Median,"Percentile-5th" = table1$CIlo,"Percentile-95th" = table1$CIhi,Variable = table1$Variable)
+						}
+						if (input$PI == 3) {
+							table1 <- data.frame(Status = table1$FED,Median = table1$Median,"Percentile-2.5th" = table1$CIlo,"Percentile-97.5th" = table1$CIhi,Variable = table1$Variable)
 						}
 						table1
 					}
@@ -339,8 +342,11 @@ shinyServer(function(input,output,session) {
 						if (input$PI == 1) {
 							table1 <- data.frame(Formulation = table1$TRT,Median = table1$Median,Variable = table1$Variable)
 						}
-						if (input$PI > 1) {
-							table1 <- data.frame(Formulation = table1$TRT,Median = table1$Median,CIlo = table1$CIlo,CIhi = table1$CIhi,Variable = table1$Variable)
+						if (input$PI == 2) {
+							table1 <- data.frame(Formulation = table1$TRT,Median = table1$Median,"Percentile-5th" = table1$CIlo,"Percentile-95th" = table1$CIhi,Variable = table1$Variable)
+						}
+						if (input$PI == 3) {
+							table1 <- data.frame(Formulation = table1$TRT,Median = table1$Median,"Percentile-2.5th" = table1$CIlo,"Percentile-97.5th" = table1$CIhi,Variable = table1$Variable)
 						}
 						table1
 					}
@@ -350,8 +356,11 @@ shinyServer(function(input,output,session) {
 						if (input$PI == 1) {
 							table1 <- data.frame(Gender = table1$SEX,Median = table1$Median,Variable = table1$Variable)
 						}
-						if (input$PI > 1) {
-							table1 <- data.frame(Gender = table1$SEX,Median = table1$Median,CIlo = table1$CIlo,CIhi = table1$CIhi,Variable = table1$Variable)
+						if (input$PI == 2) {
+							table1 <- data.frame(Gender = table1$SEX,Median = table1$Median,"Percentile-5th" = table1$CIlo,"Percentile-95th" = table1$CIhi,Variable = table1$Variable)
+						}
+						if (input$PI == 3) {
+							table1 <- data.frame(Gender = table1$SEX,Median = table1$Median,"Percentile-2.5th" = table1$CIlo,"Percentile-97.5th" = table1$CIhi,Variable = table1$Variable)
 						}
 						table1
 					}
@@ -414,8 +423,11 @@ shinyServer(function(input,output,session) {
 						if (input$PI == 1) {
 							table2 <- data.frame(Status = table2$FED,Median = table2$Median,Variable = table2$Variable)
 						}
-						if (input$PI > 1) {
-							table2 <- data.frame(Status = table2$FED,Median = table2$Median,CIlo = table2$CIlo,CIhi = table2$CIhi,Variable = table2$Variable)
+						if (input$PI == 2) {
+							table2 <- data.frame(Status = table2$FED,Median = table2$Median,"Percentile-5th" = table2$CIlo,"Percentile-95th" = table2$CIhi,Variable = table2$Variable)
+						}
+						if (input$PI == 3) {
+							table2 <- data.frame(Status = table2$FED,Median = table2$Median,"Percentile-2.5th" = table2$CIlo,"Percentile-97.5th" = table2$CIhi,Variable = table2$Variable)
 						}
 						table2
 					}
@@ -425,8 +437,11 @@ shinyServer(function(input,output,session) {
 						if (input$PI == 1) {
 							table2 <- data.frame(Formulation = table2$TRT,Median = table2$Median,Variable = table2$Variable)
 						}
-						if (input$PI > 1) {
-							table2 <- data.frame(Formulation = table2$TRT,Median = table2$Median,CIlo = table2$CIlo,CIhi = table2$CIhi,Variable = table2$Variable)
+						if (input$PI == 2) {
+							table2 <- data.frame(Formulation = table2$TRT,Median = table2$Median,"Percentile-5th" = table2$CIlo,"Percentile-95th" = table2$CIhi,Variable = table2$Variable)
+						}
+						if (input$PI == 3) {
+							table2 <- data.frame(Formulation = table2$TRT,Median = table2$Median,"Percentile-2.5th" = table2$CIlo,"Percentile-97.5th" = table2$CIhi,Variable = table2$Variable)
 						}
 						table2
 					}
@@ -436,8 +451,11 @@ shinyServer(function(input,output,session) {
 						if (input$PI == 1) {
 							table2 <- data.frame(Gender = table2$SEX,Median = table2$Median,Variable = table2$Variable)
 						}
-						if (input$PI > 1) {
-							table2 <- data.frame(Gender = table2$SEX,Median = table2$Median,CIlo = table2$CIlo,CIhi = table2$CIhi,Variable = table2$Variable)
+						if (input$PI == 2) {
+							table2 <- data.frame(Gender = table2$SEX,Median = table2$Median,"Percentile-5th" = table2$CIlo,"Percentile-95th" = table2$CIhi,Variable = table2$Variable)
+						}
+						if (input$PI == 3) {
+							table2 <- data.frame(Gender = table2$SEX,Median = table2$Median,"Percentile-2.5th" = table2$CIlo,"Percentile-97.5th" = table2$CIhi,Variable = table2$Variable)
 						}
 						table2
 					}

@@ -9,7 +9,7 @@ The objective of this application is to demonstrate the impact of a number of co
 
 # Doxycycline Population Pharmacokinetic Model
 
-Doxycycline population pharmacokinetics (PK) in this application are described by a two compartment model with oral absorption described by two transit compartments (Figure 1).  The population PK model was developed using doxycycline plasma concentrations obtained from eight Phase I clinical trials comparing **single- and/or multiple doses** of Doryx Tablet, Doryx Capsule or Doryx MPC formulations in the fed or fasted status, in healthy individuals.
+Doxycycline population pharmacokinetics (PK) in this application are described by a two-compartment model with oral absorption described by two transit compartments (Figure 1).  The population PK model was developed using doxycycline plasma concentrations obtained from eight Phase I clinical trials comparing **single- and/or multiple doses** of Doryx Tablet, Doryx Capsule or Doryx MPC formulations in the fed or fasted status, in healthy individuals.
 
 ![][id]
 
@@ -23,7 +23,7 @@ The final model includes these covariate effects:
 * Fed status effects on relative bioavaliability
 * Gender effects on clearance
 
-This application has been designed to allow user to assess the influence of covariates on doxycyline concentations. This includes formulation, food and sex effects. The final model is described in equations in the "Model" tab (written as mrgsolve code).
+This application has been designed to allow the user to assess the influence of covariates on doxycyline concentrations, such as different formulations, fed/fasted status and gender. The final model is described as differential equations in the "Model" tab (written as mrgsolve code).
 
 # Simulation Study Designs
 
@@ -41,8 +41,8 @@ In all simulations:
 
 * Each covariate subpopulation includes 500 individuals:
   + Gender status is randomly assigned to each individual, 50:50
-  + Fat free mass (kg) is randomly drawn from a log-normal distribution with a mean of 55.49 kg and sd of 0.09.
-  
+  + Fat free mass (kg) is randomly drawn from a log-normal distribution with a mean of 55.49 kg and standard deviation of 0.09.
+
 **Note:**
 
 * Multiple-dose concentration data for Doryx MPC was not used in the development of this population PK model.  Therefore, multiple-dose Doryx MPC simulations performed here are purely extrapolations from single-dose data.
