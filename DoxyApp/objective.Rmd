@@ -9,7 +9,7 @@ The objective of this application is to demonstrate the impact of a number of co
 
 # Doxycycline Population Pharmacokinetic Model
 
-Doxycycline population pharmacokinetics (PK) in this application are described by a two compartment model with oral absorption described by two transit compartments  (Figure 1).  The population PK model was developed using doxycycline plasma concentrations obtained from eight Phase I clinical trials comparing **single- and/or multiple doses** of Doryx Tablet, Doryx Capsule or Doryx MPC formulations in the fed or fasted status, in healthy individuals.
+Doxycycline population pharmacokinetics (PK) in this application are described by a two compartment model with oral absorption described by two transit compartments (Figure 1).  The population PK model was developed using doxycycline plasma concentrations obtained from eight Phase I clinical trials comparing **single- and/or multiple doses** of Doryx Tablet, Doryx Capsule or Doryx MPC formulations in the fed or fasted status, in healthy individuals.
 
 ![][id]
 
