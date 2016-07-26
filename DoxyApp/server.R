@@ -190,29 +190,29 @@ shinyServer(function(input,output,session) {
 			# Plot the results of fed/fasted - i.e., plot doryxMPC data
 				if (input$SIM_STUDY == 1) {
 					# Fasted = RED
-						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],colour = "red")
-						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],fill = "red",alpha = 0.3)
+						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],colour = "#B22222",size = 1)
+						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],fill = "#B22222",alpha = 0.3)
 					# Fed = BLUE
-						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],colour = "blue")
-						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],fill = "blue",alpha = 0.3)
+						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],colour = "#3c8dbc",size = 1)
+						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],fill = "#3c8dbc",alpha = 0.3)
 				}
 			# Plot the results of MPC/TAB - i.e., plot fasted data from doryxMPC.data and doryxTAB.data
 				if (input$SIM_STUDY == 2) {
 					# DoryxMPC = RED
-						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],colour = "red")
-						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],fill = "red",alpha = 0.3)
+						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],colour = "#B22222",size = 1)
+						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 0,],fill = "#B22222",alpha = 0.3)
 					# DoryxTAB = BLUE
-						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],colour = "blue")
-						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],fill = "blue",alpha = 0.3)
+						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],colour = "#3c8dbc",size = 1)
+						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],fill = "#3c8dbc",alpha = 0.3)
 				}
 			# Plot the results of male/female - i.e,. plot doryxMPC.data
 				if (input$SIM_STUDY == 3) {
 					# Female = RED
-						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$SEX == 0,],colour = "red")
-						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$SEX == 0,],fill = "red",alpha = 0.3)
+						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$SEX == 0,],colour = "#B22222",size = 1)
+						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$SEX == 0,],fill = "#B22222",alpha = 0.3)
 					# Male = BLUE
-						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$SEX == 1,],colour = "blue")
-						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$SEX == 1,],fill = "blue",alpha = 0.3)
+						plotobj1 <- plotobj1 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$SEX == 1,],colour = "#3c8dbc",size = 1)
+						if (input$PI > 1) plotobj1 <- plotobj1 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$SEX == 1,],fill = "#3c8dbc",alpha = 0.3)
 				}
 			# Plot horizontal line representing LLOQ
 				plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
@@ -238,29 +238,29 @@ shinyServer(function(input,output,session) {
 			# Plot the results of fed/fasted - i.e., plot doryxTAB.data
 				if (input$SIM_STUDY == 1) {
 					# Fasted = RED
-						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],colour = "red")
-						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],fill = "red",alpha = 0.3)
+						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],colour = "#B22222",size = 1)
+						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 0,],fill = "#B22222",alpha = 0.3)
 					# Fed = BLUE
-						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],colour = "blue")
-						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],fill = "blue",alpha = 0.3)
+						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],colour = "#3c8dbc",size = 1)
+						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],fill = "#3c8dbc",alpha = 0.3)
 				}
 			# Plot the results of MPC/TAB - i.e., plot fed data from doryxMPC.data and doryxTAB.data
 				if (input$SIM_STUDY == 2) {
 					# DoryxMPC = RED
-						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],colour = "red")
-						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],fill = "red",alpha = 0.3)
+						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],colour = "#B22222",size = 1)
+						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxMPC.summary[doryxMPC.summary$FED == 1,],fill = "#B22222",alpha = 0.3)
 					# DoryxTAB = BLUE
-						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],colour = "blue")
-						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],fill = "blue",alpha = 0.3)
+						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],colour = "#3c8dbc",size = 1)
+						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$FED == 1,],fill = "#3c8dbc",alpha = 0.3)
 				}
 			# Plot the results of male/female - i.e,. plot doryxTAB.data
 				if (input$SIM_STUDY == 3) {
 					# Female = RED
-						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$SEX == 0,],colour = "red")
-						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$SEX == 0,],fill = "red",alpha = 0.3)
+						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$SEX == 0,],colour = "#B22222",size = 1)
+						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$SEX == 0,],fill = "#B22222",alpha = 0.3)
 					# Male = BLUE
-						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$SEX == 1,],colour = "blue")
-						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$SEX == 1,],fill = "blue",alpha = 0.3)
+						plotobj2 <- plotobj2 + geom_line(aes(x = time,y = Median),data = doryxTAB.summary[doryxTAB.summary$SEX == 1,],colour = "#3c8dbc",size = 1)
+						if (input$PI > 1) plotobj2 <- plotobj2 + geom_ribbon(aes(x = time,ymin = CIlo,ymax = CIhi),data = doryxTAB.summary[doryxTAB.summary$SEX == 1,],fill = "#3c8dbc",alpha = 0.3)
 				}
 			# Plot horizontal line representing LLOQ
 				plotobj2 <- plotobj2 + geom_hline(aes(yintercept = 10),linetype = "dashed")

@@ -52,16 +52,16 @@ body <-
                 ),  # Brackets closing "column"
                 column(9,
                   conditionalPanel(condition = "input.SIM_STUDY == 1",
-                    p("Fasted",style = "color:red"),
-                    p("Fed",style = "color:blue")
+                    p(strong("Fasted"),style = "color:#B22222"),
+                    p(strong("Fed"),style = "color:#3c8dbc")
                   ),  # Brackets closing "conditionalPanel"
                   conditionalPanel(condition = "input.SIM_STUDY == 2",
-                    p("Doryx MPC",style = "color:red"),
-                    p("Doryx Tablet",style = "color:blue")
+                    p(strong("Doryx MPC"),style = "color:#B22222"),
+                    p(strong("Doryx Tablet"),style = "color:#3c8dbc")
                   ),  # Brackets closing "conditionalPanel"
                   conditionalPanel(condition = "input.SIM_STUDY == 3",
-                    p("Female",style = "color:red"),
-                    p("Male",style = "color:blue")
+                    p(strong("Female"),style = "color:#B22222"),
+                    p(strong("Male"),style = "color:#3c8dbc")
                   )  # Brackets closing "conditionalPanel"
                 ) # Brackets closing "column"
               ) # Brackets closing "fixedRow"
