@@ -216,11 +216,12 @@ shinyServer(function(input,output,session) {
 				}
 			# Plot horizontal line representing LLOQ
 				plotobj1 <- plotobj1 + geom_hline(aes(yintercept = 10),linetype = "dashed")
-				if (input$DOSE_REG == 1) plotobj1 <- plotobj1 + annotate("text",x = 25,y = 50,label = "Lower Limit of Quantification",colour = "black",size = 4)
-				if (input$DOSE_REG != 1) plotobj1 <- plotobj1 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
+				# if (input$DOSE_REG == 1) plotobj1 <- plotobj1 + annotate("text",x = 25,y = 50,label = "Lower Limit of Quantification",colour = "black",size = 4)
+				# if (input$DOSE_REG != 1) plotobj1 <- plotobj1 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
 				plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
 			# Plot on linear or log-scale depending on input
-				plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (µg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
+				if (input$LOGS == FALSE) plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (µg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
+				if (input$LOGS == TRUE) plotobj1 <- plotobj1 + scale_y_log10("Doxycycline Concentration (µg/L)\n",breaks = log.plot.breaks,labels = log.plot.breaks,lim = c(NA,max.CONC))
 				print(plotobj1)
 		})	#Brackets closing "renderPlot"
 
@@ -264,11 +265,12 @@ shinyServer(function(input,output,session) {
 				}
 			# Plot horizontal line representing LLOQ
 				plotobj2 <- plotobj2 + geom_hline(aes(yintercept = 10),linetype = "dashed")
-				if (input$DOSE_REG == 1) plotobj2 <- plotobj2 + annotate("text",x = 25,y = 50,label = "Lower Limit of Quantification",colour = "black",size = 4)
-				if (input$DOSE_REG != 1) plotobj2 <- plotobj2 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
+				# if (input$DOSE_REG == 1) plotobj2 <- plotobj2 + annotate("text",x = 25,y = 50,label = "Lower Limit of Quantification",colour = "black",size = 4)
+				# if (input$DOSE_REG != 1) plotobj2 <- plotobj2 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
 				plotobj2 <- plotobj2 + scale_x_continuous("\nTime (hours)")
 			# Plot on linear or log-scale depending on input
-				plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (µg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
+				if (input$LOGS == FALSE) plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (µg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
+				if (input$LOGS == TRUE) plotobj2 <- plotobj2 + scale_y_log10("Doxycycline Concentration (µg/L)\n",breaks = log.plot.breaks,labels = log.plot.breaks,lim = c(NA,max.CONC))
 				print(plotobj2)
 		})	#Brackets closing "renderPlot"
 

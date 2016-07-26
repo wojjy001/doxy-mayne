@@ -24,14 +24,15 @@
 # ------------------------------------------------------------------------------
 # Define time sequence - using mrgsolve's tgrid function
   # Simulate concentrations for 96 hour time-period
-    time.fine <- tgrid(0,24,0.25) # Intense sampling
-    time.coarse <- tgrid(36,96,12)  # Less intense sampling later in the interval
-    TIME.tgrid <- c(time.fine,time.coarse)
-# Time sequences for the multiple dosing scenarios (10 days)
-  time.multiple <- 0:240  # Intense sampling (every hour)
+    tgrid.fine <- tgrid(0,24,0.25) # Intense sampling
+    tgrid.coarse <- tgrid(36,96,12)  # Less intense sampling later in the interval
+    TIME.tgrid <- c(tgrid.fine,tgrid.coarse)
+  # Time sequences for the multiple dosing scenarios (10 days)
+    time.multiple <- 0:240  # Intense sampling (every hour)
 
 # Plot breaks
-  plot.breaks <- seq(from = 0,to = 6000,by = 500)
+  plot.breaks <- c(10,seq(from = 500,to = 6000,by = 500))
+  log.plot.breaks <- c(10,100,1000,10000)
 
 # Set number of individuals that make up the 95% prediction intervals
 	n <- 1000

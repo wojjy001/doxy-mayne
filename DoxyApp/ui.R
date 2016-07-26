@@ -43,7 +43,7 @@ body <-
         box(
           fixedRow(
             column(4,
-              selectInput("DOSE_REG","Dose Regimen:",choices = list("Single-dose" = 1,"Multiple-dose (standard infection)" = 2,"Multiple-dose (severe infection)"= 3),width = 450),
+              selectInput("DOSE_REG","Dose Regimen:",choices = list("Single-dose" = 1,"Multiple-dose (standard infection)" = 2,"Multiple-dose (severe infection)"= 3)),
               fixedRow(
                 column(3,
                   p(strong("Description:"))
@@ -65,7 +65,7 @@ body <-
               ) # Brackets closing "fixedRow"
             ),  # Brackets closing "column"
             column(4,
-              selectInput("SIM_STUDY","Simulation Study:",choices = list("Fed versus Fasted" = 1,"Doryx MPC versus Doryx Tablet" = 2,"Male versus Female" = 3),width = 400),
+              selectInput("SIM_STUDY","Simulation Study:",choices = list("Fed versus Fasted" = 1,"Doryx MPC versus Doryx Tablet" = 2,"Male versus Female" = 3)),
               fixedRow(
                 column(4,
                   p(strong("Plot Legend:"))
@@ -88,7 +88,8 @@ body <-
             ),  # Brackets closing "column"
             column(4,
               selectInput("PI","Prediction intervals:",choices = list("No Prediction Intervals" = 1,"90% Prediction Intervals" = 2,"95% Prediction Intervals" = 3)),
-              checkboxInput("SUMSTATS","Show summary statistics tables",value = FALSE) # Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+              checkboxInput("SUMSTATS","Show summary statistics tables",value = FALSE), # Calculate Tmax, Cmax and AUC. Show prediction intervals if a "type" of prediction intervals is previously selected (as above). Show for each facet if "FACET" is selected above.
+              checkboxInput("LOGS","Plot concentrations on a log-scale",value = FALSE)
             ) # Brackets closing "column"
           ),  # Brackets closing "fixedRow"
           title = strong("Simulation Options"),
@@ -99,40 +100,36 @@ body <-
         box(
           fixedRow(
             column(6,
-              div(style = "height: 100 vh; overflow-y: auto",
-                conditionalPanel(condition = "input.SIM_STUDY == 1",
-                  h4(strong("Doryx MPC"))
-                ),  # Brackets closing "conditionalPanel"
-                conditionalPanel(condition = "input.SIM_STUDY == 2",
-                  h4(strong("Fasted"))
-                ),  # Brackets closing "conditionalPanel"
-                conditionalPanel(condition = "input.SIM_STUDY == 3",
-                  h4(strong("Doryx MPC"))
-                ),  # Brackets closing "conditionalPanel"
-                plotOutput("Rplot1"),
-                conditionalPanel(condition = "input.SUMSTATS",
-                  hr(),
-                  uiOutput("Rtable1")
-                ) # Brackets closing "conditionalPanel"
-              )  # Brackets closing "div"
+              conditionalPanel(condition = "input.SIM_STUDY == 1",
+                h4(strong("Doryx MPC"))
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 2",
+                h4(strong("Fasted"))
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 3",
+                h4(strong("Doryx MPC"))
+              ),  # Brackets closing "conditionalPanel"
+              plotOutput("Rplot1"),
+              conditionalPanel(condition = "input.SUMSTATS",
+                hr(),
+                uiOutput("Rtable1")
+              ) # Brackets closing "conditionalPanel"
             ),  # Brackets closing "column"
             column(6,
-              div(style = "height: 100 vh; overflow-y: auto",
-                conditionalPanel(condition = "input.SIM_STUDY == 1",
-                  h4(strong("Doryx Tablet"))
-                ),  # Brackets closing "conditionalPanel"
-                conditionalPanel(condition = "input.SIM_STUDY == 2",
-                  h4(strong("Fed"))
-                ),  # Brackets closing "conditionalPanel"
-                conditionalPanel(condition = "input.SIM_STUDY == 3",
-                  h4(strong("Doryx Tablet"))
-                ),  # Brackets closing "conditionalPanel"
-                plotOutput("Rplot2"),
-                conditionalPanel(condition = "input.SUMSTATS",
-                  hr(),
-                  uiOutput("Rtable2")
-                ) # Brackets closing "conditionalPanel"
-              )  # Brackets closing "div"
+              conditionalPanel(condition = "input.SIM_STUDY == 1",
+                h4(strong("Doryx Tablet"))
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 2",
+                h4(strong("Fed"))
+              ),  # Brackets closing "conditionalPanel"
+              conditionalPanel(condition = "input.SIM_STUDY == 3",
+                h4(strong("Doryx Tablet"))
+              ),  # Brackets closing "conditionalPanel"
+              plotOutput("Rplot2"),
+              conditionalPanel(condition = "input.SUMSTATS",
+                hr(),
+                uiOutput("Rtable2")
+              ) # Brackets closing "conditionalPanel"
             ),  # Brackets closing "column"
             align = "center"
           ), # Brackets closing "fixedRow"
