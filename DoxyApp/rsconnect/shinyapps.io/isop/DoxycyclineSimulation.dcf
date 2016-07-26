@@ -2,8 +2,8 @@ name: DoxycyclineSimulation
 account: isop
 server: shinyapps.io
 appId: 115607
-bundleId: 512468
+bundleId: 515525
 url: https://isop.shinyapps.io/DoxycyclineSimulation/
-when: 1469171540.68281
+when: 1469517208.14066
 asMultiple: FALSE
 asStatic: FALSE
