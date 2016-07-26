@@ -38,12 +38,13 @@ body <-
 		tabItems(
       tabItem(tabName = "objective",
         includeMarkdown("objective.Rmd")
-			), # Brackets closing "tabItem" for "readme"
+			), # Brackets closing "tabItem" for "objective"
       tabItem(tabName = "model",
         pre(includeText("model.R"))
       ),  # Brackets closing "tabItem" for "model"
       tabItem(tabName = "acknowledgements",
-        includeMarkdown("acknowledgements.Rmd")
+        includeMarkdown("acknowledgements.Rmd"),
+        img(src = "ACP_logo.png",width = 225,height = 75) # University of South Australia, Australian Centre for Pharmacometrics logo
       ),  # Brackets closing "tabItem" for "acknowledgements"
       tabItem(tabName = "sim",
         box(
