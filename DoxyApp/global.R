@@ -10,7 +10,7 @@
   library(plyr)  # Split and rearrange data, ddply function
   library(dplyr)  # New plyr
   library(mrgsolve) # Metrum differential equation solver for pharmacometrics
-  library(xtable)
+  library(xtable) # Formatting tables
 
 # Define a custom ggplot2 theme
   theme_bw2 <- theme_set(theme_bw(base_size = 14))
