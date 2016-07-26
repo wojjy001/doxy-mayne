@@ -15,8 +15,9 @@ sidebar <-
 		width = 250,	# Width of sidebar the same as width of header
 		sidebarMenu(
 		  menuItem("About the Application",tabName = "about",icon = icon("question-circle"),
-        menuSubItem("Objective",tabName = "objective",icon = icon("dot-circle-o")),
-        menuSubItem("Model (mrgsolve code)",tabName = "model",icon = icon("file-code-o"))
+        menuSubItem("Objective",tabName = "objective",icon = icon("angle-double-right")),
+        menuSubItem("Model (mrgsolve code)",tabName = "model",icon = icon("angle-double-right")),
+        menuSubItem("Acknowledgements",tabName = "acknowledgements",icon = icon("angle-double-right"))
       ),  # Brackets closing "menuItem"
       menuItem("Simulation Studies",tabName = "sim",icon = icon("line-chart")),
       hr(),
@@ -41,6 +42,9 @@ body <-
       tabItem(tabName = "model",
         pre(includeText("model.R"))
       ),  # Brackets closing "tabItem" for "model"
+      tabItem(tabName = "acknowledgements",
+        includeMarkdown("acknowledgements.Rmd")
+      ),  # Brackets closing "tabItem" for "acknowledgements"
       tabItem(tabName = "sim",
         box(
           fixedRow(
