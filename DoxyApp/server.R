@@ -24,8 +24,8 @@ shinyServer(function(input,output,session) {
 				if (input$PI > 1) {
 					CIlo <- quantile(x,probs = input.CIlo)
 					CIhi <- quantile(x,probs = input.CIhi)
-					summary <- c("Median" = median,CIlo,CIhi)
-					names(summary)[c(2,3)] <- c("CIlo","CIhi")
+					summary <- c(CIlo,"Median" = median,CIhi)
+					names(summary)[c(1,3)] <- c("CIlo","CIhi")
 					summary
 				}
 				summary
@@ -220,7 +220,7 @@ shinyServer(function(input,output,session) {
 				if (input$DOSE_REG != 1) plotobj1 <- plotobj1 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
 				plotobj1 <- plotobj1 + scale_x_continuous("\nTime (hours)")
 			# Plot on linear or log-scale depending on input
-				plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (microg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
+				plotobj1 <- plotobj1 + scale_y_continuous("Doxycycline Concentration (µg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
 				print(plotobj1)
 		})	#Brackets closing "renderPlot"
 
@@ -268,199 +268,159 @@ shinyServer(function(input,output,session) {
 				if (input$DOSE_REG != 1) plotobj2 <- plotobj2 + annotate("text",x = 60,y = 80,label = "Lower Limit of Quantification",colour = "black",size = 4)
 				plotobj2 <- plotobj2 + scale_x_continuous("\nTime (hours)")
 			# Plot on linear or log-scale depending on input
-				plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (microg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
+				plotobj2 <- plotobj2 + scale_y_continuous("Doxycycline Concentration (µg/L)\n",breaks = plot.breaks,labels = plot.breaks,lim = c(0,max.CONC))
 				print(plotobj2)
 		})	#Brackets closing "renderPlot"
 
 	# Left summary table
-		output$Rtable1 <- renderTable({
-		  # Read in the necessary reactive expressions
-			  doryxMPC.data <- RdoryxMPC.data()
-				doryxTAB.data <- RdoryxTAB.data()
-			  summary.function <- Rsummary.function()
-				# Subset for the last time-point for each individual and combine the two formulation data frames together
-					doryxMPC.data.last <- ddply(doryxMPC.data, .(ID), oneperID)
-					doryxTAB.data.last <- ddply(doryxTAB.data, .(ID), oneperID)
-					data.last <- rbind(doryxMPC.data.last,doryxTAB.data.last)
+		output$Rtable1 <- renderUI({
+			withProgress(
+				message = "Calculating summaries...",
+				value = 0,
+				{
+			  # Read in the necessary reactive expressions
+				  doryxMPC.data <- RdoryxMPC.data()
+					doryxTAB.data <- RdoryxTAB.data()
+				  summary.function <- Rsummary.function()
+					# Subset for the last time-point for each individual and combine the two formulation data frames together
+						doryxMPC.data.last <- ddply(doryxMPC.data, .(ID), oneperID)
+						doryxTAB.data.last <- ddply(doryxTAB.data, .(ID), oneperID)
+						data.last <- rbind(doryxMPC.data.last,doryxTAB.data.last)
 
-				# Summarise results for fed/fasted for DoryxMPC data
-					if (input$SIM_STUDY == 1) {
-						# Summarise AUC
-					    AUC.table <- ddply(doryxMPC.data.last, .(FED), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
-				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(doryxMPC.data.last, .(FED), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$Cmax))
-					    Cmax.table$Variable <- "Cmax (microg/L)"
-				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(doryxMPC.data.last, .(FED), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$Tmax))
-					    Tmax.table$Variable <- "Tmax (h)"
-					}
-				# Summarise results for MPC/TAB for fasted
-					if (input$SIM_STUDY == 2) {
-						data.last.fasted <- data.last[data.last$FED == 0,]
-						# Summarise AUC
-					    AUC.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
-				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Cmax))
-					    Cmax.table$Variable <- "Cmax (microg/L)"
-				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Tmax))
-					    Tmax.table$Variable <- "Tmax (h)"
-					}
-				# Summarise results for male/female for doryxMPC.data
-					if (input$SIM_STUDY == 3) {
-						# Summarise AUC
-					    AUC.table <- ddply(doryxMPC.data.last, .(SEX), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
-				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(doryxMPC.data.last, .(SEX), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$Cmax))
-					    Cmax.table$Variable <- "Cmax (microg/L)"
-				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(doryxMPC.data.last, .(SEX), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$Tmax))
-					    Tmax.table$Variable <- "Tmax (h)"
-					}
-				# Return data frame
-					table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
-					if (input$SIM_STUDY == 1) {
-					  table1$FED[table1$FED == 0] <- "Fasted"
-					  table1$FED[table1$FED == 1] <- "Fed"
-						if (input$PI == 1) {
-							table1 <- data.frame(Status = table1$FED,Median = table1$Median,Variable = table1$Variable)
+					# Summarise results for fed/fasted for DoryxMPC data
+						if (input$SIM_STUDY == 1) {
+							# Summarise AUC
+						    AUC.table <- ddply(doryxMPC.data.last, .(FED), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$AUC))
+					    # Summarise Cmax (value will be found at time = 96)
+						    Cmax.table <- ddply(doryxMPC.data.last, .(FED), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$Cmax))
+					    # Summarise Tmax (value will be found at time = 96)
+						    Tmax.table <- ddply(doryxMPC.data.last, .(FED), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$Tmax))
 						}
-						if (input$PI == 2) {
-							table1 <- data.frame(Status = table1$FED,Median = table1$Median,"Percentile-5th" = table1$CIlo,"Percentile-95th" = table1$CIhi,Variable = table1$Variable)
+					# Summarise results for MPC/TAB for fasted
+						if (input$SIM_STUDY == 2) {
+							data.last.fasted <- data.last[data.last$FED == 0,]
+							# Summarise AUC
+						    AUC.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$AUC))
+					    # Summarise Cmax (value will be found at time = 96)
+						    Cmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Cmax))
+					    # Summarise Tmax (value will be found at time = 96)
+						    Tmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Tmax))
 						}
-						if (input$PI == 3) {
-							table1 <- data.frame(Status = table1$FED,Median = table1$Median,"Percentile-2.5th" = table1$CIlo,"Percentile-97.5th" = table1$CIhi,Variable = table1$Variable)
+					# Summarise results for male/female for doryxMPC.data
+						if (input$SIM_STUDY == 3) {
+							# Summarise AUC
+						    AUC.table <- ddply(doryxMPC.data.last, .(SEX), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$AUC))
+					    # Summarise Cmax (value will be found at time = 96)
+						    Cmax.table <- ddply(doryxMPC.data.last, .(SEX), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$Cmax))
+					    # Summarise Tmax (value will be found at time = 96)
+						    Tmax.table <- ddply(doryxMPC.data.last, .(SEX), function(doryxMPC.data.last) summary.function(doryxMPC.data.last$Tmax))
 						}
-						table1
-					}
-					if (input$SIM_STUDY == 2){
-					  table1$TRT[table1$TRT == 1] <- "Doryx MPC"
-					  table1$TRT[table1$TRT == 2] <- "Doryx Tablet"
-						if (input$PI == 1) {
-							table1 <- data.frame(Formulation = table1$TRT,Median = table1$Median,Variable = table1$Variable)
+
+					# Return data frame of combined results
+						table1 <- rbind(AUC.table,Cmax.table,Tmax.table)
+						table1$Variable <- c("AUC\\ (\\mu g*h/L)","AUC\\ (\\mu g*h/L)","Cmax\\ (\\mu g/L)","Cmax\\ (\\mu g/L)","Tmax\\ (h)","Tmax\\ (h)")
+						table1 <- table1[,c(ncol(table1),1:ncol(table1)-1)]
+
+					# Rename column headings depending on prediction intervals and what covariate comparison are selected
+						if (input$PI == 2) colnames(table1)[c(3,5)] <- c("5th Percentile","95th Percentile")
+						if (input$PI == 3) colnames(table1)[c(3,5)] <- c("2.5th Percentile","97.5th Percentile")
+						if (input$SIM_STUDY == 1) {
+							colnames(table1)[2] <- "Status"
+							table1$Status <- c("Fasted","Fed")
 						}
-						if (input$PI == 2) {
-							table1 <- data.frame(Formulation = table1$TRT,Median = table1$Median,"Percentile-5th" = table1$CIlo,"Percentile-95th" = table1$CIhi,Variable = table1$Variable)
+						if (input$SIM_STUDY == 2) {
+							colnames(table1)[2] <- "Formulation"
+							table1$Formulation <- c("Doryx\\ MPC","Doryx\\ Tablet")
 						}
-						if (input$PI == 3) {
-							table1 <- data.frame(Formulation = table1$TRT,Median = table1$Median,"Percentile-2.5th" = table1$CIlo,"Percentile-97.5th" = table1$CIhi,Variable = table1$Variable)
+						if (input$SIM_STUDY == 3) {
+							colnames(table1)[2] <- "Gender"
+							table1$Gender <- c("Female","Male")
 						}
-						table1
-					}
-					if (input$SIM_STUDY == 3) {
-					  table1$SEX[table1$SEX == 0] <- "Female"
-					  table1$SEX[table1$SEX == 1] <- "Male"
-						if (input$PI == 1) {
-							table1 <- data.frame(Gender = table1$SEX,Median = table1$Median,Variable = table1$Variable)
-						}
-						if (input$PI == 2) {
-							table1 <- data.frame(Gender = table1$SEX,Median = table1$Median,"Percentile-5th" = table1$CIlo,"Percentile-95th" = table1$CIhi,Variable = table1$Variable)
-						}
-						if (input$PI == 3) {
-							table1 <- data.frame(Gender = table1$SEX,Median = table1$Median,"Percentile-2.5th" = table1$CIlo,"Percentile-97.5th" = table1$CIhi,Variable = table1$Variable)
-						}
-						table1
-					}
-			  table1
-		})	#Brackets closing "renderTable"
+
+					# Format as an "xtable"
+					  table1x <- print(xtable(table1,align = c("l","l",rep("c",times = ncol(table1)-1))),include.rownames = FALSE,floating = FALSE,tabular.environment = "array",comment = FALSE,print.results = FALSE,sanitize.text.function = function(x) {x},sanitize.colnames.function = bold)
+						html <- paste0("$$",table1x,"$$")
+		        list(
+		          withMathJax(HTML(html))
+		        )
+				}	#Brackets closing expression for "withProgress"
+			)	#Brackets closing "withProgress"
+		})	# Brackets closing "renderUI"
 
 	# Right summary table
-		output$Rtable2 <- renderTable({
-		  # Read in the necessary reactive expressions
-			  doryxMPC.data <- RdoryxMPC.data()
-				doryxTAB.data <- RdoryxTAB.data()
-			  summary.function <- Rsummary.function()
-				# Subset for the last time-point for each individual and combine the two formulation data frames together
-					doryxMPC.data.last <- ddply(doryxMPC.data, .(ID), oneperID)
-					doryxTAB.data.last <- ddply(doryxTAB.data, .(ID), oneperID)
-					data.last <- rbind(doryxMPC.data.last,doryxTAB.data.last)
+		output$Rtable2 <- renderUI({
+			withProgress(
+				message = "Calculating summaries...",
+				value = 0,
+				{
+			  # Read in the necessary reactive expressions
+				  doryxMPC.data <- RdoryxMPC.data()
+					doryxTAB.data <- RdoryxTAB.data()
+				  summary.function <- Rsummary.function()
+					# Subset for the last time-point for each individual and combine the two formulation data frames together
+						doryxMPC.data.last <- ddply(doryxMPC.data, .(ID), oneperID)
+						doryxTAB.data.last <- ddply(doryxTAB.data, .(ID), oneperID)
+						data.last <- rbind(doryxMPC.data.last,doryxTAB.data.last)
 
-				# Summarise results for fed/fasted for doryxTAB data
-					if (input$SIM_STUDY == 1) {
-						# Summarise AUC
-					    AUC.table <- ddply(doryxTAB.data.last, .(FED), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
-				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(doryxTAB.data.last, .(FED), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$Cmax))
-					    Cmax.table$Variable <- "Cmax (microg/L)"
-				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(doryxTAB.data.last, .(FED), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$Tmax))
-					    Tmax.table$Variable <- "Tmax (h)"
-					}
-				# Summarise results for MPC/TAB for fed
-					if (input$SIM_STUDY == 2) {
-						data.last.fasted <- data.last[data.last$FED == 1,]
-						# Summarise AUC
-					    AUC.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
-				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Cmax))
-					    Cmax.table$Variable <- "Cmax (microg/L)"
-				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Tmax))
-					    Tmax.table$Variable <- "Tmax (h)"
-					}
-				# Summarise results for male/female for doryxTAB.data
-					if (input$SIM_STUDY == 3) {
-						# Summarise AUC
-					    AUC.table <- ddply(doryxTAB.data.last, .(SEX), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$AUC))
-					    AUC.table$Variable <- "AUC (microg*h/L)"
-				    # Summarise Cmax (value will be found at time = 96)
-					    Cmax.table <- ddply(doryxTAB.data.last, .(SEX), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$Cmax))
-					    Cmax.table$Variable <- "Cmax (microg/L)"
-				    # Summarise Tmax (value will be found at time = 96)
-					    Tmax.table <- ddply(doryxTAB.data.last, .(SEX), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$Tmax))
-					    Tmax.table$Variable <- "Tmax (h)"
-					}
-				# Return data frame
-					table2 <- rbind(AUC.table,Cmax.table,Tmax.table)
-					if (input$SIM_STUDY == 1) {
-					  table2$FED[table2$FED == 0] <- "Fasted"
-					  table2$FED[table2$FED == 1] <- "Fed"
-						if (input$PI == 1) {
-							table2 <- data.frame(Status = table2$FED,Median = table2$Median,Variable = table2$Variable)
+					# Summarise results for fed/fasted for doryxTAB data
+						if (input$SIM_STUDY == 1) {
+							# Summarise AUC
+						    AUC.table <- ddply(doryxTAB.data.last, .(FED), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$AUC))
+					    # Summarise Cmax (value will be found at time = 96)
+						    Cmax.table <- ddply(doryxTAB.data.last, .(FED), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$Cmax))
+					    # Summarise Tmax (value will be found at time = 96)
+						    Tmax.table <- ddply(doryxTAB.data.last, .(FED), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$Tmax))
 						}
-						if (input$PI == 2) {
-							table2 <- data.frame(Status = table2$FED,Median = table2$Median,"Percentile-5th" = table2$CIlo,"Percentile-95th" = table2$CIhi,Variable = table2$Variable)
+					# Summarise results for MPC/TAB for fed
+						if (input$SIM_STUDY == 2) {
+							data.last.fasted <- data.last[data.last$FED == 1,]
+							# Summarise AUC
+						    AUC.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$AUC))
+					    # Summarise Cmax (value will be found at time = 96)
+						    Cmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Cmax))
+					    # Summarise Tmax (value will be found at time = 96)
+						    Tmax.table <- ddply(data.last.fasted, .(TRT), function(data.last.fasted) summary.function(data.last.fasted$Tmax))
 						}
-						if (input$PI == 3) {
-							table2 <- data.frame(Status = table2$FED,Median = table2$Median,"Percentile-2.5th" = table2$CIlo,"Percentile-97.5th" = table2$CIhi,Variable = table2$Variable)
+					# Summarise results for male/female for doryxTAB.data
+						if (input$SIM_STUDY == 3) {
+							# Summarise AUC
+						    AUC.table <- ddply(doryxTAB.data.last, .(SEX), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$AUC))
+					    # Summarise Cmax (value will be found at time = 96)
+						    Cmax.table <- ddply(doryxTAB.data.last, .(SEX), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$Cmax))
+					    # Summarise Tmax (value will be found at time = 96)
+						    Tmax.table <- ddply(doryxTAB.data.last, .(SEX), function(doryxTAB.data.last) summary.function(doryxTAB.data.last$Tmax))
 						}
-						table2
-					}
-					if (input$SIM_STUDY == 2){
-					  table2$TRT[table2$TRT == 1] <- "Doryx MPC"
-					  table2$TRT[table2$TRT == 2] <- "Doryx Tablet"
-						if (input$PI == 1) {
-							table2 <- data.frame(Formulation = table2$TRT,Median = table2$Median,Variable = table2$Variable)
+
+					# Return data frame of combined results
+						table2 <- rbind(AUC.table,Cmax.table,Tmax.table)
+						table2$Variable <- c("AUC\\ (\\mu g*h/L)","AUC\\ (\\mu g*h/L)","Cmax\\ (\\mu g/L)","Cmax\\ (\\mu g/L)","Tmax\\ (h)","Tmax\\ (h)")
+						table2 <- table2[,c(ncol(table2),1:ncol(table2)-1)]
+
+					# Rename column headings depending on prediction intervals and what covariate comparison are selected
+						if (input$PI == 2) colnames(table2)[c(3,5)] <- c("5th Percentile","95th Percentile")
+						if (input$PI == 3) colnames(table2)[c(3,5)] <- c("2.5th Percentile","97.5th Percentile")
+						if (input$SIM_STUDY == 1) {
+							colnames(table2)[2] <- "Status"
+							table2$Status <- c("Fasted","Fed")
 						}
-						if (input$PI == 2) {
-							table2 <- data.frame(Formulation = table2$TRT,Median = table2$Median,"Percentile-5th" = table2$CIlo,"Percentile-95th" = table2$CIhi,Variable = table2$Variable)
+						if (input$SIM_STUDY == 2) {
+							colnames(table2)[2] <- "Formulation"
+							table2$Formulation <- c("Doryx\\ MPC","Doryx\\ Tablet")
 						}
-						if (input$PI == 3) {
-							table2 <- data.frame(Formulation = table2$TRT,Median = table2$Median,"Percentile-2.5th" = table2$CIlo,"Percentile-97.5th" = table2$CIhi,Variable = table2$Variable)
+						if (input$SIM_STUDY == 3) {
+							colnames(table2)[2] <- "Gender"
+							table2$Gender <- c("Female","Male")
 						}
-						table2
-					}
-					if (input$SIM_STUDY == 3) {
-					  table2$SEX[table2$SEX == 0] <- "Female"
-					  table2$SEX[table2$SEX == 1] <- "Male"
-						if (input$PI == 1) {
-							table2 <- data.frame(Gender = table2$SEX,Median = table2$Median,Variable = table2$Variable)
-						}
-						if (input$PI == 2) {
-							table2 <- data.frame(Gender = table2$SEX,Median = table2$Median,"Percentile-5th" = table2$CIlo,"Percentile-95th" = table2$CIhi,Variable = table2$Variable)
-						}
-						if (input$PI == 3) {
-							table2 <- data.frame(Gender = table2$SEX,Median = table2$Median,"Percentile-2.5th" = table2$CIlo,"Percentile-97.5th" = table2$CIhi,Variable = table2$Variable)
-						}
-						table2
-					}
-			  table2
-		})	#Brackets closing "renderTable"
+
+					# Format as an "xtable"
+					  table2x <- print(xtable(table2,align = c("l","l",rep("c",times = ncol(table2)-1))),include.rownames = FALSE,floating = FALSE,tabular.environment = "array",comment = FALSE,print.results = FALSE,sanitize.text.function = function(x) {x},sanitize.colnames.function = bold)
+						html <- paste0("$$",table2x,"$$")
+		        list(
+		          withMathJax(HTML(html))
+		        )
+				}	#Brackets closing expression for "withProgress"
+			)	#Brackets closing "withProgress"
+		})	#Brackets closing "renderUI"
 
   #############
   ##_SESSION_##

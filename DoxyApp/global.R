@@ -10,9 +10,13 @@
   library(plyr)  # Split and rearrange data, ddply function
   library(dplyr)  # New plyr
   library(mrgsolve) # Metrum differential equation solver for pharmacometrics
+  library(xtable)
 
 # Define a custom ggplot2 theme
   theme_bw2 <- theme_set(theme_bw(base_size = 14))
+
+# Function for making column headings in "bold"
+  bold <- function(x) {paste0('{\\textbf{',x,'}}')}
 
 # Source model code
   source("model.R")

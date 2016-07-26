@@ -28,11 +28,11 @@ This application has been designed to allow the user to assess the influence of 
 
 The effect of these covariates can be evaluated in three different doxycycline dosing regimens:
 
-1.  Single dose: 120 mg Doryx MPC versus 100 mg Doryx Tablet over 96 hours
-2.  Clinical Regimen 1 (standard multiple dose regimen):
+1.  Single-dose: 120 mg Doryx MPC versus 100 mg Doryx Tablet over 96 hours
+2.  Multiple-dose (standard infection):
     + Doryx MPC - 120 mg every 12 hours on Day 1, then 120 mg every 24 hours on Days 2 to 7 *versus*
     + Doryx Tablet - 100 mg every 12 hours on Day 1, then 100 mg every 24 hours on Days 2 to 7
-3.  Clinical Regimen 2 (multiple dose regimen for severe infection):
+3.  Multiple-dose (severe infection):
     + Doryx MPC - 120 mg every 12 hours for 7 days
     + Doryx Tablet - 100 mg every 12 hours for 7 days
 
