@@ -12,7 +12,7 @@
 # Define time sequence - using mrgsolve's tgrid function
 	TIME.tgrid <- c(tgrid(0,3,0.25),tgrid(4,12,4),tgrid(16,96,8))
 # Set number of individuals that make up the 95% prediction intervals
-	n <- 1
+	n <- 1000
 # 95% prediction interval functions - calculate the 2.5th and 97.5th percentiles
 	CI95lo <- function(x) quantile(x,probs = 0.025)
 	CI95hi <- function(x) quantile(x,probs = 0.975)
